@@ -1,0 +1,125 @@
+const adminSchema = require("./adminSchema.js");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const  JWTSECRET  = process.env.JWTSECRET;
+try {
+  module.exports = {
+    addAdmin: async (doc) => {
+      try {
+        const hashPassword = await bcrypt.hash(doc.password, 12);
+        const admin = new adminSchema({
+          name: doc.name,
+          mobile_number: doc.mobile_number,
+          email: doc.email,
+          password: hashPassword,
+          is_active: true,
+        });
+        return admin.save();
+      } catch (err) {
+        return err;
+      }
+    },
+    loginAdmin: async (doc) => {
+      try {
+        const email = doc.email;
+        const password = doc.password;
+        let token;
+        if (!email || !password) {
+          return new Error("email and password not found");
+        } else if (!email) {
+          return new Error("email not found");
+        } else if (!password) {
+          return new Error("password not found");
+        } else {
+          const admin = await adminSchema.findOne({ email: email });
+          if (!admin) {
+            return new Error("admin not found");
+          } else {
+            if (await bcrypt.compare(password, admin.password)) {
+              if (admin.is_active === true) {
+                token = jwt.sign({ admin_id: admin._id, email }, JWTSECRET, {
+                  expiresIn: "12h",
+                });
+                return { token: token, admin: admin };
+              } else {
+                return new Error("Account is not Activated");
+              }
+            } else {
+              return new Error("Incorrect Password");
+            }
+          }
+        }
+      } catch (err) {
+        console.log(err);
+        return err;
+      }
+    },
+    updateAdmin: async (res, admin_id, updateAdminDoc) => {
+      try {
+        var admin = await adminSchema.findByIdAndUpdate(
+          { _id: admin_id },
+          {
+            $set: {
+              name: updateAdminDoc.name,
+              mobile_number: updateAdminDoc.mobile_number,
+              is_active: updateAdminDoc.is_active,
+            },
+          }
+        );
+        return admin;
+      } catch (err) {
+        return err;
+      }
+    },
+
+    getByIdAdmin: async (res, admin_id) => {
+      try {
+        var admin = await adminSchema.findOne({
+          _id: admin_id,
+          is_active: true,
+        });
+        return admin;
+      } catch (err) {
+        return err;
+      }
+    },
+
+    contactus: async (data) => {
+      try {
+        heading = "New Request";
+        transporter.sendMail(
+          {
+            to: "rajanbhatia100@gmail.com",
+            from: "newtest960@gmail.com",
+            subject: "New Request",
+            html: `  <div> Dear Admin , </div> <br>
+
+                         <div> Message:  ${data.message} </div><br>
+
+                         <div> Email:   ${data.email}</div>  <br>
+
+                       <div>Name:  ${data.name}</div>
+
+            <br>
+            `,
+          },
+          (err, res) => {
+            if (err) {
+
+              console.log("err", err);
+
+
+            }
+
+            console.log("res", res);
+            
+          }
+        );
+      } catch (error) {
+        return error;
+      }
+    },
+  };
+} catch (e) {
+  log.error(e);
+}
