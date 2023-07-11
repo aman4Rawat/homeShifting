@@ -1,9 +1,49 @@
 const adminSchema = require("./adminSchema.js");
+const bannerSchema = require("./bannerSchema.js");
+const banner3Schema = require("./banner3Schema.js");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const  JWTSECRET  = process.env.JWTSECRET;
+const JWTSECRET = process.env.JWTSECRET;
 try {
   module.exports = {
+    addMailBanner: async (data) => {
+      try {
+        const checkBanner = await bannerSchema.find();
+        if (checkBanner.length === 0) {
+          const mainBanner = bannerSchema({
+            banner_main_image: data.path,
+          });
+          await mainBanner.save();
+          return "Banner Uploaded Successfully";
+        } else {
+          await bannerSchema.findByIdAndUpdate(
+            { _id: checkBanner[0]._id },
+            { banner_main_image: data.path },
+            { new: true }
+          );
+          return "Banner Updated Successfully";
+        }
+      } catch (err) {
+        return err;
+      }
+    },
+    threeBanner: async (data) => {
+      try {
+        const checkBanner = await banner3Schema.find();
+        if (checkBanner.length < 3) {
+          const banner = new banner3Schema({
+            banner_three_image: data.path,
+          });
+          await banner.save();
+          return "Banner uploaded successfully";
+        } else {
+          return new Error("First delete a image to upload this image because length is full");
+        }
+      } catch (err) {
+        return err;
+      }
+    },
+
     addAdmin: async (doc) => {
       try {
         const hashPassword = await bcrypt.hash(doc.password, 12);
@@ -12,11 +52,11 @@ try {
           mobile_number: doc.mobile_number,
           email: doc.email,
           password: hashPassword,
-          is_active: true,
+          gender: doc.gender,
         });
-        return admin.save();
+        return await admin.save();
       } catch (err) {
-        return err;
+        return new Error(err.errmsg);
       }
     },
     loginAdmin: async (doc) => {
@@ -37,9 +77,13 @@ try {
           } else {
             if (await bcrypt.compare(password, admin.password)) {
               if (admin.is_active === true) {
-                token = jwt.sign({ admin_id: admin._id, email }, JWTSECRET, {
-                  expiresIn: "12h",
-                });
+                token = jwt.sign(
+                  { admin_id: admin._id, role: admin.role, email },
+                  JWTSECRET,
+                  {
+                    expiresIn: "12h",
+                  }
+                );
                 return { token: token, admin: admin };
               } else {
                 return new Error("Account is not Activated");
@@ -105,14 +149,10 @@ try {
           },
           (err, res) => {
             if (err) {
-
               console.log("err", err);
-
-
             }
 
             console.log("res", res);
-            
           }
         );
       } catch (error) {

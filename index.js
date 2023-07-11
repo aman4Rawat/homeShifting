@@ -1,14 +1,14 @@
+const dotenv = require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const helmet = require("helmet");
 const compression = require("compression");
-const dotenv = require("dotenv");
-dotenv.config();
 
 
 const user = require("./routes/userroutes.js");
+const admin = require("./routes/adminroutes.js");
 
 
 var dataDate = new Date();
@@ -66,6 +66,7 @@ try {
   });
  ; 
    app.use("/user", user);
+   app.use("/admin", admin);
   
   mongoose.set('strictQuery', false);
   (async () => {

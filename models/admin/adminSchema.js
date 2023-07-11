@@ -34,7 +34,15 @@ const adminSchema = new mongoose.Schema({
   gender:{
     type:String
   },
-
+  role:{
+    type: String,
+    enum : ["ADMIN",'SUPER_ADMIN'],
+    default: 'ADMIN'
+  },
+  password: {
+    type: String,
+    required: true,
+  },
   is_active: {
     type: Boolean,
     default: true,

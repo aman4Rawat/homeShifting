@@ -1,106 +1,109 @@
 const adminModel = require("../models/admin/index.js");
+const bannerModel = require("../models/admin/index.js");
 const adminValidation = require("../validator/adminValidation.js");
 const utils = require("../libs/utils");
+const multer = require("multer");
+const fs = require("fs");
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    if (!fs.existsSync("image")) {
+      fs.mkdirSync("image", { recursive: true });
+    }
+    cb(null, "image");
+  },
+  filename: function (req, file, cb) {
+    const { originalname } = file;
+    let fileExt = ".jpeg";
+    const extI = originalname.lastIndexOf(".");
+    if (extI !== -1) {
+      fileExt = originalname.substring(extI).toLowerCase();
+    }
+    const fileName = `${Date.now()}-image${fileExt}`;
+    cb(null, fileName);
+  },
+});
+
+const upload = multer({
+  storage: storage,
+}).single("Image");
 
 try {
   module.exports = {
-    addAdmin: async (req, res) => {
+    mainBanner: async (req, res, next) => {
       try {
-        const admin = {
-          name: req.body.name,
-          mobile_number: req.body.mobile_number,
-          email: req.body.email,
+        if(req.role !== "ADMIN"){return res.status(401).send(utils.error("Only Admin can upload main banner")); }
+        upload(req, res, async (err) => {
+          if (err) {
+            return res.status(500).send(utils.error("Internal server error"));
+          }
+          if (!req.file) {
+            return res.status(400).send(utils.error("No file uploaded"));
+          }
+          const data = req.file;
+          const result = await bannerModel.addMailBanner(data);
+          return res
+            .status(200)
+            .send(utils.response(result));
+        });
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+    threeBanners: async(req, res, next) =>{
+      try {
+        if(req.role !== "ADMIN"){return res.status(401).send(utils.error("Only Admin can upload banners")); }
+        upload(req, res, async (err) => {
+          if (err) {
+            return res.status(500).send(utils.error("Internal server error"));
+          }
+          if (!req.file) {
+            return res.status(400).send(utils.error("No file uploaded"));
+          }
+          const data = req.file;
+          const result = await bannerModel.threeBanner(data);
+          if (result instanceof Error) {
+            return res.status(403).send(utils.error(result.message));
+          } else {
+            return res.status(201).send(utils.response(result));
+          }
+        });
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+    addAdmin:async(req, res,next)=>{
+      try{
+        const data = {
+          email : req.body.email,
           password: req.body.password,
-        };
-        // const adminData = await adminValidation.addAdmin.validateAsync(admin);
-        const result = await adminModel.addAdmin(admin);
+          name: req.body.name,
+          mobile_number: req.body.number,
+          gender: req.body.gender
+        }
+        const result = await adminModel.addAdmin(data);
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
         } else {
           return res.status(201).send(utils.response(result));
         }
-      } catch (err) {
-        return res.status(403).send(utils.error(err));
+      }catch(err){
+        return err
       }
     },
-
-    loginAdmin: async (req, res) => {
-      try {
-        const admin = {
+    loginAdmin:async(req,res,next)=>{
+      try{
+        const data = {
           email: req.body.email,
           password: req.body.password,
-        };
-
-        // const adminData = await adminValidation.loginAdmin.validateAsync(admin);
-        const result = await adminModel.loginAdmin(admin);
+        }
+        const result = await adminModel.loginAdmin(data);
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
         } else {
-          return res.status(200).send(utils.response(result));
+          return res.status(201).send(utils.response(result));
         }
-      } catch (err) {
-        console.log(err);
-        return res.status(403).send(utils.error(err));
-      }
-    },
-
-    updateAdmin: async (req, res) => {
-      try {
-        const admin_id = req.params.id;
-        const updateAdminDoc = {
-          name: req.body.name,
-          mobile_number: req.body.mobile_number,
-        };
-        const result = await adminModel.updateAdmin(
-          res,
-          admin_id,
-          updateAdminDoc
-        );
-        res.send(result);
-      } catch (err) {
-        return res.status(403).send(utils.error(err));
-      }
-    },
-
-    removeAdmin: async (req, res) => {
-      try {
-        const admin_id = req.params._id;
-        const updateAdminDoc = {
-          is_active: false,
-        };
-        const result = await adminModel.updateAdmin(
-          res,
-          admin_id,
-          updateAdminDoc
-        );
-        res.send(result);
-      } catch (err) {
-        return res.status(403).send(utils.error(err));
-      }
-    },
-
-    getAdminById: async (req, res) => {
-      try {
-        const admin_id = req.params.id;
-        const result = await adminModel.getByIdAdmin(res, admin_id);
-        res.send(result);
-      } catch (err) {
-        return res.status(403).send(utils.error(err));
-      }
-    },
-
-    contactus: async (req, res) => {
-      try {
-        const data = {
-          name: req.body.name,
-          email: req.body.email,
-          message: req.body.message,
-        };
-        const result = await adminModel.contactus(data);
-        res.send(result);
-      } catch (err) {
-        return res.status(403).send(utils.error(err));
-      }
+      }catch(err){return err}
     },
   };
 } catch (err) {

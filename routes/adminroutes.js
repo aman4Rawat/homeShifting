@@ -3,17 +3,11 @@ const adminCtrl = require("../controllers/adminCtrl.js");
 const jwtauth = require("../middlewares/auth");
 
 try {
-  adminroutes.post("/create", adminCtrl.addAdmin);
-
-  adminroutes.post("/login", adminCtrl.loginAdmin);
-
-  adminroutes.put("/update/:id", adminCtrl.updateAdmin);
-
-  adminroutes.put("/remove/:id", adminCtrl.removeAdmin);
-
-  adminroutes.get("/:id", adminCtrl.getAdminById);
-
-  adminroutes.post("/contactus", adminCtrl.contactus);
+  adminroutes.post("/addadmin", adminCtrl.addAdmin);
+  adminroutes.post("/loginadmin", adminCtrl.loginAdmin);
+  adminroutes.post("/mainbanner",jwtauth, adminCtrl.mainBanner);
+  adminroutes.post("/threebanner",jwtauth, adminCtrl.threeBanners);
+  
 
   module.exports = adminroutes;
 } catch (error) {
