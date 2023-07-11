@@ -2,25 +2,27 @@ const userSchema = require("./userSchema.js");
 const otpSchema = require("./otpSchema.js");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const OTP = require('../../services/OTP.js')
-const  JWTSECRET  = process.env.JWTSECRET;
+const OTP = require("../../services/OTP.js");
+const BASEURL = process.env.BASEURL;
+const JWTSECRET = process.env.JWTSECRET;
 try {
   module.exports = {
-    adduser: async (doc) => {
+    adduser: async (body, data) => {
       try {
-        const data = await userSchema.findOne({mobile_number:doc.number});
-        if(!data){
-        const admin = new userSchema({
-          mobile_number: doc.number,
-          name: doc.name,
-          gender: doc.gender,
-          email:doc.email,
-        });
-        const data = await admin.save();
-        return data;
-      }else{
-        return data;
-      }
+        const user = await userSchema.findOne({ mobile_number: body.number });
+        if (!user) {
+          const admin = new userSchema({
+            mobile_number: body.number,
+            name: body.name,
+            gender: body.gender,
+            email: body.email,
+            profile_image: BASEURL + data.path,
+          });
+          const user = await admin.save();
+          return user;
+        } else {
+          return user;
+        }
       } catch (err) {
         return err;
       }
@@ -30,19 +32,23 @@ try {
         const number = doc.number;
         const otp = doc.otp;
         const time = new Date(Date.now() + 60000 * 5).getTime();
-        const user = await otpSchema.findOne({mobile_number:number});
-        if(!user){
+        const user = await otpSchema.findOne({ mobile_number: number });
+        if (!user) {
           const newUser = new otpSchema({
             mobile_number: number,
             otp: otp,
-            expire_time:time,
-            wrong_attempt:0
-          })
+            expire_time: time,
+            wrong_attempt: 0,
+          });
           await newUser.save();
-        }else{
-          await otpSchema.findOneAndUpdate({_id:user._id, mobile_number:number},{otp:otp, expire_time:time, wrong_attempt:0, is_active:true},{new:true});
+        } else {
+          await otpSchema.findOneAndUpdate(
+            { _id: user._id, mobile_number: number },
+            { otp: otp, expire_time: time, wrong_attempt: 0, is_active: true },
+            { new: true }
+          );
         }
-        const data  = await OTP.sendOTP(number,otp);
+        const data = await OTP.sendOTP(number, otp);
         return data;
       } catch (err) {
         console.log(err);
@@ -54,56 +60,90 @@ try {
         const number = doc.number;
         const otp = Number(doc.otp);
         const time = new Date(Date.now()).getTime();
-        const user = await otpSchema.findOne({mobile_number:number});
-        if(!user){return new Error("Please register with this number first")};
-        if(user.wrong_attempt>=3){return new Error("you have exceed the limit of wrong attemt please resend OTP")};
-        if(user.expire_time<time){return new Error("OTP time expired")};
-        if(user.otp !== otp){
-          const num = user.wrong_attempt+1
-          const x = await otpSchema.findOneAndUpdate({mobile_number:number},{wrong_attempt:num},{new:true});
-          return new Error(`Wrong OTP, attempt failed ${x.wrong_attempt}`)
+        const user = await otpSchema.findOne({ mobile_number: number });
+        if (!user) {
+          return new Error("Please register with this number first");
         }
-        if(user.otp === otp && user.is_active===true){
-          await otpSchema.findOneAndUpdate({mobile_number:number},{is_active:false},{new:true});
-          const data = await userSchema.findOne({mobile_number:number});
-          if(data){
+        if (user.wrong_attempt >= 3) {
+          return new Error(
+            "you have exceed the limit of wrong attemt please resend OTP"
+          );
+        }
+        if (user.expire_time < time) {
+          return new Error("OTP time expired");
+        }
+        if (user.otp !== otp) {
+          const num = user.wrong_attempt + 1;
+          const x = await otpSchema.findOneAndUpdate(
+            { mobile_number: number },
+            { wrong_attempt: num },
+            { new: true }
+          );
+          return new Error(`Wrong OTP, attempt failed ${x.wrong_attempt}`);
+        }
+        if (user.otp === otp && user.is_active === true) {
+          await otpSchema.findOneAndUpdate(
+            { mobile_number: number },
+            { is_active: false },
+            { new: true }
+          );
+          const data = await userSchema.findOne({ mobile_number: number });
+          if (data) {
             token = jwt.sign({ user_id: data._id }, JWTSECRET);
             return { token, data };
           }
           return data;
-        }{return new Error("OTP has been used")}
+        }
+        {
+          return new Error("OTP has been used");
+        }
       } catch (err) {
         console.log(err);
         return err;
       }
     },
 
-
-    updateAdmin: async (res, admin_id, updateAdminDoc) => {
+    updateAdmin: async (userDoc) => {
       try {
-        var admin = await userSchema.findByIdAndUpdate(
-          { _id: admin_id },
+        const update = {};
+        if(userDoc.email){
+          update.email=userDoc.email;
+        }
+        if(userDoc.gender){
+          update.gender=userDoc.gender;
+        }
+        if(userDoc.name){
+          update.name=userDoc.name;
+        }
+        if(userDoc.is_active){
+          update.is_active=userDoc.is_active;
+        }
+        if(userDoc.dob){
+          update.dob=userDoc.dob;
+        }
+        if(userDoc.profile_image){
+          update.profile_image= BASEURL + data.path;
+        }
+        var user = await userSchema.findByIdAndUpdate(
+          { _id: userDoc.id },
           {
-            $set: {
-              name: updateAdminDoc.name,
-              mobile_number: updateAdminDoc.mobile_number,
-              is_active: updateAdminDoc.is_active,
-            },
-          }
+            $set: update,
+          },
+          { new: true }
         );
-        return admin;
+        return user;
       } catch (err) {
         return err;
       }
     },
 
-    getByIdAdmin: async (res, admin_id) => {
+    getByIdUser: async (id) => {
       try {
-        var admin = await userSchema.findOne({
-          _id: admin_id,
+        const user = await userSchema.findOne({
+          _id: id,
           is_active: true,
         });
-        return admin;
+        return user;
       } catch (err) {
         return err;
       }
@@ -130,14 +170,10 @@ try {
           },
           (err, res) => {
             if (err) {
-
               console.log("err", err);
-
-
             }
 
             console.log("res", res);
-            
           }
         );
       } catch (error) {

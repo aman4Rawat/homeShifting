@@ -2,23 +2,33 @@ const userModel = require("../models/user/index.js");
 const adminValidation = require("../validator/adminValidation.js");
 const utils = require("../libs/utils");
 const otpGenerator = require('otp-generator');
+const upload = require('../middlewares/multer.js')
 
 try {
   module.exports = {
     adduser: async (req, res) => {
       try {
-        const body = {
-          email: req.body.email,
-          number: req.body.number,
-          gender: req.body.gender,
-          name: req.body.name,          
-        };
-        const result = await userModel.adduser(body);
-        if (result instanceof Error) {
-          return res.status(403).send(utils.error(result.message));
-        } else {
-          return res.status(201).send(utils.response(result));
-        }
+        upload(req, res, async (err) => {
+          if (err) {
+            return res.status(500).send(utils.error("Internal server error"));
+          }
+          if (!req.file) {
+            return res.status(400).send(utils.error("No file uploaded"));
+          }
+          const body = {
+            email: req.body.email,
+            number: req.body.number,
+            gender: req.body.gender,
+            name: req.body.name,          
+          };
+          const data = req.file; 
+          const result = await userModel.adduser(body,data);
+          if (result instanceof Error) {
+            return res.status(403).send(utils.error(result.message));
+          } else {
+            return res.status(201).send(utils.response(result));
+          }
+        });      
       } catch (err) {
         return res.status(403).send(utils.error(err));
       }
@@ -60,19 +70,32 @@ try {
       }
     },
 
-    updateAdmin: async (req, res) => {
+    updateuser: async (req, res) => {
       try {
-        const admin_id = req.params.id;
-        const updateAdminDoc = {
-          name: req.body.name,
-          mobile_number: req.body.mobile_number,
-        };
-        const result = await userModel.updateAdmin(
-          res,
-          admin_id,
-          updateAdminDoc
-        );
-        res.send(result);
+        upload(req, res, async (err) => {
+          if (err) {
+            return res.status(500).send(utils.error("Internal server error"));
+          }
+          
+          const userDoc = {
+            is_active: req.body.is_active,
+            gender: req.body.gender,
+            name: req.body.name,
+            dob: req.body.dob,
+            id: req.body.id,
+          };
+          if(req.file){
+            userDoc.profile_image = req.file.path;
+          }
+          const result = await userModel.updateAdmin(
+            userDoc
+          );
+          if (result instanceof Error) {
+            return res.status(403).send(utils.error(result.message));
+          } else {
+            return res.status(201).send(utils.response(result));
+          }
+        });
       } catch (err) {
         return res.status(403).send(utils.error(err));
       }
@@ -95,10 +118,10 @@ try {
       }
     },
 
-    getAdminById: async (req, res) => {
+    getUserById: async (req, res) => {
       try {
-        const admin_id = req.params.id;
-        const result = await userModel.getByIdAdmin(res, admin_id);
+        const id = req.body.id;
+        const result = await userModel.getByIdUser(id);
         res.send(result);
       } catch (err) {
         return res.status(403).send(utils.error(err));

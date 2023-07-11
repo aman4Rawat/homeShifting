@@ -34,7 +34,9 @@ const userSchema = new mongoose.Schema({
   gender:{
     type:String
   },
-
+  dob:{
+    type:String
+  },
   is_active: {
     type: Boolean,
     default: true,

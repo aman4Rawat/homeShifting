@@ -1,9 +1,11 @@
 const adminSchema = require("./adminSchema.js");
 const bannerSchema = require("./bannerSchema.js");
 const banner3Schema = require("./banner3Schema.js");
+const serviceSchema = require('./serviceSchema.js');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const JWTSECRET = process.env.JWTSECRET;
+const BASEURL = process.env.BASEURL;
 try {
   module.exports = {
     addMailBanner: async (data) => {
@@ -98,67 +100,30 @@ try {
         return err;
       }
     },
-    updateAdmin: async (res, admin_id, updateAdminDoc) => {
+    createService: async(data)=>{
       try {
-        var admin = await adminSchema.findByIdAndUpdate(
-          { _id: admin_id },
-          {
-            $set: {
-              name: updateAdminDoc.name,
-              mobile_number: updateAdminDoc.mobile_number,
-              is_active: updateAdminDoc.is_active,
-            },
-          }
-        );
-        return admin;
+          const image = serviceSchema({
+            image: BASEURL+data.image,
+            name: data.name
+          });
+          await image.save();
+          return "Service Created Successfully";
+      } catch (err) {
+        return err;
+      }
+    },
+    allServices: async(body)=>{
+      try {
+        const page = body.page || 1;
+        const limit = body.limit|| 8;
+          const data = await serviceSchema.find().skip((page-1)*limit).limit();
+          return data;
       } catch (err) {
         return err;
       }
     },
 
-    getByIdAdmin: async (res, admin_id) => {
-      try {
-        var admin = await adminSchema.findOne({
-          _id: admin_id,
-          is_active: true,
-        });
-        return admin;
-      } catch (err) {
-        return err;
-      }
-    },
 
-    contactus: async (data) => {
-      try {
-        heading = "New Request";
-        transporter.sendMail(
-          {
-            to: "rajanbhatia100@gmail.com",
-            from: "newtest960@gmail.com",
-            subject: "New Request",
-            html: `  <div> Dear Admin , </div> <br>
-
-                         <div> Message:  ${data.message} </div><br>
-
-                         <div> Email:   ${data.email}</div>  <br>
-
-                       <div>Name:  ${data.name}</div>
-
-            <br>
-            `,
-          },
-          (err, res) => {
-            if (err) {
-              console.log("err", err);
-            }
-
-            console.log("res", res);
-          }
-        );
-      } catch (error) {
-        return error;
-      }
-    },
   };
 } catch (e) {
   log.error(e);

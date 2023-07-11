@@ -27,8 +27,7 @@ const upload = multer({
 // Export the middleware function
 module.exports = function (req, res, next) {
   upload(req, res, function (err) {
-    console.log(req.file, req.files)
-    if (err) {
+        if (err) {
       return res.status(500).json({msg:'File upload failed'});
     }
     next();

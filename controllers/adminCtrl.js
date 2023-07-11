@@ -1,38 +1,44 @@
 const adminModel = require("../models/admin/index.js");
 const bannerModel = require("../models/admin/index.js");
+const serviceModel = require('../models/admin/index.js');
 const adminValidation = require("../validator/adminValidation.js");
+const upload = require("../middlewares/multer.js");
 const utils = require("../libs/utils");
-const multer = require("multer");
-const fs = require("fs");
+// const multer = require("multer");
+// const fs = require("fs");
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    if (!fs.existsSync("image")) {
-      fs.mkdirSync("image", { recursive: true });
-    }
-    cb(null, "image");
-  },
-  filename: function (req, file, cb) {
-    const { originalname } = file;
-    let fileExt = ".jpeg";
-    const extI = originalname.lastIndexOf(".");
-    if (extI !== -1) {
-      fileExt = originalname.substring(extI).toLowerCase();
-    }
-    const fileName = `${Date.now()}-image${fileExt}`;
-    cb(null, fileName);
-  },
-});
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     if (!fs.existsSync("image")) {
+//       fs.mkdirSync("image", { recursive: true });
+//     }
+//     cb(null, "image");
+//   },
+//   filename: function (req, file, cb) {
+//     const { originalname } = file;
+//     let fileExt = ".jpeg";
+//     const extI = originalname.lastIndexOf(".");
+//     if (extI !== -1) {
+//       fileExt = originalname.substring(extI).toLowerCase();
+//     }
+//     const fileName = `${Date.now()}-image${fileExt}`;
+//     cb(null, fileName);
+//   },
+// });
 
-const upload = multer({
-  storage: storage,
-}).single("Image");
+// const upload = multer({
+//   storage: storage,
+// }).single("Image");
 
 try {
   module.exports = {
     mainBanner: async (req, res, next) => {
       try {
-        if(req.role !== "ADMIN"){return res.status(401).send(utils.error("Only Admin can upload main banner")); }
+        if (req.role !== "ADMIN") {
+          return res
+            .status(401)
+            .send(utils.error("Only Admin can upload main banner"));
+        }
         upload(req, res, async (err) => {
           if (err) {
             return res.status(500).send(utils.error("Internal server error"));
@@ -42,17 +48,19 @@ try {
           }
           const data = req.file;
           const result = await bannerModel.addMailBanner(data);
-          return res
-            .status(200)
-            .send(utils.response(result));
+          return res.status(200).send(utils.response(result));
         });
       } catch (err) {
         return res.status(403).send(utils.error(err));
       }
     },
-    threeBanners: async(req, res, next) =>{
+    threeBanners: async (req, res, next) => {
       try {
-        if(req.role !== "ADMIN"){return res.status(401).send(utils.error("Only Admin can upload banners")); }
+        if (req.role !== "ADMIN") {
+          return res
+            .status(401)
+            .send(utils.error("Only Admin can upload banners"));
+        }
         upload(req, res, async (err) => {
           if (err) {
             return res.status(500).send(utils.error("Internal server error"));
@@ -72,38 +80,71 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
-    addAdmin:async(req, res,next)=>{
+    createservice: async (req, res) => {
+      try {
+        if (req.role !== "ADMIN") {
+          return res
+            .status(401)
+            .send(utils.error("Only Admin can upload banners"));
+        }
+        upload(req, res, async (err) => {
+          if (err) {
+            return res.status(500).send(utils.error("Internal server error"));
+          }
+          if (!req.file) {
+            return res.status(400).send(utils.error("No file found"));
+          }
+          const data = {};
+          data.name = req.body.name;
+          data.image = req.file.path;
+          const result = await serviceModel.createService(data);
+          return res.status(201).send(utils.response(result));
+        });
+      } catch (err) {
+        return err;
+      }
+    },
+    getAllService:async(req, res)=>{
       try{
+        const body = req.body;
+        const result = await serviceModel.allServices(body);
+          return res.status(201).send(utils.response(result));
+      }catch(err){return err}
+    },
+    addAdmin: async (req, res, next) => {
+      try {
         const data = {
-          email : req.body.email,
+          email: req.body.email,
           password: req.body.password,
           name: req.body.name,
           mobile_number: req.body.number,
-          gender: req.body.gender
-        }
+          gender: req.body.gender,
+        };
         const result = await adminModel.addAdmin(data);
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
         } else {
           return res.status(201).send(utils.response(result));
         }
-      }catch(err){
-        return err
+      } catch (err) {
+        return err;
       }
     },
-    loginAdmin:async(req,res,next)=>{
-      try{
+    loginAdmin: async (req, res, next) => {
+      try {
         const data = {
           email: req.body.email,
           password: req.body.password,
-        }
+        };
         const result = await adminModel.loginAdmin(data);
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
         } else {
           return res.status(201).send(utils.response(result));
         }
-      }catch(err){return err}
+      } catch (err) {
+        return err;
+      }
     },
   };
 } catch (err) {
