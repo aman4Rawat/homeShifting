@@ -6,10 +6,13 @@ try {
         "string.base": "{#label} should be a type of 'text'",
         "any.required": "{#label} is a required field",
       }),
+      gender: Joi.string().label("Gender").messages({
+        "string.base": "{#label} should be a type of 'text'",
+      }),
       mobile_number: Joi.string()
         .length(10)
         .pattern(/^[0-9]+$/)
-        .label("Mobile Number")
+        .label("Number")
         .messages({
           "string.base": "{#label} should be in a valid number format",
           "string.length":
@@ -47,5 +50,5 @@ try {
     }),
   };
 } catch (error) {
-  console.log(error);
+ return error
 }

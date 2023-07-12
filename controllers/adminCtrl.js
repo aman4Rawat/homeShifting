@@ -120,14 +120,15 @@ try {
           mobile_number: req.body.number,
           gender: req.body.gender,
         };
-        const result = await adminModel.addAdmin(data);
+        const valid = await adminValidation.addAdmin.validateAsync(data);
+        const result = await adminModel.addAdmin(valid);
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
         } else {
           return res.status(201).send(utils.response(result));
         }
       } catch (err) {
-        return err;
+        return res.status(403).send(utils.error(err.message));
       }
     },
     loginAdmin: async (req, res, next) => {
@@ -136,6 +137,7 @@ try {
           email: req.body.email,
           password: req.body.password,
         };
+        const valid = await adminValidation.loginAdmin.validateAsync(data);
         const result = await adminModel.loginAdmin(data);
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
