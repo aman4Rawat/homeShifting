@@ -7,10 +7,6 @@ try {
   adminroutes.post("/loginadmin", adminCtrl.loginAdmin);
   adminroutes.post("/mainbanner",jwtauth, adminCtrl.mainBanner);
   adminroutes.post("/threebanner",jwtauth, adminCtrl.threeBanners);
-  adminroutes.post("/createservice",jwtauth, adminCtrl.createservice);
-  adminroutes.post("/getallservice",jwtauth, adminCtrl.getAllService);
-
-
   
 
   module.exports = adminroutes;

@@ -1,9 +1,9 @@
 const adminSchema = require("./adminSchema.js");
 const bannerSchema = require("./bannerSchema.js");
 const banner3Schema = require("./banner3Schema.js");
-const serviceSchema = require('./serviceSchema.js');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { default: mongoose } = require("mongoose");
 const JWTSECRET = process.env.JWTSECRET;
 const BASEURL = process.env.BASEURL;
 try {
@@ -97,28 +97,6 @@ try {
         }
       } catch (err) {
         console.log(err);
-        return err;
-      }
-    },
-    createService: async(data)=>{
-      try {
-          const image = serviceSchema({
-            image: BASEURL+data.image,
-            name: data.name
-          });
-          await image.save();
-          return "Service Created Successfully";
-      } catch (err) {
-        return err;
-      }
-    },
-    allServices: async(body)=>{
-      try {
-        const page = body.page || 1;
-        const limit = body.limit|| 8;
-          const data = await serviceSchema.find().skip((page-1)*limit).limit();
-          return data;
-      } catch (err) {
         return err;
       }
     },

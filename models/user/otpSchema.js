@@ -5,15 +5,15 @@ const otpSchema = new mongoose.Schema(
     mobile_number: {
       type: Number,
     },
-    otp:{
-        type:Number,
+    otp: {
+      type: Number,
     },
-    expire_time:{
-        type:String,
+    expire_time: {
+      type: String,
     },
-    wrong_attempt:{
-        type:Number,
-        default:0
+    wrong_attempt: {
+      type: Number,
+      default: 0,
     },
     is_active: {
       type: Boolean,

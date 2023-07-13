@@ -1,5 +1,5 @@
 const userModel = require("../models/user/index.js");
-const adminValidation = require("../validator/adminValidation.js");
+const userValidation = require("../validator/userValidation.js");
 const utils = require("../libs/utils");
 const otpGenerator = require('otp-generator');
 const upload = require('../middlewares/multer.js')
@@ -41,7 +41,8 @@ try {
         };
         const otp = otpGenerator.generate(4, { upperCaseAlphabets: false, specialChars: false,lowerCaseAlphabets:false });
         body.otp = otp;
-        const result = await userModel.sendOtp(body);
+        const verify = await userValidation.sendOTP.validateAsync(body)
+        const result = await userModel.sendOtp(verify);
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
         } else {
@@ -58,7 +59,8 @@ try {
           number: req.body.number,
           otp: req.body.otp
         };
-        const result = await userModel.verifyotp(body);
+        const verify = await userValidation.verifyOTP.validateAsync(body)
+        const result = await userModel.verifyotp(verify);
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
         } else {

@@ -1,6 +1,5 @@
 const adminModel = require("../models/admin/index.js");
 const bannerModel = require("../models/admin/index.js");
-const serviceModel = require('../models/admin/index.js');
 const adminValidation = require("../validator/adminValidation.js");
 const upload = require("../middlewares/multer.js");
 const utils = require("../libs/utils");
@@ -79,37 +78,6 @@ try {
       } catch (err) {
         return res.status(403).send(utils.error(err));
       }
-    },
-    createservice: async (req, res) => {
-      try {
-        if (req.role !== "ADMIN") {
-          return res
-            .status(401)
-            .send(utils.error("Only Admin can upload banners"));
-        }
-        upload(req, res, async (err) => {
-          if (err) {
-            return res.status(500).send(utils.error("Internal server error"));
-          }
-          if (!req.file) {
-            return res.status(400).send(utils.error("No file found"));
-          }
-          const data = {};
-          data.name = req.body.name;
-          data.image = req.file.path;
-          const result = await serviceModel.createService(data);
-          return res.status(201).send(utils.response(result));
-        });
-      } catch (err) {
-        return err;
-      }
-    },
-    getAllService:async(req, res)=>{
-      try{
-        const body = req.body;
-        const result = await serviceModel.allServices(body);
-          return res.status(201).send(utils.response(result));
-      }catch(err){return err}
     },
     addAdmin: async (req, res, next) => {
       try {

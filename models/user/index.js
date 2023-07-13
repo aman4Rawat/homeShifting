@@ -21,7 +21,8 @@ try {
           const user = await admin.save();
           return user;
         } else {
-          return user;
+          token = jwt.sign({ user_id: user._id }, JWTSECRET);
+            return { token, user };
         }
       } catch (err) {
         return err;
@@ -34,17 +35,16 @@ try {
         const time = new Date(Date.now() + 60000 * 5).getTime();
         const user = await otpSchema.findOne({ mobile_number: number });
         if (!user) {
-          const newUser = new otpSchema({
+          let newUser = new otpSchema({
             mobile_number: number,
             otp: otp,
             expire_time: time,
-            wrong_attempt: 0,
           });
-          await newUser.save();
+       const abc =  await newUser.save();
         } else {
           await otpSchema.findOneAndUpdate(
             { _id: user._id, mobile_number: number },
-            { otp: otp, expire_time: time, wrong_attempt: 0, is_active: true },
+           {$set: { otp: otp, expire_time: time, wrong_attempt: 0, is_active: true }},
             { new: true }
           );
         }
@@ -84,7 +84,7 @@ try {
         if (user.otp === otp && user.is_active === true) {
           await otpSchema.findOneAndUpdate(
             { mobile_number: number },
-            { is_active: false },
+            {$set:{ is_active: false }},
             { new: true }
           );
           const data = await userSchema.findOne({ mobile_number: number });
