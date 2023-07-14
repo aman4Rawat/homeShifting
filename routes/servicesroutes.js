@@ -4,9 +4,14 @@ const jwtauth = require("../middlewares/auth.js");
 
 try {
   adminroutes.post("/createservice",jwtauth, serviceCtrl.createservice);
-  adminroutes.post("/getallservice",jwtauth, serviceCtrl.getAllService);
+  adminroutes.post("/updateservice",jwtauth, serviceCtrl.updateservice);
+  adminroutes.post("/getallservice",serviceCtrl.getAllService);
+  adminroutes.post("/deleteservice",jwtauth, serviceCtrl.deleteService);
   adminroutes.post("/createcategory",jwtauth, serviceCtrl.createcategory);
-  adminroutes.post("/getallcategories",jwtauth, serviceCtrl.getallcategories);
+  adminroutes.post("/updatecategory",jwtauth, serviceCtrl.updatecategory);
+  adminroutes.post("/getallcategories", serviceCtrl.getallcategories);
+  adminroutes.post("/categoriesbyserviceid", serviceCtrl.categoriesbyserviceid);
+  adminroutes.post("/deletecategory",jwtauth, serviceCtrl.deletecategory);
 
 
 
