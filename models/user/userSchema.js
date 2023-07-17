@@ -37,6 +37,14 @@ const userSchema = new mongoose.Schema({
   dob:{
     type:String
   },
+  refCode:{
+    type:String
+  },
+  role:{
+    type: String,
+    enum : ["USER","VENDOR"],
+    default: "USER"
+  },
   is_active: {
     type: Boolean,
     default: true,

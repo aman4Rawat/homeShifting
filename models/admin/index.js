@@ -81,10 +81,7 @@ try {
               if (admin.is_active === true) {
                 token = jwt.sign(
                   { admin_id: admin._id, role: admin.role, email },
-                  JWTSECRET,
-                  {
-                    expiresIn: "12h",
-                  }
+                  JWTSECRET
                 );
                 return { token: token, admin: admin };
               } else {

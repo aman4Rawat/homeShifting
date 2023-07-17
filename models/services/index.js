@@ -70,7 +70,7 @@ try {
       try {
         const page = body.page || 1;
         const limit = body.limit|| 8;
-          const data = await serviceSchema.find().skip((page-1)*limit).limit(limit);
+          const data = await categorySchema.find().skip((page-1)*limit).limit(limit);
           return data;
       } catch (err) {
         return err;
@@ -89,13 +89,20 @@ try {
         const page = body.page || 1;
         const limit = body.limit|| 8;
         const id = body.serviceId
-          const data = await serviceSchema.find({serviceId:id}).skip((page-1)*limit).limit(limit);
+          const data = await categorySchema.find({serviceId:id}).skip((page-1)*limit).limit(limit);
           return data;
       } catch (err) {
         return err;
       }
     },
-    
+    serviceAndCategoryAll: async()=>{
+      try {
+          const data = await categorySchema.find();
+          return data;
+      } catch (err) {
+        return err;
+      }
+    },
 
 
   };

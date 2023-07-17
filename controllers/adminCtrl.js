@@ -106,14 +106,14 @@ try {
           password: req.body.password,
         };
         const valid = await adminValidation.loginAdmin.validateAsync(data);
-        const result = await adminModel.loginAdmin(data);
+        const result = await adminModel.loginAdmin(valid);
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
         } else {
           return res.status(201).send(utils.response(result));
         }
       } catch (err) {
-        return err;
+        return res.status(403).send(utils.error(err.message));
       }
     },
   };

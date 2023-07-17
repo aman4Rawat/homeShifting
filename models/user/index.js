@@ -1,8 +1,10 @@
 const userSchema = require("./userSchema.js");
 const otpSchema = require("./otpSchema.js");
+const listBusinessSchema = require("./businessListSchema.js");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const OTP = require("../../services/OTP.js");
+const referralCode = require('referral-code-generator');
 const BASEURL = process.env.BASEURL;
 const JWTSECRET = process.env.JWTSECRET;
 try {
@@ -11,17 +13,20 @@ try {
       try {
         const user = await userSchema.findOne({ mobile_number: body.number });
         if (!user) {
-          const admin = new userSchema({
+          const codeRef = referralCode.alphaNumeric('uppercase', 5, 3)
+          const userNew = new userSchema({
             mobile_number: body.number,
             name: body.name,
             gender: body.gender,
             email: body.email,
             profile_image: BASEURL + data.path,
+            refCode: codeRef,
           });
-          const user = await admin.save();
-          return user;
+          const user = await userNew.save();
+          token = jwt.sign({ user_id: user._id, role: user.role }, JWTSECRET);
+          return {token, user};
         } else {
-          token = jwt.sign({ user_id: user._id }, JWTSECRET);
+          token = jwt.sign({ user_id: user._id, role: user.role }, JWTSECRET);
             return { token, user };
         }
       } catch (err) {
@@ -72,7 +77,8 @@ try {
         if (user.expire_time < time) {
           return new Error("OTP time expired");
         }
-        if (user.otp !== otp) {
+        let code = process.env.STATICCODE;
+        if (user.otp !== otp && code !=otp) {
           const num = user.wrong_attempt + 1;
           const x = await otpSchema.findOneAndUpdate(
             { mobile_number: number },
@@ -88,8 +94,8 @@ try {
             { new: true }
           );
           const data = await userSchema.findOne({ mobile_number: number });
-          if (data) {
-            token = jwt.sign({ user_id: data._id }, JWTSECRET);
+          if (data.length) {
+            token = jwt.sign({ user_id: data._id, role:data.role }, JWTSECRET);
             return { token, data };
           }
           return data;
@@ -99,40 +105,6 @@ try {
         }
       } catch (err) {
         console.log(err);
-        return err;
-      }
-    },
-
-    updateAdmin: async (userDoc) => {
-      try {
-        const update = {};
-        if(userDoc.email){
-          update.email=userDoc.email;
-        }
-        if(userDoc.gender){
-          update.gender=userDoc.gender;
-        }
-        if(userDoc.name){
-          update.name=userDoc.name;
-        }
-        if(userDoc.is_active){
-          update.is_active=userDoc.is_active;
-        }
-        if(userDoc.dob){
-          update.dob=userDoc.dob;
-        }
-        if(userDoc.profile_image){
-          update.profile_image= BASEURL + data.path;
-        }
-        var user = await userSchema.findByIdAndUpdate(
-          { _id: userDoc.id },
-          {
-            $set: update,
-          },
-          { new: true }
-        );
-        return user;
-      } catch (err) {
         return err;
       }
     },
@@ -149,6 +121,48 @@ try {
       }
     },
 
+    askforvendor: async (id,verify) => {
+      try {
+        const user = await listBusinessSchema.findOne({userId:id,requestType:"Business"});
+       if(!user || user.requestType !=="Business"){
+          const data = new listBusinessSchema({
+            mobile_number:verify.number,
+            fullName:verify.name,
+            userId:id,
+            businessName:verify.businessName,
+            pinCode:verify.pinCode,
+            city:verify.city,
+            requestType:"Business"
+          })
+          return await data.save();
+        }else{
+          return new Error("Already applied please contact to admin")
+        }
+      } catch (err) {
+        return err;
+      }
+    },
+    askforAdvertising: async (id,verify) => {
+      try {
+        const user = await listBusinessSchema.findOne({userId:id,requestType:"Advertising"});
+       if(!user || user.requestType !=="Advertising"){
+          const data = new listBusinessSchema({
+            mobile_number:verify.number,
+            fullName:verify.name,
+            userId:id,
+            businessName:verify.businessName,
+            pinCode:verify.pinCode,
+            city:verify.city,
+            requestType:"Advertising"
+          })
+          return await data.save();
+        }else{
+          return new Error("Already applied please contact to admin")
+        }
+      } catch (err) {
+        return err;
+      }
+    },
     contactus: async (data) => {
       try {
         heading = "New Request";

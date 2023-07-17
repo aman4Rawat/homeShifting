@@ -19,7 +19,7 @@ module.exports = (req, res, next) => {
     const error = new Error("Not authenticated.");
     return res.status(401).send(utils.error(error.message));
   }
-  req.userId = decodedToken.admin_id;
+  req.userId = decodedToken.admin_id??decodedToken.user_id;
   req.role = decodedToken.role;
   next();
 };

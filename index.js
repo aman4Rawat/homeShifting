@@ -66,6 +66,9 @@ try {
     res.send("House Shifting Apis");
   });
  ; 
+  app.use('/api',async(req,res)=>{
+    res.send("House Shifting Apis")
+  })
    app.use("/user", user);
    app.use("/admin", admin);
    app.use("/service",service);

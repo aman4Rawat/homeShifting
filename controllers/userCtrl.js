@@ -1,4 +1,5 @@
 const userModel = require("../models/user/index.js");
+const listBusinessModel = require("../models/user/index.js");
 const userValidation = require("../validator/userValidation.js");
 const utils = require("../libs/utils");
 const otpGenerator = require('otp-generator');
@@ -74,6 +75,11 @@ try {
 
     updateuser: async (req, res) => {
       try {
+        if (req.role !== "USER") {
+          return res
+            .status(401)
+            .send(utils.error("Only User can Apply!"));
+        }
         upload(req, res, async (err) => {
           if (err) {
             return res.status(500).send(utils.error("Internal server error"));
@@ -102,26 +108,13 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
-
-    removeAdmin: async (req, res) => {
-      try {
-        const admin_id = req.params._id;
-        const updateAdminDoc = {
-          is_active: false,
-        };
-        const result = await userModel.updateAdmin(
-          res,
-          admin_id,
-          updateAdminDoc
-        );
-        res.send(result);
-      } catch (err) {
-        return res.status(403).send(utils.error(err));
-      }
-    },
-
     getUserById: async (req, res) => {
       try {
+        if (req.role !== "USER") {
+          return res
+            .status(401)
+            .send(utils.error("Only User can Apply!"));
+        }
         const id = req.body.id;
         const result = await userModel.getByIdUser(id);
         res.send(result);
@@ -129,20 +122,47 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
-
-    contactus: async (req, res) => {
+    applyForVendor: async (req, res) => {
       try {
-        const data = {
-          name: req.body.name,
-          email: req.body.email,
-          message: req.body.message,
-        };
-        const result = await userModel.contactus(data);
-        res.send(result);
+        if (req.role !== "USER") {
+          return res
+            .status(401)
+            .send(utils.error("Only User can Apply!"));
+        }
+        const id = req.userId;
+        const body = req.body;
+        const verify = await userValidation.applyforVendor.validateAsync(body);
+        const result = await listBusinessModel.askforvendor(id,verify);
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(200).send(utils.response(result));
+        }
       } catch (err) {
         return res.status(403).send(utils.error(err));
       }
     },
+    applyForAdvertising: async (req, res) => {
+      try {
+        if (req.role !== "USER" && req.role !=="VENDOR") {
+          return res
+            .status(401)
+            .send(utils.error("Only User or Vendor can Apply!"));
+        }
+        const id = req.userId;
+        const body = req.body;
+        const verify = await userValidation.applyforVendor.validateAsync(body);
+        const result = await listBusinessModel.askforAdvertising(id,verify);
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(200).send(utils.response(result));
+        }
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+
   };
 } catch (err) {
   console.log(err);

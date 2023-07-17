@@ -37,7 +37,7 @@ try {
         }),
     }),
     loginAdmin: Joi.object({
-      email: Joi.string().required().messages({
+      email: Joi.string().required().email({ tlds: { allow: false } }).messages({
         "string.base": "{#label} should be a type of 'text'",
         "string.email": "{#label} should be in a valid email format",
         "any.required": "{#label} is a required field",
@@ -46,6 +46,7 @@ try {
         .required()
         .messages({
           "string.base": "{#label} should be a type of 'text'",
+          "any.required": "{#label} is a required field",
         }),
     }),
   };

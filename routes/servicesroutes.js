@@ -9,9 +9,11 @@ try {
   adminroutes.post("/deleteservice",jwtauth, serviceCtrl.deleteService);
   adminroutes.post("/createcategory",jwtauth, serviceCtrl.createcategory);
   adminroutes.post("/updatecategory",jwtauth, serviceCtrl.updatecategory);
+  adminroutes.post("/deletecategory",jwtauth, serviceCtrl.deletecategory);
   adminroutes.post("/getallcategories", serviceCtrl.getallcategories);
   adminroutes.post("/categoriesbyserviceid", serviceCtrl.categoriesbyserviceid);
-  adminroutes.post("/deletecategory",jwtauth, serviceCtrl.deletecategory);
+  adminroutes.post("/allserviceandcategory", serviceCtrl.allserviceandcategory);
+
 
 
 
