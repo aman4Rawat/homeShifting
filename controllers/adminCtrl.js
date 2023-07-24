@@ -1,5 +1,7 @@
 const adminModel = require("../models/admin/index.js");
 const bannerModel = require("../models/admin/index.js");
+const appDataModel = require("../models/appData/index.js")
+const userModel = require("../models/user/index.js")
 const adminValidation = require("../validator/adminValidation.js");
 const upload = require("../middlewares/multer.js");
 const utils = require("../libs/utils");
@@ -107,6 +109,43 @@ try {
         };
         const valid = await adminValidation.loginAdmin.validateAsync(data);
         const result = await adminModel.loginAdmin(valid);
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(201).send(utils.response(result));
+        }
+      } catch (err) {
+        return res.status(403).send(utils.error(err.message));
+      }
+    },
+    appDataAdd: async (req, res, next) => {
+      try {
+        const data = {
+          aboutUs: req.body.aboutUs,
+          privacyAndPolicy: req.body.privacyAndPolicy,
+          termAndCondition: req.body.termAndCondition,
+          fAQ: req.body.fAQ,
+        };
+        const result = await appDataModel.addAppData(data);
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(201).send(utils.response(result));
+        }
+      } catch (err) {
+        return res.status(403).send(utils.error(err.message));
+      }
+    },
+    makeVander: async (req, res, next) => {
+      try {
+        if (req.role !== "ADMIN") {
+          return res
+            .status(401)
+            .send(utils.error("Only Admin can upload banners"));
+        }
+        
+        const  userId=req.body.userId
+        const result = await userModel.makeNewVander(userId);
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
         } else {

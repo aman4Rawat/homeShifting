@@ -1,6 +1,5 @@
 const serviceSchema = require('./serviceSchema.js');
 const categorySchema = require('./categorySchema.js');
-const { default: mongoose } = require("mongoose");
 const BASEURL = process.env.BASEURL;
 try {
   module.exports = {

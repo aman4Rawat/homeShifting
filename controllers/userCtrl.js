@@ -1,6 +1,8 @@
 const userModel = require("../models/user/index.js");
 const listBusinessModel = require("../models/user/index.js");
 const userValidation = require("../validator/userValidation.js");
+const notification = require("../models/notification/index.js")
+const appData = require("../models/appData/index.js")
 const utils = require("../libs/utils");
 const otpGenerator = require('otp-generator');
 const upload = require('../middlewares/multer.js')
@@ -34,7 +36,23 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
-
+    createnotification: async (req, res) => {
+      try {
+          const body = {
+            title: req.body.title,
+            description: req.body.description,
+            userId: req.body.userId,        
+          };
+          const result = await notification.addNotification(body);
+          if (result instanceof Error) {
+            return res.status(403).send(utils.error(result.message));
+          } else {
+            return res.status(201).send(utils.response(result));
+          }    
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
     sendOtp: async (req, res) => {
       try {
         const body = {
@@ -158,6 +176,75 @@ try {
         } else {
           return res.status(200).send(utils.response(result));
         }
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+    mynotification: async (req, res) => {
+      try {
+        if (req.role !== "USER" && req.role !=="VENDOR") {
+          return res
+            .status(401)
+            .send(utils.error("Only User or Vendor can see notification!"));
+        }
+        const id = req.userId;
+        const result = await notification.usersNotification(id);
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(200).send(utils.response(result));
+        }
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+    deletenotification: async (req, res) => {
+      try {
+        if (req.role !== "USER" && req.role !=="VENDOR") {
+          return res
+            .status(401)
+            .send(utils.error("Only User or Vendor can see notification!"));
+        }
+        const uid = req.userId;
+        const id = req.body.id;
+        const result = await notification.deleteNotification(id,uid);
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(200).send(utils.response(result));
+        }
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+    aboutus: async (req, res) => {
+      try {
+        const result = await appData.aboutUs();
+        return res.status(200).send(utils.response(result));
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+    privacyandpolicy: async (req, res) => {
+      try {
+        const result = await appData.privacyAndPolicy();
+        return res.status(200).send(utils.response(result));
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+    termandcondition: async (req, res) => {
+      try {
+        const result = await appData.termAndCondition();
+        return res.status(200).send(utils.response(result));
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+    faq: async (req, res) => {
+      try {
+        const result = await appData.fAQ();
+        return res.status(200).send(utils.response(result));
       } catch (err) {
         return res.status(403).send(utils.error(err));
       }

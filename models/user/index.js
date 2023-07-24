@@ -13,7 +13,7 @@ try {
       try {
         const user = await userSchema.findOne({ mobile_number: body.number });
         if (!user) {
-          const codeRef = referralCode.alphaNumeric('uppercase', 5, 3)
+          const codeRef = referralCode.alphaNumeric('uppercase',2,2)
           const userNew = new userSchema({
             mobile_number: body.number,
             name: body.name,
@@ -87,18 +87,18 @@ try {
           );
           return new Error(`Wrong OTP, attempt failed ${x.wrong_attempt}`);
         }
-        if (user.otp === otp && user.is_active === true) {
+        if (user.otp === otp|| code == otp && user.is_active === true) {
           await otpSchema.findOneAndUpdate(
             { mobile_number: number },
             {$set:{ is_active: false }},
             { new: true }
           );
           const data = await userSchema.findOne({ mobile_number: number });
-          if (data.length) {
-            token = jwt.sign({ user_id: data._id, role:data.role }, JWTSECRET);
-            return { token, data };
+          if (!data) {
+            return data;
           }
-          return data;
+          token = jwt.sign({ user_id: data._id, role:data.role }, JWTSECRET);
+          return { token, data };
         }
         {
           return new Error("OTP has been used");
@@ -138,6 +138,19 @@ try {
         }else{
           return new Error("Already applied please contact to admin")
         }
+      } catch (err) {
+        return err;
+      }
+    },
+    makeNewVander: async (userId) => {
+      try {
+        const user = await userSchema.findOne({_id:userId});
+       if(!user || user.requestType !=="USER"){
+          return new Error("this Id is Not a User's Id")
+        }
+        const result = await userSchema.findByIdAndUpdate({_id:userId}, {$set:{role:"VENDOR"}}, {new:true});
+        return result;
+
       } catch (err) {
         return err;
       }
