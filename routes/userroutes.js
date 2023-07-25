@@ -17,6 +17,8 @@ try {
   userroutes.post("/privacyandpolicy", userCtrl.privacyandpolicy);
   userroutes.post("/termandcondition", userCtrl.termandcondition);
   userroutes.post("/faq", userCtrl.faq);
+  userroutes.post("/homedata", userCtrl.homeData);
+
   
 
 

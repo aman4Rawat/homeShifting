@@ -1,7 +1,6 @@
 const userSchema = require("./userSchema.js");
 const otpSchema = require("./otpSchema.js");
 const listBusinessSchema = require("./businessListSchema.js");
-const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const OTP = require("../../services/OTP.js");
 const referralCode = require('referral-code-generator');
@@ -9,20 +8,23 @@ const BASEURL = process.env.BASEURL;
 const JWTSECRET = process.env.JWTSECRET;
 try {
   module.exports = {
-    adduser: async (body, data) => {
+    adduser: async (body) => {
       try {
         const user = await userSchema.findOne({ mobile_number: body.number });
         if (!user) {
-          const codeRef = referralCode.alphaNumeric('uppercase',2,2)
-          const userNew = new userSchema({
-            mobile_number: body.number,
-            name: body.name,
-            gender: body.gender,
-            email: body.email,
-            profile_image: BASEURL + data.path,
-            refCode: codeRef,
-          });
-          const user = await userNew.save();
+          const codeRef = referralCode.alphaNumeric('uppercase',2,2);
+          const userNew = {};
+          userNew.mobile_number= body.number;
+          userNew.name= body.name;
+          userNew.gender= body.gender;
+          userNew.email= body.email;
+          userNew.refCode= codeRef;
+          if(body.image){
+            userNew.profile_image= BASEURL + body.image;
+          }
+          const newUser = new userSchema(userNew);
+          
+          const user = await newUser.save();
           token = jwt.sign({ user_id: user._id, role: user.role }, JWTSECRET);
           return {token, user};
         } else {
@@ -145,10 +147,10 @@ try {
     makeNewVander: async (userId) => {
       try {
         const user = await userSchema.findOne({_id:userId});
-       if(!user || user.requestType !=="USER"){
+       if(!user || user.role !=="USER"){
           return new Error("this Id is Not a User's Id")
         }
-        const result = await userSchema.findByIdAndUpdate({_id:userId}, {$set:{role:"VENDOR"}}, {new:true});
+        const result = await userSchema.findByIdAndUpdate({_id:userId}, {$set:{role:"VENDOR", serviceId}}, {new:true});
         return result;
 
       } catch (err) {

@@ -1,5 +1,6 @@
 const serviceSchema = require('./serviceSchema.js');
 const categorySchema = require('./categorySchema.js');
+const mongoose = require("mongoose");
 const BASEURL = process.env.BASEURL;
 try {
   module.exports = {
@@ -96,8 +97,23 @@ try {
     },
     serviceAndCategoryAll: async()=>{
       try {
-          const data = await categorySchema.find();
-          return data;
+          const data = await serviceSchema.find();
+          const abc = await Promise.all(data.map(async(x)=>{
+            const sunCategory = await categorySchema.find({serviceId:x.id})
+              const category = sunCategory.map((xx)=>{
+                const wefwef = {
+                  categoryId: xx.id,
+                  categoryName: xx.name,
+                  image: xx.image
+                }
+                return wefwef
+              })
+            return {
+              serviceId:x.id,
+              serviceName: x.name,category}
+          }))
+          console.log(abc);
+          return abc;
       } catch (err) {
         return err;
       }

@@ -15,17 +15,16 @@ try {
           if (err) {
             return res.status(500).send(utils.error("Internal server error"));
           }
-          if (!req.file) {
-            return res.status(400).send(utils.error("No file uploaded"));
-          }
           const body = {
             email: req.body.email,
             number: req.body.number,
             gender: req.body.gender,
             name: req.body.name,          
           };
-          const data = req.file; 
-          const result = await userModel.adduser(body,data);
+        if(req.file !== undefined){
+          body.image = req.file.path; 
+        }
+          const result = await userModel.adduser(body);
           if (result instanceof Error) {
             return res.status(403).send(utils.error(result.message));
           } else {
@@ -244,6 +243,14 @@ try {
     faq: async (req, res) => {
       try {
         const result = await appData.fAQ();
+        return res.status(200).send(utils.response(result));
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+    homeData: async (req, res) => {
+      try {
+        const result = await appData.homeDataApi();
         return res.status(200).send(utils.response(result));
       } catch (err) {
         return res.status(403).send(utils.error(err));
