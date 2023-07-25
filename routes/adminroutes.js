@@ -9,6 +9,7 @@ try {
   adminroutes.post("/threebanner",jwtauth, adminCtrl.threeBanners);
   adminroutes.post("/appdataadd",jwtauth, adminCtrl.appDataAdd);
   adminroutes.post("/makevander",jwtauth, adminCtrl.makeVander);
+  adminroutes.post("/craetevenderprofile", adminCtrl.createVendorProfile);
 
 
   

@@ -155,6 +155,32 @@ try {
         return res.status(403).send(utils.error(err.message));
       }
     },
+    createVendorProfile: async (req, res, next) => {
+      try {
+        // if (req.role !== "ADMIN") {
+        //   return res
+        //     .status(401)
+        //     .send(utils.error("Only Admin can upload banners"));
+        // }
+        const body={
+          companyName: req.body.companyName,
+          constactPersonName: req.body.constactPersonName,
+          mobileNumber: req.body.mobileNumber,
+          area: req.body.area,
+          pinCode: req.body.pinCode,
+          businessCategory: req.body.businessCategory,
+        }
+        const result = await userModel.vendorProfile(body);
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(201).send(utils.response(result));
+        }
+      } catch (err) {
+        return res.status(403).send(utils.error(err.message));
+      }
+    },
+
   };
 } catch (err) {
   console.log(err);

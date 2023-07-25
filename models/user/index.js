@@ -1,5 +1,6 @@
 const userSchema = require("./userSchema.js");
 const otpSchema = require("./otpSchema.js");
+const vendorBusinessSchema = require("./vendorBusinessSchema.js");
 const listBusinessSchema = require("./businessListSchema.js");
 const jwt = require("jsonwebtoken");
 const OTP = require("../../services/OTP.js");
@@ -110,7 +111,6 @@ try {
         return err;
       }
     },
-
     getByIdUser: async (id) => {
       try {
         const user = await userSchema.findOne({
@@ -122,13 +122,12 @@ try {
         return err;
       }
     },
-
     askforvendor: async (id,verify) => {
       try {
         const user = await listBusinessSchema.findOne({userId:id,requestType:"Business"});
        if(!user || user.requestType !=="Business"){
           const data = new listBusinessSchema({
-            mobile_number:verify.number,
+            mobileNumber:verify.number,
             fullName:verify.name,
             userId:id,
             businessName:verify.businessName,
@@ -162,7 +161,7 @@ try {
         const user = await listBusinessSchema.findOne({userId:id,requestType:"Advertising"});
        if(!user || user.requestType !=="Advertising"){
           const data = new listBusinessSchema({
-            mobile_number:verify.number,
+            mobileNumber:verify.number,
             fullName:verify.name,
             userId:id,
             businessName:verify.businessName,
@@ -178,6 +177,28 @@ try {
         return err;
       }
     },
+    vendorProfile: async (body) => {
+      try {
+        const condition = {};
+        for (const key in body) {
+          if (body[key] !== undefined) {
+            condition[key] = body[key];
+          }
+        }
+        const results = await vendorBusinessSchema.find(condition);
+        if(results.length>0){
+          return results
+        }else{
+          const newBusiness = new vendorBusinessSchema(condition);
+          const results = await newBusiness.save();
+          return results
+        }
+
+      } catch (err) {
+        return err;
+      }
+    },
+
     contactus: async (data) => {
       try {
         heading = "New Request";

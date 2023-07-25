@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const businessListSchema = new mongoose.Schema(
   {
-    mobile_number: {
+    mobileNumber: {
       type: Number, 
     },
     fullName: {

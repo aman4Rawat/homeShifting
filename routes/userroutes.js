@@ -6,7 +6,7 @@ try {
   userroutes.post("/createnotification", userCtrl.createnotification);
   userroutes.post("/sendotp", userCtrl.sendOtp);
   userroutes.post("/verifyotp", userCtrl.verifyotp);
-  userroutes.post("/logincreate", userCtrl.adduser);
+  userroutes.post("/registeruser", userCtrl.adduser);
   userroutes.post("/updateuser",JWTAUTH, userCtrl.updateuser);
   userroutes.post("/getuserbyid",JWTAUTH, userCtrl.getUserById);
   userroutes.post("/applyforvendor",JWTAUTH, userCtrl.applyForVendor);
