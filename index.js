@@ -63,6 +63,7 @@ try {
 
   module.exports =app;
   app.get("/", (req, res) => {
+    console.log("apis working fine...")
     res.send("House Shifting Apis");
   });
  ; 

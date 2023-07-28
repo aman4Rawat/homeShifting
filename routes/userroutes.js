@@ -18,6 +18,8 @@ try {
   userroutes.post("/termandcondition", userCtrl.termandcondition);
   userroutes.post("/faq", userCtrl.faq);
   userroutes.post("/homedata", userCtrl.homeData);
+  userroutes.post("/updatebusinessimages", userCtrl.homeData);
+
 
   
 

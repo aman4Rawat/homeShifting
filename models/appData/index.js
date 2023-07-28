@@ -45,8 +45,9 @@ try {
         const allServices = await servicesSchema.find();
         const categories = await Promise.all(allServices.map(async(x)=>{
         const serviceName = `${x.name}`
+        const serviceId = `${x.id}`
         const categoryName = await categorySchema.find({serviceId:x.id});
-        return {serviceName,categoryName}
+        return {serviceId, serviceName, categoryName}
         }));
 
         return {mainBanners,threeBanners,allServices,categories}
