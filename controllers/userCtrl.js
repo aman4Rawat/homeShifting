@@ -1,11 +1,11 @@
 const userModel = require("../models/user/index.js");
 const listBusinessModel = require("../models/user/index.js");
 const userValidation = require("../validator/userValidation.js");
-const notification = require("../models/notification/index.js")
-const appData = require("../models/appData/index.js")
+const notification = require("../models/notification/index.js");
+const appData = require("../models/appData/index.js");
 const utils = require("../libs/utils");
 const otpGenerator = require('otp-generator');
-const upload = require('../middlewares/multer.js')
+const upload = require('../middlewares/multer.js');
 
 try {
   module.exports = {
@@ -251,6 +251,24 @@ try {
     homeData: async (req, res) => {
       try {
         const result = await appData.homeDataApi();
+        return res.status(200).send(utils.response(result));
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+    findVendorbyCategoryId: async (req, res) => {
+      try {
+        const cId = req.body.id;
+        const result = await userModel.vwndorByCategoryId(cId);
+        return res.status(200).send(utils.response(result));
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+    findVendorbyId: async (req, res) => {
+      try {
+        const id = req.body.id;
+        const result = await userModel.vendorById(id);
         return res.status(200).send(utils.response(result));
       } catch (err) {
         return res.status(403).send(utils.error(err));

@@ -19,6 +19,8 @@ try {
   userroutes.post("/faq", userCtrl.faq);
   userroutes.post("/homedata", userCtrl.homeData);
   userroutes.post("/updatebusinessimages", userCtrl.homeData);
+  userroutes.post("/findvendorbycategoryid", userCtrl.findVendorbyCategoryId);
+  userroutes.post("/findvendorbyid", userCtrl.findVendorbyId);
 
 
   

@@ -67,6 +67,12 @@ const vendorBusinessSchema = new mongoose.Schema(
         type:Boolean,
         default:false
     },
+    categoryId:{
+      type:String
+    },
+    categoryName:{
+      type:String
+    },
     
     is_active: {
       type: Boolean,

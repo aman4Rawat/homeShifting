@@ -198,7 +198,56 @@ try {
         return err;
       }
     },
-
+    vendorprofileimageUpload: async (data, id) => {
+      try {
+        
+        const results = await vendorBusinessSchema.findById({_id:id});
+        if(!results){
+          return new Error("No vendor found with this Id");
+        }
+        const image = BASEURL+data;
+        await vendorBusinessSchema.findByIdAndUpdate({_id:id},{$set:{profileImage:image}},{new:true})
+        return "image Updated sucessfully";
+      } catch (err) {
+        return err;
+      }
+    },
+    vendorBackgroundimageUpload: async (data, id) => {
+      try {
+        
+        const results = await vendorBusinessSchema.findById({_id:id});
+        if(!results){
+          return new Error("No vendor found with this Id");
+        }
+        const image = BASEURL+data;
+        await vendorBusinessSchema.findByIdAndUpdate({_id:id},{$set:{bgImage:image}},{new:true})
+        return "image Updated sucessfully";
+      } catch (err) {
+        return err;
+      }
+    },
+    vwndorByCategoryId: async (cId) => {
+      try {
+        const results = await vendorBusinessSchema.find({categoryId:cId});
+        if(!results){
+          return "No vendor found with this category ";
+        }
+        return results;
+      } catch (err) {
+        return err;
+      }
+    },
+    vendorById: async (id) => {
+      try {
+        const results = await vendorBusinessSchema.find({_id:id});
+        if(!results){
+          return "No vendor found with this category ";
+        }
+        return results;
+      } catch (err) {
+        return err;
+      }
+    },
     contactus: async (data) => {
       try {
         heading = "New Request";
