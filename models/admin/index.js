@@ -34,7 +34,7 @@ try {
         const checkBanner = await banner3Schema.find();
         if (checkBanner.length < 3) {
           const banner = new banner3Schema({
-            banner_three_image: data.path,
+            banner_three_image: BASEURL+data.path,
           });
           await banner.save();
           return "Banner uploaded successfully";

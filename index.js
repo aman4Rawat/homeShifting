@@ -17,6 +17,7 @@ dataDate.setUTCHours(0,0,0,0)
 try {
   const app = express();
   app.use(express.static('uploads'))
+  app.use("/image",express.static('image'))
   app.use(helmet());
   app.use(compression());
 //   const options = {

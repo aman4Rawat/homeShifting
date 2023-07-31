@@ -43,14 +43,18 @@ try {
         const mainBanners = await bannerSchema.find();
         const threeBanners = await banner3Schema.find();
         const allServices = await servicesSchema.find();
-        const categories = await Promise.all(allServices.map(async(x)=>{
-        const serviceName = `${x.name}`
-        const serviceId = `${x.id}`
-        const categoryName = await categorySchema.find({serviceId:x.id});
-        return {serviceId, serviceName, categoryName}
-        }));
-
-        return {mainBanners,threeBanners,allServices,categories}
+        // const categories = await Promise.all(allServices.map(async(x)=>{
+        // const serviceName = `${x.name}`
+        // const serviceId = `${x.id}`
+        // const categoryName = await categorySchema.find({serviceId:x.id});
+        // return {serviceId, serviceName, categoryName}
+        // }));
+        const repairService = await categorySchema.find({serviceName: "Repair  Service"});
+        const cleaningService = await categorySchema.find({serviceName: "Cleaning Service"});
+        const pickerService = await categorySchema.find({serviceName: "Packer Mover"});
+        const pestCantrolService = await categorySchema.find({serviceName: "Pest control"});
+        const courierService = await categorySchema.find({serviceName: "Courier Service "});
+        return {mainBanners,threeBanners,allServices,repairService,pickerService,cleaningService,pestCantrolService,courierService}
       } catch (err) {
         return err;
       }
