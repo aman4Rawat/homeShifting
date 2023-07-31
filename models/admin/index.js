@@ -13,14 +13,14 @@ try {
         const checkBanner = await bannerSchema.find();
         if (checkBanner.length === 0) {
           const mainBanner = bannerSchema({
-            banner_main_image: data.path,
+            banner_main_image: BASEURL+data.path,
           });
           await mainBanner.save();
           return "Banner Uploaded Successfully";
         } else {
           await bannerSchema.findByIdAndUpdate(
             { _id: checkBanner[0]._id },
-            { banner_main_image: data.path },
+            { banner_main_image: BASEURL+data.path },
             { new: true }
           );
           return "Banner Updated Successfully";
