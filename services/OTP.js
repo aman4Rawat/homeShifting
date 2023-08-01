@@ -45,8 +45,6 @@ module.exports = {
     };
     try {
       const response = await axios(options);
-      console.log(response); // Handle the response data here
-
       if (response.data.type === "success") {
       return "OTP verification successful";
         // Perform further actions here, such as updating user information or granting access

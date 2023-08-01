@@ -21,6 +21,8 @@ try {
   userroutes.post("/updatebusinessimages", userCtrl.homeData);
   userroutes.post("/findvendorbycategoryid", userCtrl.findVendorbyCategoryId);
   userroutes.post("/findvendorbyid", userCtrl.findVendorbyId);
+  userroutes.post("/bestdeal",JWTAUTH, userCtrl.bestDeal);
+  
 
 
   

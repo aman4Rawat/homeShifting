@@ -274,6 +274,28 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
+    bestDeal: async (req, res) => {
+      try {
+        if (req.role !== "USER") {
+          return res
+            .status(401)
+            .send(utils.error("Only User can Apply!"));
+        }
+        const body = {
+          vid: req.body.vendorId,
+          name: req.body.name,
+          number: req.body.number,
+          email: req.body.email,
+          query: req.body.query,
+          uid: req.userId,
+        };
+        
+        const result = await userModel.bestDeal(body);
+        return res.status(200).send(utils.response(result));
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
 
   };
 } catch (err) {

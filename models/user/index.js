@@ -1,6 +1,7 @@
 const userSchema = require("./userSchema.js");
 const otpSchema = require("./otpSchema.js");
 const vendorBusinessSchema = require("./vendorBusinessSchema.js");
+const bestDeal = require("./bestDealSchema.js");
 const listBusinessSchema = require("./businessListSchema.js");
 const jwt = require("jsonwebtoken");
 const OTP = require("../../services/OTP.js");
@@ -229,7 +230,7 @@ try {
     vwndorByCategoryId: async (cId) => {
       try {
         const results = await vendorBusinessSchema.find({categoryId:cId});
-        if(!results){
+        if(results.length ===0){
           return "No vendor found with this category ";
         }
         return results;
@@ -248,6 +249,30 @@ try {
         return err;
       }
     },
+    bestDeal: async (body) => {
+      try {
+        const newDeal = new bestDeal({
+          number:body.number,
+          email:body.email,
+          name:body.name,
+          query:body.query,
+          vendorId:body.vid,
+          userId:body.uid,
+        });
+        const result = await newDeal();
+        return result;
+       
+      } catch (err) {
+        return err;
+      }
+    },
+
+
+
+
+
+
+
     contactus: async (data) => {
       try {
         heading = "New Request";
@@ -279,6 +304,7 @@ try {
         return error;
       }
     },
+
   };
 } catch (e) {
   log.error(e);

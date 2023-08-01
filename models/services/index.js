@@ -112,7 +112,6 @@ try {
               serviceId:x.id,
               serviceName: x.name,category}
           }))
-          console.log(abc);
           return abc;
       } catch (err) {
         return err;
