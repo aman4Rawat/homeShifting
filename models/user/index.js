@@ -259,7 +259,7 @@ try {
           vendorId:body.vid,
           userId:body.uid,
         });
-        const result = await newDeal();
+        const result = await newDeal.save();
         return result;
        
       } catch (err) {

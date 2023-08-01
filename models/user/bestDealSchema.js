@@ -21,6 +21,10 @@ const bestDealSchema = new mongoose.Schema(
     userId: {
       type: String,
     },
+    isComplete:{
+        type:Boolean,
+        default:false
+    },
   },
   { timestamps: true }
 );
