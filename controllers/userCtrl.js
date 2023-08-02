@@ -296,6 +296,24 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
+    enqueryList: async (req, res) => {
+      try {
+        if (req.role !== "USER") {
+          return res
+            .status(401)
+            .send(utils.error("Only User can see!"));
+        }
+        const body = {
+          cid: req.body.categoryId,
+          uid: req.userId,
+        };
+        
+        const result = await userModel.myEnquery(body);
+        return res.status(200).send(utils.response(result));
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
 
   };
 } catch (err) {

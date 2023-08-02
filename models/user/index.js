@@ -97,12 +97,12 @@ try {
             {$set:{ is_active: false }},
             { new: true }
           );
-          const data = await userSchema.findOne({ mobile_number: number });
-          if (!data) {
-            return data;
+          const newUser = await userSchema.findOne({ mobile_number: number });
+          if (!newUser) {
+            return newUser;
           }
-          token = jwt.sign({ user_id: data._id, role:data.role }, JWTSECRET);
-          return { token, data };
+          token = jwt.sign({ user_id: newUser._id, role:newUser.role }, JWTSECRET);
+          return { token, newUser };
         }
         {
           return new Error("OTP has been used");
@@ -230,9 +230,6 @@ try {
     vwndorByCategoryId: async (cId) => {
       try {
         const results = await vendorBusinessSchema.find({categoryId:cId});
-        if(results.length ===0){
-          return "No vendor found with this category ";
-        }
         return results;
       } catch (err) {
         return err;
@@ -251,6 +248,10 @@ try {
     },
     bestDeal: async (body) => {
       try {
+        const vendor = await vendorBusinessSchema.findById({_id:body.vid});
+        if(!vendor){
+          return new Error("No Vendor found with this ID");
+        }
         const newDeal = new bestDeal({
           number:body.number,
           email:body.email,
@@ -258,6 +259,8 @@ try {
           query:body.query,
           vendorId:body.vid,
           userId:body.uid,
+          categoryId: vendor.categoryId,
+          enqueryType:"Best Deal"
         });
         const result = await newDeal.save();
         return result;
@@ -266,7 +269,20 @@ try {
         return err;
       }
     },
-
+    myEnquery: async (body) => {
+      try {
+               const condition = {userId:body.uid};
+               if(body.cid){
+                condition.categoryId = body.cid;
+               }
+               
+        const result = await bestDeal.find(condition).populate("vendorId")
+        return result;
+       
+      } catch (err) {
+        return err;
+      }
+    },
 
 
 

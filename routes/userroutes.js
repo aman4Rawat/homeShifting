@@ -22,6 +22,7 @@ try {
   userroutes.post("/findvendorbycategoryid", userCtrl.findVendorbyCategoryId);
   userroutes.post("/findvendorbyid", userCtrl.findVendorbyId);
   userroutes.post("/bestdeal",JWTAUTH, userCtrl.bestDeal);
+  userroutes.post("/enquerylist",JWTAUTH, userCtrl.enqueryList);
   
 
 

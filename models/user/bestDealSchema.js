@@ -14,11 +14,17 @@ const bestDealSchema = new mongoose.Schema(
     query: {
       type: String,
     },
-    vendorId: {
-      type: mongoose.Types.ObjectId,
+    vendor: {
+      type: mongoose.Schema.Types.ObjectId,
       ref:"venderBusiness",
     },
     userId: {
+      type: String,
+    },
+    enqueryType: {
+      type: String,
+    },
+    categoryId: {
       type: String,
     },
     isComplete:{
