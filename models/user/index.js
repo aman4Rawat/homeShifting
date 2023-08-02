@@ -98,7 +98,7 @@ try {
           );
           const newUser = await userSchema.findOne({ mobile_number: number });
           if (!newUser) {
-            return newUser;
+            return new Error("null");
           }
           token = jwt.sign({ user_id: newUser._id, role:newUser.role }, JWTSECRET);
           return { token, newUser };

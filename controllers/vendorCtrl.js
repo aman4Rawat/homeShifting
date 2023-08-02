@@ -5,6 +5,48 @@ const utils = require("../libs/utils");
 
 try {
   module.exports = {
+
+    createVendorProfile: async (req, res, next) => {
+        try {
+          const body={
+            companyName: req.body.companyName,
+            constactPersonName: req.body.constactPersonName,
+            mobileNumber: req.body.mobileNumber,
+            area: req.body.area,
+            pinCode: req.body.pinCode,
+            categoryId: req.body.businessCategory,
+          }
+          const result = await userModel.vendorProfile(body);
+          if (result instanceof Error) {
+            return res.status(403).send(utils.error(result.message));
+          } else {
+            return res.status(201).send(utils.response(result));
+          }
+        } catch (err) {
+          return res.status(403).send(utils.error(err.message));
+        }
+      },
+    vendorProfile: async (body) => {
+        try {
+          const condition = {};
+          for (const key in body) {
+            if (body[key] !== undefined) {
+              condition[key] = body[key];
+            }
+          }
+          const results = await vendorBusinessSchema.find(condition);
+          if(results.length>0){
+            return results
+          }else{
+            const newBusiness = new vendorBusinessSchema(condition);
+            const results = await newBusiness.save();
+            return results
+          }
+  
+        } catch (err) {
+          return err;
+        }
+      },
     findVendorbyCategoryId: async (req, res) => {
       try {
         const cId = req.body.id;
