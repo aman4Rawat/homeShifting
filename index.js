@@ -10,6 +10,7 @@ const compression = require("compression");
 const user = require("./routes/userroutes.js");
 const admin = require("./routes/adminroutes.js");
 const service = require("./routes/servicesroutes.js");
+const vendor = require("./routes/vendorroutes.js");
 
 
 var dataDate = new Date();
@@ -74,6 +75,7 @@ try {
    app.use("/user", user);
    app.use("/admin", admin);
    app.use("/service",service);
+   app.use("/vendor",vendor);
   
   mongoose.set('strictQuery', false);
   (async () => {
