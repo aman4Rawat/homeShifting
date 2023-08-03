@@ -20,14 +20,27 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({
+const multiUpload = multer({
   storage: storage,
-}).single('Image');
+  limits: {
+    fileSize: 10000000,
+  },
+  fileFilter(req, file, cb) {
+    if (
+      !file.originalname.match(
+        /\.(png|jpg|JPG|PNG|jpeg|JPEG|pdf|PDF|docx|mp4|doc)$/
+      )
+    ) {
+      return cb(new Error("Please upload a Image"));
+    }
+    cb(undefined, true);
+  },
+}).fields([{ name: "Aadhar" }, { name: "PAN" },{ name: "Company" }, { name: "Other" }]);
 
 module.exports = function (req, res, next) {
-  upload(req, res, function (err) {
+  multiUpload(req, res, function (err) {
         if (err) {
-     console.log(err,"wallah habibi")
+     console.log(err,"wallah");
     }
     next();
   });

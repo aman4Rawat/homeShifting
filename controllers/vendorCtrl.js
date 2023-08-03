@@ -1,7 +1,7 @@
 
 const vendorModel = require("../models/vendor/index.js");
 const upload = require("../middlewares/multer.js");
-const multiUpload = require("../middlewares/multer.js");
+const multiUpload = require("../middlewares/multiMulter.js");
 const utils = require("../libs/utils");
 
 try {
