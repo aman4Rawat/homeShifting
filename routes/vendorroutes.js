@@ -7,6 +7,7 @@ try {
   vendorRoutes.post("/vendorprofileimage", vendorCtrl.vendorprofileimage);
   vendorRoutes.post("/vendorbackgroundimage", vendorCtrl.vendorbackgroundimage);
   vendorRoutes.post("/uploaddocuments", vendorCtrl.uploadVendorDocuments);
+  vendorRoutes.post("/uploadgallary", vendorCtrl.uploadgallary);
 
   
 

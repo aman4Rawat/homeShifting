@@ -134,6 +134,24 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
+    uploadgallary: async (req, res, next) => {
+      try {
+        upload(req, res, async (err) => {
+          if (err) {
+            return res.status(500).send(utils.error("Internal server error"));
+          }
+          if (!req.file) {
+            return res.status(400).send(utils.error("No file uploaded"));
+          }
+          const data = req.file.path;
+          const id = req.body.id;
+          const result = await vendorModel.vendorGallaryUpload(data, id);
+          return res.status(200).send(utils.response(result));
+        });
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
   };
 } catch (err) {
   console.log(err);

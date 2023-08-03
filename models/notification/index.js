@@ -21,8 +21,8 @@ try {
         const notification = await notificationSchema.findOne({_id:id});
         if(!notification){return new Error("no notification found")}
         if(notification.userId !== uid){return new Error("You can not delete other's notification")}
-        const result = await  notificationSchema.findOneAndDelete({_id:id,userId:uid});
-        return result
+        await  notificationSchema.findOneAndDelete({_id:id,userId:uid},{new:true});
+        return "deleted successfully"
       } catch (err) {
         return err;
       }

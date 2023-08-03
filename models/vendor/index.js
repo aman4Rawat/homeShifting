@@ -1,5 +1,6 @@
 
 const vendorBusinessSchema = require("./vendorBusinessSchema.js");
+const gallarySchema = require("./gallarySchema.js");
 const BASEURL = process.env.BASEURL;
 try {
   module.exports = {
@@ -88,6 +89,23 @@ try {
         }
       const vendorBusiness = await vendorBusinessSchema.findByIdAndUpdate({_id:id},{$set:condition},{new:true});
       return vendorBusiness;
+      } catch (err) {
+        return err;
+      }
+    },
+    vendorGallaryUpload: async (data, id) => {
+      try {
+        
+        const results = await vendorBusinessSchema.findById({_id:id});
+        if(!results){
+          return new Error("No vendor found with this Id");
+        }
+        const newGallary = new gallarySchema({
+          vendorId:id,
+          image: BASEURL+data
+        })
+        await newGallary.save();
+        return "successfully uploaded"
       } catch (err) {
         return err;
       }
