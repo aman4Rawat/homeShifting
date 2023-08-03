@@ -188,7 +188,7 @@ try {
           email:body.email,
           name:body.name,
           query:body.query,
-          vendorId:body.vid,
+          vendor:body.vid,
           userId:body.uid,
           categoryId: vendor.categoryId,
           enqueryType:"Best Deal"
@@ -207,7 +207,7 @@ try {
                 condition.categoryId = body.cid;
                }
                
-        const result = await bestDeal.find(condition).populate("vendorId")
+        const result = await bestDeal.find(condition).populate("vendor");
         return result;
        
       } catch (err) {

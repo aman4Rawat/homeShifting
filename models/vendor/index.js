@@ -71,6 +71,27 @@ try {
         return err;
       }
     },
+    vendorDocumentsimageUpload: async (data,id) => {
+      try {
+        const condition = {};
+        if(data.Aadhar){
+          condition.aadharImage = BASEURL+data.Aadhar;
+        }
+        if(data.PAN){
+          condition.panImage = BASEURL+data.PAN;
+        }
+        if(data.Other){
+          condition.otherDocumentImage = BASEURL+data.Other;
+        }
+        if(data.Company){
+          condition.companyCertificateImage = BASEURL+data.Company;
+        }
+      const vendorBusiness = await vendorBusinessSchema.findByIdAndUpdate({_id:id},{$set:condition},{new:true});
+      return vendorBusiness;
+      } catch (err) {
+        return err;
+      }
+    },
 
   };
 } catch (e) {

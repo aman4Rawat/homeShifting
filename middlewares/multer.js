@@ -24,11 +24,33 @@ const upload = multer({
   storage: storage,
 }).single('Image');
 
-// Export the middleware function
+const multiUpload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 10000000,
+  },
+  fileFilter(req, file, cb) {
+    if (
+      !file.originalname.match(
+        /\.(png|jpg|JPG|PNG|jpeg|JPEG|pdf|PDF|docx|mp4|doc)$/
+      )
+    ) {
+      return cb(new Error("Please upload a Image"));
+    }
+    cb(undefined, true);
+  },
+}).fields([{ name: "Aadhar" }, { name: "PAN" },{ name: "Company" }, { name: "Other" }]);
+
 module.exports = function (req, res, next) {
-  upload(req, res, function (err) {
+  // upload(req, res, function (err) {
+  //       if (err) {
+  //     return res.status(500).json({msg:'File upload failed gggg'});
+  //   }
+  //   next();
+  // });
+  multiUpload(req, res, function (err) {
         if (err) {
-      return res.status(500).json({msg:'File upload failed'});
+     console.log(err);
     }
     next();
   });

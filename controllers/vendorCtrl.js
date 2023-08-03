@@ -1,9 +1,12 @@
 
-const userModel = require("../models/user/index.js");
+const vendorModel = require("../models/vendor/index.js");
 const upload = require("../middlewares/multer.js");
+const multiUpload = require("../middlewares/multer.js");
 const utils = require("../libs/utils");
 
 try {
+
+ 
   module.exports = {
 
     createVendorProfile: async (req, res, next) => {
@@ -16,7 +19,7 @@ try {
             pinCode: req.body.pinCode,
             categoryId: req.body.businessCategory,
           }
-          const result = await userModel.vendorProfile(body);
+          const result = await vendorModel.vendorProfile(body);
           if (result instanceof Error) {
             return res.status(403).send(utils.error(result.message));
           } else {
@@ -50,7 +53,7 @@ try {
     findVendorbyCategoryId: async (req, res) => {
       try {
         const cId = req.body.id;
-        const result = await userModel.vwndorByCategoryId(cId);
+        const result = await vendorModel.vwndorByCategoryId(cId);
         return res.status(200).send(utils.response(result));
       } catch (err) {
         return res.status(403).send(utils.error(err));
@@ -59,7 +62,7 @@ try {
     findVendorbyId: async (req, res) => {
       try {
         const id = req.body.id;
-        const result = await userModel.vendorById(id);
+        const result = await vendorModel.vendorById(id);
         return res.status(200).send(utils.response(result));
       } catch (err) {
         return res.status(403).send(utils.error(err));
@@ -76,7 +79,7 @@ try {
           }
           const data = req.file.path;
           const id = req.body.id;
-          const result = await userModel.vendorprofileimageUpload(data, id);
+          const result = await vendorModel.vendorprofileimageUpload(data, id);
           return res.status(200).send(utils.response(result));
         });
       } catch (err) {
@@ -94,7 +97,37 @@ try {
           }
           const data = req.file.path;
           const id = req.body.id;
-          const result = await userModel.vendorBackgroundimageUpload(data, id);
+          const result = await vendorModel.vendorBackgroundimageUpload(data, id);
+          return res.status(200).send(utils.response(result));
+        });
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+    uploadVendorDocuments:  async (req, res, next) => {
+      try {
+        multiUpload(req, res, async (err) => {
+          if (err) {
+            return res.status(500).send(utils.error("Internal server error"));
+          }
+          if (!req.files) {
+            return res.status(400).send(utils.error("No file uploaded"));
+          }
+          const data = {};
+          if(req.files.Aadhar){
+            data.Aadhar = req.files.Aadhar[0].path;
+          }
+          if(req.files.PAN){
+          data.PAN = req.files.PAN[0].path;
+          }
+          if(req.files.Other){
+          data.Other = req.files.Other[0].path;
+          }
+          if(req.files.Company){
+            data.Company = req.files.Company[0].path;
+          }
+          const id = req.body.id;
+          const result = await vendorModel.vendorDocumentsimageUpload(data, id);
           return res.status(200).send(utils.response(result));
         });
       } catch (err) {
