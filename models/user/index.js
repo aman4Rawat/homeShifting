@@ -1,6 +1,7 @@
 const userSchema = require("./userSchema.js");
 const otpSchema = require("./otpSchema.js");
 const bestDeal = require("./bestDealSchema.js");
+const vendorBusinessSchema = require("../vendor/vendorBusinessSchema.js")
 const listBusinessSchema = require("./businessListSchema.js");
 const jwt = require("jsonwebtoken");
 const OTP = require("../../services/OTP.js");

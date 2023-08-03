@@ -42,12 +42,13 @@ const multiUpload = multer({
 }).fields([{ name: "Aadhar" }, { name: "PAN" },{ name: "Company" }, { name: "Other" }]);
 
 module.exports = function (req, res, next) {
-  // upload(req, res, function (err) {
-  //       if (err) {
-  //     return res.status(500).json({msg:'File upload failed gggg'});
-  //   }
-  //   next();
-  // });
+  upload(req, res, function (err) {
+        if (err) {
+      return res.status(500).json({msg:'File upload failed gggg'});
+    }
+    next();
+  });
+  
   multiUpload(req, res, function (err) {
         if (err) {
      console.log(err);
