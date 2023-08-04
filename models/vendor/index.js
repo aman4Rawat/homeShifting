@@ -1,6 +1,7 @@
 
 const vendorBusinessSchema = require("./vendorBusinessSchema.js");
 const gallarySchema = require("./gallarySchema.js");
+const socialMediaSchema = require("./socialMedia.js");
 const BASEURL = process.env.BASEURL;
 try {
   module.exports = {
@@ -55,7 +56,7 @@ try {
     },
     vwndorByCategoryId: async (cId) => {
       try {
-        const results = await vendorBusinessSchema.find({categoryId:cId});
+       const results = await vendorBusinessSchema.find({categoryId:cId});
         return results;
       } catch (err) {
         return err;
@@ -63,11 +64,12 @@ try {
     },
     vendorById: async (id) => {
       try {
-        const results = await vendorBusinessSchema.find({_id:id});
-        if(!results){
+        const vendor = await vendorBusinessSchema.findById({_id:id});
+        if(!vendor){
           return "No vendor found with this category ";
         }
-        return results;
+        const gallary = await gallarySchema.find({vendorId:vendor._id})
+        return {vendor,gallary};
       } catch (err) {
         return err;
       }
@@ -106,6 +108,14 @@ try {
         })
         await newGallary.save();
         return "successfully uploaded"
+      } catch (err) {
+        return err;
+      }
+    },
+    vendorSocialMedia: async (data, id) => {
+      try {
+        
+        //lkdjaksdjklalskdlajsdlajs asjkldla sdjlasjd lasd jlasdjasd jklasjkljlkasdjlas dasdasd jkl
       } catch (err) {
         return err;
       }

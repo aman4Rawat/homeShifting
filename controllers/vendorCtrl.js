@@ -152,6 +152,25 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
+    uploadSocialMedia: async (req, res, next) => {
+      try {
+        
+        const data = {
+          whatsapp:req.body.whatsapp,
+          facebook:req.body.facebook,
+          instagram:req.body.instagram,
+          snapchat:req.body.snapchat,
+          youtube:req.body.youtube,
+          linkedin:req.body.linkedin,
+        }
+        const id = req.body.vendorId;
+        const result = await vendorModel.vendorSocialMedia(data,id);
+        return res.status(200).send(utils.response(result));
+
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
   };
 } catch (err) {
   console.log(err);

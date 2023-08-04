@@ -25,17 +25,13 @@ try {
     updateservice: async (req, res) => {
       try {
         if (req.role !== "ADMIN") {return res.status(401).send(utils.error("Only Admin can create Services"));}
-       const id = req.body.id;
-       if(!id){return res.status(404).send(utils.error("Id is required"));}
-       const name = req.body.name;
-       const image = upload(req, res, async (err) => {
+      upload(req, res, async (err) => {
           if (err) { return res.status(500).send(utils.error("Internal server error")); }
-          if (!req.file) {return res.status(400).send(utils.error("No file found")); }
           const image = req.file.path;
-          if(image){
-          return image}
-        });
-        const data = {};
+          const id = req.body.id;
+          if(!id){return res.status(404).send(utils.error("Id is required"));}
+          const name = req.body.name;
+          const data = {};
         if(name){
           data.name = name;
         }
@@ -44,6 +40,7 @@ try {
         }
         const result = await serviceModel.updateService(id,data)
         return res.status(200).send(utils.response(result));
+        });
       } catch (err) {
         return err;
       }
@@ -91,18 +88,14 @@ try {
     updatecategory: async (req, res) => {
       try {
         if (req.role !== "ADMIN") {return res.status(401).send(utils.error("Only Admin can create Services"));}
-       const id = req.body.id;
+       upload(req, res, async (err) => {
+          if (err) { return res.status(500).send(utils.error("Internal server error")); }
+          const image = req.file.path;
+          const id = req.body.id;
        if(!id){return res.status(401).send(utils.error("Id is required"));}
        const name = req.body.name;
        const serviceId = req.body.serviceId;
-       const image = upload(req, res, async (err) => {
-          if (err) { return res.status(500).send(utils.error("Internal server error")); }
-          if (!req.file) {return res.status(400).send(utils.error("No file found")); }
-          const image = req.file.path;
-          if(image){
-          return image}
-        });
-        const data = {};
+       const data = {};
         if(serviceId){
           data.serviceId = serviceId;
         }
@@ -114,6 +107,8 @@ try {
         }
         const result = await categoryModel.updateCategory(id,data)
         return res.status(200).send(utils.response(result));
+        });
+        
       } catch (err) {
         return err;
       }
