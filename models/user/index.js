@@ -252,7 +252,6 @@ try {
         return err;
       }
     },
-
     contactus: async (data) => {
       try {
         heading = "New Request";
