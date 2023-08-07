@@ -18,8 +18,9 @@ try {
     },
     updateService: async(id,data)=>{
       try {
-          await serviceSchema.findByIdAndUpdate({_id:id},{$set:{data}},{new:true});
-          return "Service Updated Successfully";
+       
+        await serviceSchema.findByIdAndUpdate({_id:id},{$set:{image:data.image}},{new:true});
+          return "Service Updated Successfully"
       } catch (err) {
         return err;
       }
@@ -60,8 +61,9 @@ try {
     },
     updateCategory: async(id,data)=>{
       try {
-          await categorySchema.findByIdAndUpdate({_id:id},{$set:{data}},{new:true});
-          return "Category Updated Successfully";
+        console.log(id,"this is id.....", data, "this is dataaaaaaaa");
+        const abc=   await categorySchema.findByIdAndUpdate({_id:id},{$set:{image:data.image}},{new:true});
+          return {msg:"Category Updated Successfully", abc};
       } catch (err) {
         return err;
       }

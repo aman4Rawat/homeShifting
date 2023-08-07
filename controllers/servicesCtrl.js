@@ -3,7 +3,7 @@ const serviceModel = require('../models/services/index.js');
 const categoryModel = require('../models/services/index.js');
 const upload = require("../middlewares/multer.js");
 const utils = require("../libs/utils.js");
-
+const BASEURL = process.env.BASEURL;
 try {
   module.exports = {
     createservice: async (req, res) => {
@@ -36,7 +36,7 @@ try {
           data.name = name;
         }
         if(image){
-          data.image = image;
+          data.image = BASEURL+image;
         }
         const result = await serviceModel.updateService(id,data)
         return res.status(200).send(utils.response(result));
@@ -103,7 +103,7 @@ try {
           data.name = name;
         }
         if(image){
-          data.image = image;
+          data.image = BASEURL+image;
         }
         const result = await categoryModel.updateCategory(id,data)
         return res.status(200).send(utils.response(result));

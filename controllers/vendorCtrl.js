@@ -154,7 +154,6 @@ try {
     },
     uploadSocialMedia: async (req, res, next) => {
       try {
-        
         const data = {
           whatsapp:req.body.whatsapp,
           facebook:req.body.facebook,
@@ -171,6 +170,31 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
+
+
+
+
+
+
+    reviewThisVendor: async (req, res) => {
+      try {
+        if(!req.role === "USER"){
+          return  res.status(403).send(utils.error("Only user can review to Vendor"));
+        }
+        const data = {
+          vid:req.body.vendorId,
+          review: req.body.review,
+          rating:req.body.rating,
+          userId:req.userId,
+        }
+      
+        const result = await vendorModel.reviewByUser(data);
+        return res.status(200).send(utils.response(result));
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+
   };
 } catch (err) {
   console.log(err);

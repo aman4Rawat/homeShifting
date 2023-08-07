@@ -2,6 +2,7 @@
 const vendorBusinessSchema = require("./vendorBusinessSchema.js");
 const gallarySchema = require("./gallarySchema.js");
 const socialMediaSchema = require("./socialMedia.js");
+const reviewSchema = require("./reviews.js");
 const BASEURL = process.env.BASEURL;
 try {
   module.exports = {
@@ -68,8 +69,10 @@ try {
         if(!vendor){
           return "No vendor found with this category ";
         }
-        const gallary = await gallarySchema.find({vendorId:vendor._id})
-        return {vendor,gallary};
+        const gallary = await gallarySchema.find({vendorId:vendor._id});
+        const mediaLinks = await socialMediaSchema.find({vendorId:vendor._id});
+        const reviews = await reviewSchema.find({vendorId:vendor._id}).populate("userId");
+        return {vendor,gallary,mediaLinks,reviews};
       } catch (err) {
         return err;
       }
@@ -114,8 +117,37 @@ try {
     },
     vendorSocialMedia: async (data, id) => {
       try {
-        
-        //lkdjaksdjklalskdlajsdlajs asjkldla sdjlasjd lasd jlasdjasd jklasjkljlkasdjlas dasdasd jkl
+        const vendor = await socialMediaSchema.findOne({vendorId:id});
+        if(!vendor){
+          const account = new socialMediaSchema({
+            vendorId:id,
+            links:data
+          });
+          const abc = await account.save();
+          return abc;
+        }else{
+          const xyz = await socialMediaSchema.findByIdAndUpdate({_id:vendor.id,vendorId:id},{$set:{
+            links:data
+          }},{new:true});
+          return xyz;
+        }
+      } catch (err) {
+        return err;
+      }
+    },
+
+
+
+    reviewByUser: async (data) => {
+      try {
+        const abc = new reviewSchema({
+          vendorId:data.vid,
+          review: data.review,
+          rating:data.rating,
+          userId:data.userId
+        })
+        const xyz = await abc.save();
+        return xyz;
       } catch (err) {
         return err;
       }

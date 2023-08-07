@@ -10,8 +10,9 @@ try {
   vendorRoutes.post("/uploadgallary", vendorCtrl.uploadgallary);
   vendorRoutes.post("/uploadsocialmedia", vendorCtrl.uploadSocialMedia);
   
-
   
+  
+  vendorRoutes.post("/reviewthisvendor",JWTAUTH, vendorCtrl.reviewThisVendor);
 
 
   

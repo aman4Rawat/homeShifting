@@ -23,6 +23,8 @@ try {
           userNew.refCode= codeRef;
           if(body.image){
             userNew.profile_image= BASEURL + body.image;
+          }else{
+            userNew.profile_image= BASEURL + `/image/i/defaultuser.jpg`;
           }
           const newUser = new userSchema(userNew);
           
@@ -99,11 +101,11 @@ try {
           );
           const newUser = await userSchema.findOne({ mobile_number: number });
           if (!newUser) {
-            return new Error("null");
+            return "null";
           }
           token = jwt.sign({ user_id: newUser._id, role:newUser.role }, JWTSECRET);
           return { token, newUser };
-        }
+        }else
         {
           return new Error("OTP has been used");
         }
