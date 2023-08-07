@@ -89,7 +89,6 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
-
     updateuser: async (req, res) => {
       try {
         if (req.role !== "USER") {
@@ -314,7 +313,6 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
-
   };
 } catch (err) {
   console.log(err);

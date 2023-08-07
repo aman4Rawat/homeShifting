@@ -6,6 +6,7 @@ const listBusinessSchema = require("./businessListSchema.js");
 const jwt = require("jsonwebtoken");
 const OTP = require("../../services/OTP.js");
 const referralCode = require('referral-code-generator');
+const categorySchema = require("../services/categorySchema.js");
 const BASEURL = process.env.BASEURL;
 const JWTSECRET = process.env.JWTSECRET;
 try {
@@ -186,6 +187,7 @@ try {
         if(!vendor){
           return new Error("No Vendor found with this ID");
         }
+        const service = await categorySchema.findById({_id:vendor.categoryId},{serviceId:1})
         const newDeal = new bestDeal({
           number:body.number,
           email:body.email,
@@ -194,6 +196,7 @@ try {
           vendor:body.vid,
           userId:body.uid,
           categoryId: vendor.categoryId,
+          serviceId: service.serviceId,
           enqueryType:"Best Deal"
         });
         const result = await newDeal.save();

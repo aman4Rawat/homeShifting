@@ -60,7 +60,6 @@ try {
           return res.status(200).send(utils.response(result));
       }catch(err){return err}
     },
-  
     createcategory: async (req, res) => {
       try {
         if (req.role !== "ADMIN") {return res.status(401).send(utils.error("Only Admin can create Services"));}
@@ -134,6 +133,16 @@ try {
         const result = await serviceModel.serviceAndCategoryAll();
           return res.status(200).send(utils.response(result));
       }catch(err){return err}
+    },
+    search: async (req, res) => {
+      try {
+       const search = req.body.search;
+        
+        const result = await serviceModel.searchAll(search);
+        return res.status(200).send(utils.response(result));
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
     },
   };
 } catch (err) {

@@ -27,6 +27,9 @@ const bestDealSchema = new mongoose.Schema(
     categoryId: {
       type: String,
     },
+    serviceId: {
+      type: String,
+    },
     isComplete:{
         type:Boolean,
         default:false

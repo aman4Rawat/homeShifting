@@ -1,25 +1,26 @@
-const adminroutes = require("express").Router();
+const serviceroutes = require("express").Router();
 const serviceCtrl = require("../controllers/servicesCtrl");
 const jwtauth = require("../middlewares/auth.js");
 
 try {
-  adminroutes.post("/createservice",jwtauth, serviceCtrl.createservice);
-  adminroutes.post("/updateservice",jwtauth, serviceCtrl.updateservice);
-  adminroutes.post("/getallservice",serviceCtrl.getAllService);
-  adminroutes.post("/deleteservice",jwtauth, serviceCtrl.deleteService);
-  adminroutes.post("/createcategory",jwtauth, serviceCtrl.createcategory);
-  adminroutes.post("/updatecategory",jwtauth, serviceCtrl.updatecategory);
-  adminroutes.post("/deletecategory",jwtauth, serviceCtrl.deletecategory);
-  adminroutes.post("/getallcategories", serviceCtrl.getallcategories);
-  adminroutes.post("/categoriesbyserviceid", serviceCtrl.categoriesbyserviceid);
-  adminroutes.post("/allserviceandcategory", serviceCtrl.allserviceandcategory);
+  serviceroutes.post("/createservice",jwtauth, serviceCtrl.createservice);
+  serviceroutes.post("/updateservice",jwtauth, serviceCtrl.updateservice);
+  serviceroutes.post("/getallservice",serviceCtrl.getAllService);
+  serviceroutes.post("/deleteservice",jwtauth, serviceCtrl.deleteService);
+  serviceroutes.post("/createcategory",jwtauth, serviceCtrl.createcategory);
+  serviceroutes.post("/updatecategory",jwtauth, serviceCtrl.updatecategory);
+  serviceroutes.post("/deletecategory",jwtauth, serviceCtrl.deletecategory);
+  serviceroutes.post("/getallcategories", serviceCtrl.getallcategories);
+  serviceroutes.post("/categoriesbyserviceid", serviceCtrl.categoriesbyserviceid);
+  serviceroutes.post("/allserviceandcategory", serviceCtrl.allserviceandcategory);
+  serviceroutes.post("/search", serviceCtrl.search);
 
 
 
 
   
 
-  module.exports = adminroutes;
+  module.exports = serviceroutes;
 } catch (error) {
   console.log(error);
 }
