@@ -1,7 +1,8 @@
 const adminModel = require("../models/admin/index.js");
 const bannerModel = require("../models/admin/index.js");
-const appDataModel = require("../models/appData/index.js")
-const userModel = require("../models/user/index.js")
+const appDataModel = require("../models/appData/index.js");
+const userModel = require("../models/user/index.js");
+const venderBUsinessModel = require("../models/vendor/index.js");
 const adminValidation = require("../validator/adminValidation.js");
 const upload = require("../middlewares/multer.js");
 const utils = require("../libs/utils");
@@ -170,7 +171,7 @@ try {
           pinCode: req.body.pinCode,
           categoryId: req.body.businessCategory,
         }
-        const result = await userModel.vendorProfile(body);
+        const result = await venderBUsinessModel.vendorProfile(body);
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
         } else {

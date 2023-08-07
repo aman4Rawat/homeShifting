@@ -152,7 +152,7 @@ try {
        if(!user || user.role !=="USER"){
           return new Error("this Id is Not a User's Id")
         }
-        const result = await userSchema.findByIdAndUpdate({_id:userId}, {$set:{role:"VENDOR", serviceId}}, {new:true});
+        const result = await userSchema.findByIdAndUpdate({_id:userId}, {$set:{role:"VENDOR"}}, {new:true});
         return result;
 
       } catch (err) {

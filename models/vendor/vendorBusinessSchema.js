@@ -73,7 +73,13 @@ const vendorBusinessSchema = new mongoose.Schema(
     categoryName:{
       type:String
     },
-    
+    uniqueId:{
+      type:String
+    },
+    userId:{
+      type:mongoose.Schema.Types.ObjectId,
+      ref:"user",
+    },
     is_active: {
       type: Boolean,
       default: true,

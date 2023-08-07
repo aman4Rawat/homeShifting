@@ -6,7 +6,7 @@ try {
   vendorRoutes.post("/findvendorbyid", vendorCtrl.findVendorbyId);
   vendorRoutes.post("/vendorprofileimage", vendorCtrl.vendorprofileimage);
   vendorRoutes.post("/vendorbackgroundimage", vendorCtrl.vendorbackgroundimage);
-  vendorRoutes.post("/uploaddocuments", vendorCtrl.uploadVendorDocuments);
+  vendorRoutes.post("/uploaddocuments",JWTAUTH, vendorCtrl.uploadVendorDocuments);
   vendorRoutes.post("/uploadgallary", vendorCtrl.uploadgallary);
   vendorRoutes.post("/uploadsocialmedia", vendorCtrl.uploadSocialMedia);
   

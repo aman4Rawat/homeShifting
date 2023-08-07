@@ -3,23 +3,33 @@ const vendorBusinessSchema = require("./vendorBusinessSchema.js");
 const gallarySchema = require("./gallarySchema.js");
 const socialMediaSchema = require("./socialMedia.js");
 const reviewSchema = require("./reviews.js");
+const userSchema = require("../user/userSchema.js");
 const BASEURL = process.env.BASEURL;
 try {
   module.exports = {
     vendorProfile: async (body) => {
       try {
+        const user = await userSchema.findOne({mobile_number:body.mobileNumber});
+        if(!user){
+          return new Error("No user found with this number Please register first");
+        }
+        console.log(user,"this is user for user.id or user._id")
         const condition = {};
         for (const key in body) {
           if (body[key] !== undefined) {
             condition[key] = body[key];
           }
         }
-        const results = await vendorBusinessSchema.find(condition);
+        const results = await vendorBusinessSchema.find(condition).populate("userId");
         if(results.length>0){
           return results
         }else{
+          const code = Date.now();
+          condition.userId = user.id;
+          condition.uniqueId = code;
           const newBusiness = new vendorBusinessSchema(condition);
           const results = await newBusiness.save();
+          await userSchema.findByIdAndUpdate({_id:user.id},{$set:{role:"VENDOR"}},{new:true});
           return results
         }
 

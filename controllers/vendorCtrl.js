@@ -106,6 +106,9 @@ try {
     },
     uploadVendorDocuments:  async (req, res, next) => {
       try {
+        if(!req.role === "VENDOR" ){
+          return res.status(403).send(utils.error("Only Vendor can Upload Documents"));
+        }
         multiUpload(req, res, async (err) => {
           if (err) {
             return res.status(500).send(utils.error("Internal server error"));
