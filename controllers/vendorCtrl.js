@@ -164,6 +164,7 @@ try {
           snapchat:req.body.snapchat,
           youtube:req.body.youtube,
           linkedin:req.body.linkedin,
+          website:req.body.website,
         }
         const id = req.body.vendorId;
         const result = await vendorModel.vendorSocialMedia(data,id);
