@@ -12,6 +12,10 @@ const vendorBusinessSchema = new mongoose.Schema(
       type: Boolean,
       default:false,
     },
+    isExpert: {
+      type: Boolean,
+      default:false,
+    },
     companyName: {
       type: String,
     },

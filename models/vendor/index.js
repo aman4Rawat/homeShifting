@@ -65,9 +65,19 @@ try {
         return err;
       }
     },
-    vwndorByCategoryId: async (cId) => {
+    vendorByCategoryId: async (cId,sort) => {
       try {
-       const results = await vendorBusinessSchema.find({categoryId:cId});
+       const condition = {};
+        if(sort==="TOP"){
+          condition.rating = 1
+        };
+        if(sort==="VERIFIED"){
+          condition.isVerified = 1
+        };
+        if(sort==="EXPERT"){
+          condition.isExpert = 1
+        };
+       const results = await vendorBusinessSchema.find({categoryId:cId}).sort(condition);
         return results;
       } catch (err) {
         return err;

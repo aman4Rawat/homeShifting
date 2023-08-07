@@ -53,7 +53,8 @@ try {
     findVendorbyCategoryId: async (req, res) => {
       try {
         const cId = req.body.id;
-        const result = await vendorModel.vwndorByCategoryId(cId);
+        const sort = req.body.sort;
+        const result = await vendorModel.vendorByCategoryId(cId,sort);
         return res.status(200).send(utils.response(result));
       } catch (err) {
         return res.status(403).send(utils.error(err));
