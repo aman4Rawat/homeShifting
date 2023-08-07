@@ -303,7 +303,7 @@ try {
             .send(utils.error("Only User can see!"));
         }
         const body = {
-          cid: req.body.categoryId,
+          cid: req.body.id,
           uid: req.userId,
         };
         

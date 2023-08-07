@@ -1,11 +1,11 @@
 const userSchema = require("./userSchema.js");
 const otpSchema = require("./otpSchema.js");
 const bestDeal = require("./bestDealSchema.js");
-const vendorBusinessSchema = require("../vendor/vendorBusinessSchema.js")
+const vendorBusinessSchema = require("../vendor/vendorBusinessSchema.js");
 const listBusinessSchema = require("./businessListSchema.js");
 const jwt = require("jsonwebtoken");
 const OTP = require("../../services/OTP.js");
-const referralCode = require('referral-code-generator');
+const referralCode = require("referral-code-generator");
 const categorySchema = require("../services/categorySchema.js");
 const BASEURL = process.env.BASEURL;
 const JWTSECRET = process.env.JWTSECRET;
@@ -15,26 +15,26 @@ try {
       try {
         const user = await userSchema.findOne({ mobile_number: body.number });
         if (!user) {
-          const codeRef = referralCode.alphaNumeric('uppercase',2,2);
+          const codeRef = referralCode.alphaNumeric("uppercase", 2, 2);
           const userNew = {};
-          userNew.mobile_number= body.number;
-          userNew.name= body.name;
-          userNew.gender= body.gender;
-          userNew.email= body.email;
-          userNew.refCode= codeRef;
-          if(body.image){
-            userNew.profile_image= BASEURL + body.image;
-          }else{
-            userNew.profile_image= BASEURL + `/image/i/defaultuser.jpg`;
+          userNew.mobile_number = body.number;
+          userNew.name = body.name;
+          userNew.gender = body.gender;
+          userNew.email = body.email;
+          userNew.refCode = codeRef;
+          if (body.image) {
+            userNew.profile_image = BASEURL + body.image;
+          } else {
+            userNew.profile_image = BASEURL + `/image/i/defaultuser.jpg`;
           }
           const newUser = new userSchema(userNew);
-          
+
           const user = await newUser.save();
           token = jwt.sign({ user_id: user._id, role: user.role }, JWTSECRET);
-          return {token, user};
+          return { token, user };
         } else {
           token = jwt.sign({ user_id: user._id, role: user.role }, JWTSECRET);
-            return { token, user };
+          return { token, user };
         }
       } catch (err) {
         return err;
@@ -52,11 +52,18 @@ try {
             otp: otp,
             expire_time: time,
           });
-       const abc =  await newUser.save();
+          const abc = await newUser.save();
         } else {
           await otpSchema.findOneAndUpdate(
             { _id: user._id, mobile_number: number },
-           {$set: { otp: otp, expire_time: time, wrong_attempt: 0, is_active: true }},
+            {
+              $set: {
+                otp: otp,
+                expire_time: time,
+                wrong_attempt: 0,
+                is_active: true,
+              },
+            },
             { new: true }
           );
         }
@@ -85,7 +92,7 @@ try {
           return new Error("OTP time expired");
         }
         let code = process.env.STATICCODE;
-        if (user.otp !== otp && code !=otp) {
+        if (user.otp !== otp && code != otp) {
           const num = user.wrong_attempt + 1;
           const x = await otpSchema.findOneAndUpdate(
             { mobile_number: number },
@@ -94,20 +101,22 @@ try {
           );
           return new Error(`Wrong OTP, attempt failed ${x.wrong_attempt}`);
         }
-        if (user.otp === otp|| code == otp && user.is_active === true) {
+        if (user.otp === otp || (code == otp && user.is_active === true)) {
           await otpSchema.findOneAndUpdate(
             { mobile_number: number },
-            {$set:{ is_active: false }},
+            { $set: { is_active: false } },
             { new: true }
           );
           const newUser = await userSchema.findOne({ mobile_number: number });
           if (!newUser) {
             return "null";
           }
-          token = jwt.sign({ user_id: newUser._id, role:newUser.role }, JWTSECRET);
+          token = jwt.sign(
+            { user_id: newUser._id, role: newUser.role },
+            JWTSECRET
+          );
           return { token, newUser };
-        }else
-        {
+        } else {
           return new Error("OTP has been used");
         }
       } catch (err) {
@@ -126,22 +135,25 @@ try {
         return err;
       }
     },
-    askforvendor: async (id,verify) => {
+    askforvendor: async (id, verify) => {
       try {
-        const user = await listBusinessSchema.findOne({userId:id,requestType:"Business"});
-       if(!user || user.requestType !=="Business"){
+        const user = await listBusinessSchema.findOne({
+          userId: id,
+          requestType: "Business",
+        });
+        if (!user || user.requestType !== "Business") {
           const data = new listBusinessSchema({
-            mobileNumber:verify.number,
-            fullName:verify.name,
-            userId:id,
-            businessName:verify.businessName,
-            pinCode:verify.pinCode,
-            city:verify.city,
-            requestType:"Business"
-          })
+            mobileNumber: verify.number,
+            fullName: verify.name,
+            userId: id,
+            businessName: verify.businessName,
+            pinCode: verify.pinCode,
+            city: verify.city,
+            requestType: "Business",
+          });
           return await data.save();
-        }else{
-          return new Error("Already applied please contact to admin")
+        } else {
+          return new Error("Already applied please contact to admin");
         }
       } catch (err) {
         return err;
@@ -149,33 +161,39 @@ try {
     },
     makeNewVander: async (userId) => {
       try {
-        const user = await userSchema.findOne({_id:userId});
-       if(!user || user.role !=="USER"){
-          return new Error("this Id is Not a User's Id")
+        const user = await userSchema.findOne({ _id: userId });
+        if (!user || user.role !== "USER") {
+          return new Error("this Id is Not a User's Id");
         }
-        const result = await userSchema.findByIdAndUpdate({_id:userId}, {$set:{role:"VENDOR"}}, {new:true});
+        const result = await userSchema.findByIdAndUpdate(
+          { _id: userId },
+          { $set: { role: "VENDOR" } },
+          { new: true }
+        );
         return result;
-
       } catch (err) {
         return err;
       }
     },
-    askforAdvertising: async (id,verify) => {
+    askforAdvertising: async (id, verify) => {
       try {
-        const user = await listBusinessSchema.findOne({userId:id,requestType:"Advertising"});
-       if(!user || user.requestType !=="Advertising"){
+        const user = await listBusinessSchema.findOne({
+          userId: id,
+          requestType: "Advertising",
+        });
+        if (!user || user.requestType !== "Advertising") {
           const data = new listBusinessSchema({
-            mobileNumber:verify.number,
-            fullName:verify.name,
-            userId:id,
-            businessName:verify.businessName,
-            pinCode:verify.pinCode,
-            city:verify.city,
-            requestType:"Advertising"
-          })
+            mobileNumber: verify.number,
+            fullName: verify.name,
+            userId: id,
+            businessName: verify.businessName,
+            pinCode: verify.pinCode,
+            city: verify.city,
+            requestType: "Advertising",
+          });
           return await data.save();
-        }else{
-          return new Error("Already applied please contact to admin")
+        } else {
+          return new Error("Already applied please contact to admin");
         }
       } catch (err) {
         return err;
@@ -183,48 +201,57 @@ try {
     },
     bestDeal: async (body) => {
       try {
-        const vendor = await vendorBusinessSchema.findById({_id:body.vid});
-        if(!vendor){
+        const vendor = await vendorBusinessSchema.findById({ _id: body.vid });
+        if (!vendor) {
           return new Error("No Vendor found with this ID");
         }
-        const service = await categorySchema.findById({_id:vendor.categoryId},{serviceId:1})
+        const service = await categorySchema.findById(
+          { _id: vendor.categoryId },
+          { serviceId: 1 }
+        );
         const newDeal = new bestDeal({
-          number:body.number,
-          email:body.email,
-          name:body.name,
-          query:body.query,
-          vendor:body.vid,
-          userId:body.uid,
+          number: body.number,
+          email: body.email,
+          name: body.name,
+          query: body.query,
+          vendor: body.vid,
+          userId: body.uid,
           categoryId: vendor.categoryId,
           serviceId: service.serviceId,
-          enqueryType:"Best Deal"
+          enqueryType: "Best Deal",
         });
         const result = await newDeal.save();
         return result;
-       
       } catch (err) {
         return err;
       }
     },
     myEnquery: async (body) => {
       try {
-               const condition = {userId:body.uid};
-               if(body.cid){
-                condition.categoryId = body.cid;
-               }
-               
-        const result = await bestDeal.find(condition).populate("vendor");
-        return result;
-       
+        if (!body.cid) {
+          const result = await bestDeal
+            .find({ userId: body.uid })
+            .populate("vendor").populate("serviceId","name")
+            .sort({ createdAt: -1 });
+          return result;
+        } else {
+          const result = await bestDeal
+            .find({
+              $and: [
+                { userId: body.uid },
+                {
+                  $or: [{ serviceId: body.cid }, { categoryId: body.cid }],
+                },
+              ],
+            })
+            .populate("vendor").populate("serviceId","name")
+            .sort({ createdAt: -1 });
+          return result;
+        }
       } catch (err) {
         return err;
       }
     },
-
-
-
-
-
 
     contactus: async (data) => {
       try {
@@ -257,7 +284,6 @@ try {
         return error;
       }
     },
-
   };
 } catch (e) {
   log.error(e);

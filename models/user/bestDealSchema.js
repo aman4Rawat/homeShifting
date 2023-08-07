@@ -28,7 +28,8 @@ const bestDealSchema = new mongoose.Schema(
       type: String,
     },
     serviceId: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref:"service",
     },
     isComplete:{
         type:Boolean,
