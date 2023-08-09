@@ -140,10 +140,10 @@ try {
     },
     applyForVendor: async (req, res) => {
       try {
-        if (req.role !== "USER") {
+        if (req.role !== "USER" || req.role !== "VENDOR") {
           return res
             .status(401)
-            .send(utils.error("Only User can Apply!"));
+            .send(utils.error("Only User or Vendor can Apply!"));
         }
         const id = req.userId;
         const body = req.body;

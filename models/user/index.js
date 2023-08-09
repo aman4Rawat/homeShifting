@@ -141,6 +141,7 @@ try {
           userId: id,
           requestType: "Business",
         });
+        if(user.isBusinessComplete ===true){
         if (!user || user.requestType !== "Business") {
           const data = new listBusinessSchema({
             mobileNumber: verify.number,
@@ -153,6 +154,8 @@ try {
           });
           return await data.save();
         } else {
+          return new Error("Already applied please contact to admin");
+        }}else {
           return new Error("Already applied please contact to admin");
         }
       } catch (err) {

@@ -69,13 +69,13 @@ try {
       try {
        const condition = {};
         if(sort==="TOP"){
-          condition.rating = 1
+          condition.rating = -1
         };
         if(sort==="VERIFIED"){
-          condition.isVerified = 1
+          condition.isVerified = -1
         };
         if(sort==="EXPERT"){
-          condition.isExpert = 1
+          condition.isExpert = -1
         };
        const results = await vendorBusinessSchema.find({categoryId:cId}).sort(condition);
         return results;
@@ -151,6 +151,37 @@ try {
           }},{new:true});
           return xyz;
         }
+      } catch (err) {
+        return err;
+      }
+    },
+    businessDetailsUpdate: async (data) => {
+      try {
+        const vendor = await vendorBusinessSchema.findOne({_id:data.id});
+        if(!vendor){return new Error("vendor id galat hai")};
+        const condition = {}
+        if(data.name){
+          condition.name = data.name;
+        }
+        if(data.area){
+          condition.area = data.area;
+        }
+        if(data.categoryId){
+          condition.categoryId = data.categoryId;
+        }
+        if(data.userId){
+          condition.userId = data.userId;
+        }
+        if(data.rating){
+          condition.rating = data.rating;
+        }
+        if(data.esteblish){
+          condition.yearOfEsteblish = data.esteblish;
+        }
+
+          const xyz = await vendorBusinessSchema.findByIdAndUpdate({_id:vendor.id},{$set:condition},{new:true});
+          return xyz;
+        
       } catch (err) {
         return err;
       }

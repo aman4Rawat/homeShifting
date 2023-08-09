@@ -175,6 +175,25 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
+    updatebusinessDetails: async (req, res, next) => {
+      try {
+        const data = {
+          name:req.body.name,
+          rating:req.body.rating,
+          yearOfEsteblish:req.body.esteblish,
+          categoryId:req.body.categoryId,
+          categoryName:req.body.categoryName,
+          userId:req.body.userId,
+          area:req.body.area,
+          id:req.body.id,
+        }
+        const result = await vendorModel.businessDetailsUpdate(data);
+        return res.status(200).send(utils.response(result));
+
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
 
 
 

@@ -11,20 +11,21 @@ try {
     addMailBanner: async (data) => {
       try {
         const checkBanner = await bannerSchema.find();
-        if (checkBanner.length === 0) {
-          const mainBanner = bannerSchema({
+        if (checkBanner.length <3) {
+          const mainBanner = new bannerSchema({
             banner_main_image: BASEURL+data.path,
           });
           await mainBanner.save();
           return "Banner Uploaded Successfully";
-        } else {
-          await bannerSchema.findByIdAndUpdate(
-            { _id: checkBanner[0]._id },
-            { banner_main_image: BASEURL+data.path },
-            { new: true }
-          );
-          return "Banner Updated Successfully";
-        }
+        } 
+        // else {
+        //   await bannerSchema.findByIdAndUpdate(
+        //     { _id: checkBanner[0]._id },
+        //     { banner_main_image: BASEURL+data.path },
+        //     { new: true }
+        //   );
+        //   return "Banner Updated Successfully";
+        // }
       } catch (err) {
         return err;
       }

@@ -27,6 +27,10 @@ const businessListSchema = new mongoose.Schema(
     requestType:{
       type:String,
       enum:["Advertising","Business"]
+    },
+    isBusinessComplete:{
+      type:Boolean,
+      default:true
     }
   },
   { timestamps: true }

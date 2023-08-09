@@ -88,6 +88,8 @@ const vendorBusinessSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    rating:{type:Number, default: 2},
+    ratingCount:{type:Number,default: 34}
   },
   { timestamps: true }
 );
