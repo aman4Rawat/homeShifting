@@ -80,6 +80,12 @@ const vendorBusinessSchema = new mongoose.Schema(
     uniqueId:{
       type:String
     },
+    email:{
+      type:String
+    },
+    designation:{
+      type:String
+    },
     userId:{
       type:mongoose.Schema.Types.ObjectId,
       ref:"user",
@@ -88,6 +94,7 @@ const vendorBusinessSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    
     rating:{type:Number, default: 2},
     ratingCount:{type:Number,default: 34}
   },

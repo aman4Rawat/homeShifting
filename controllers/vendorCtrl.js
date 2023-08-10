@@ -158,16 +158,21 @@ try {
     },
     uploadSocialMedia: async (req, res, next) => {
       try {
+        if(!req.role === "VENDOR"){
+          return  res.status(403).send(utils.error("Only Vender can suggest"));
+        }
         const data = {
-          whatsapp:req.body.whatsapp,
+          website:req.body.website,
           facebook:req.body.facebook,
           instagram:req.body.instagram,
-          snapchat:req.body.snapchat,
-          youtube:req.body.youtube,
+          twitter: req.body.twitter,
+          youtube: req.body.youtube,
           linkedin:req.body.linkedin,
-          website:req.body.website,
+          whatsapp:req.body.whatsapp,
+          snapchat:req.body.snapchat,
+          other:req.body.other,
         }
-        const id = req.body.vendorId;
+        const id = req.userId;
         const result = await vendorModel.vendorSocialMedia(data,id);
         return res.status(200).send(utils.response(result));
 
@@ -177,6 +182,9 @@ try {
     },
     updatebusinessDetails: async (req, res, next) => {
       try {
+        if(!req.role === "VENDOR"){
+          return  res.status(403).send(utils.error("Only Vender can suggest"));
+        }
         const data = {
           name:req.body.name,
           rating:req.body.rating,
@@ -185,7 +193,7 @@ try {
           categoryName:req.body.categoryName,
           userId:req.body.userId,
           area:req.body.area,
-          id:req.body.id,
+          id:req.userId,
         }
         const result = await vendorModel.businessDetailsUpdate(data);
         return res.status(200).send(utils.response(result));
@@ -213,6 +221,43 @@ try {
         }
       
         const result = await vendorModel.reviewByUser(data);
+        return res.status(200).send(utils.response(result));
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+    //======== Apis for Vender side as only ==============
+
+    suggestion: async (req, res) => {
+      try {
+        if(!req.role === "VENDOR"){
+          return  res.status(403).send(utils.error("Only Vender can suggest"));
+        }
+        const data = {
+          description: req.body.description,
+          subject:req.body.subject,
+          venderId:req.userId,
+        }
+        const result = await vendorModel.suggestionOfVender(data);
+        return res.status(200).send(utils.response(result));
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+    updateContactDetails: async (req, res) => {
+      try {
+        if(!req.role === "VENDOR"){
+          return  res.status(403).send(utils.error("Only Vender can suggest"));
+        }
+        const data = {
+          contactName: req.body.contactName,
+          designation:req.body.designation,
+          whatsappNumber:req.body.whatsappNumber,
+          mobileNumber:req.body.mobileNumber,
+          email:req.body.email,
+          venderId:req.userId,
+        }
+        const result = await vendorModel.contactDetailUpdate(data);
         return res.status(200).send(utils.response(result));
       } catch (err) {
         return res.status(403).send(utils.error(err));

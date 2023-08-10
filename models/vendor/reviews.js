@@ -18,5 +18,26 @@ const reviewaSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+const suggestionSchema = new mongoose.Schema(
+  {
+    vendorId: {
+      type: mongoose.Schema.Types.ObjectId,
+    },
+    subject:{
+       type: String, 
+    },
+    description:{
+        type:String,
+    },
+    status:{
+      type: Boolean,
+      default:false
+    },
+  },
+  { timestamps: true }
+);
 
-module.exports = mongoose.model("review", reviewaSchema);
+const suggestionsSchema = mongoose.model("suggestion", suggestionSchema);
+const reviewsSchema = mongoose.model("review", reviewaSchema);
+
+module.exports = {suggestionsSchema,reviewsSchema}

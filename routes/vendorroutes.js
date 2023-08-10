@@ -14,6 +14,8 @@ try {
   
   
   vendorRoutes.post("/reviewthisvendor",JWTAUTH, vendorCtrl.reviewThisVendor);
+  vendorRoutes.post("/suggestion",JWTAUTH, vendorCtrl.suggestion);
+  vendorRoutes.post("/updatecontactdetails",JWTAUTH, vendorCtrl.updateContactDetails);
 
 
   

@@ -2,7 +2,7 @@
 const vendorBusinessSchema = require("./vendorBusinessSchema.js");
 const gallarySchema = require("./gallarySchema.js");
 const socialMediaSchema = require("./socialMedia.js");
-const reviewSchema = require("./reviews.js");
+const {reviewsSchema,suggestionsSchema} = require("./reviews.js");
 const userSchema = require("../user/userSchema.js");
 const BASEURL = process.env.BASEURL;
 try {
@@ -91,7 +91,7 @@ try {
         }
         const gallary = await gallarySchema.find({vendorId:vendor._id});
         const mediaLinks = await socialMediaSchema.find({vendorId:vendor._id});
-        const reviews = await reviewSchema.find({vendorId:vendor._id}).populate("userId");
+        const reviews = await reviewsSchema.find({vendorId:vendor._id}).populate("userId");
         return {vendor,gallary,mediaLinks,reviews};
       } catch (err) {
         return err;
@@ -141,14 +141,27 @@ try {
         if(!vendor){
           const account = new socialMediaSchema({
             vendorId:id,
-            links:data
+            website: data.website,
+            facebook: data.facebook,
+            instagram: data.instagram,
+            twitter: data.twitter,
+            youtube: data.youtube,
+            linkedin: data.linkedin,
+            snapchat: data.snapchat,
+            whatsapp: data.whatsapp,
+            other: data.other,
+            
           });
           const abc = await account.save();
           return abc;
         }else{
-          const xyz = await socialMediaSchema.findByIdAndUpdate({_id:vendor.id,vendorId:id},{$set:{
-            links:data
-          }},{new:true});
+          const condition = {};
+          for (const key in data) {
+            if (data[key] !== undefined) {
+              condition[key] = data[key];
+            }
+          }
+          const xyz = await socialMediaSchema.findByIdAndUpdate({_id:vendor.id,vendorId:id},{$set:condition},{new:true});
           return xyz;
         }
       } catch (err) {
@@ -186,16 +199,47 @@ try {
         return err;
       }
     },
-
-
-
     reviewByUser: async (data) => {
       try {
-        const abc = new reviewSchema({
+        const abc = new reviewsSchema({
           vendorId:data.vid,
           review: data.review,
           rating:data.rating,
           userId:data.userId
+        })
+        const xyz = await abc.save();
+        return xyz;
+      } catch (err) {
+        return err;
+      }
+    },
+    contactDetailUpdate: async (data) => {
+      try {
+        const user = await vendorBusinessSchema.findOne({userId:data.venderId})
+        const result = await vendorBusinessSchema.findByIdAndUpdate({_id:user.id},{$set:
+          {
+            contactPersonName:data.contactName,
+            designation:data.designation,
+            whatsappNumber:data.whatsappNumber,
+            mobileNumber:data.mobileNumber,
+            email:data.email,
+          }},{new:true});
+        return result;
+      } catch (err) {
+        return err;
+      }
+    },
+
+
+
+    //===================== Apis only for Vender side ==================
+
+    suggestionOfVender: async (data) => {
+      try {
+        const abc = new suggestionsSchema({
+          vendorId:data.vendorId,
+          subject: data.subject,
+          description:data.description
         })
         const xyz = await abc.save();
         return xyz;
