@@ -263,7 +263,20 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
-
+    uploadTiming: async (req, res) => {
+      try {
+        if(!req.role === "VENDOR"){
+          return  res.status(403).send(utils.error("Only Vender can suggest"));
+        }
+        const data = { };
+        //data se kaam krna hai
+        
+        const result = await vendorModel.contactDetailUpdate(data);
+        return res.status(200).send(utils.response(result));
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
   };
 } catch (err) {
   console.log(err);

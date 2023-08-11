@@ -6,6 +6,7 @@ const appData = require("../models/appData/index.js");
 const utils = require("../libs/utils");
 const otpGenerator = require('otp-generator');
 const upload = require('../middlewares/multer.js');
+const BASEURL = process.env.BASEURL;
 
 try {
   module.exports = {
@@ -91,7 +92,7 @@ try {
     },
     updateuser: async (req, res) => {
       try {
-        if (req.role !== "USER") {
+        if (req.role !== 'USER' && req.role !== 'VENDOR') {
           return res
             .status(401)
             .send(utils.error("Only User can Apply!"));
@@ -101,19 +102,17 @@ try {
             return res.status(500).send(utils.error("Internal server error"));
           }
           
+          const id=req.userId;
           const userDoc = {
             is_active: req.body.is_active,
             gender: req.body.gender,
             name: req.body.name,
             dob: req.body.dob,
-            id: req.body.id,
           };
           if(req.file){
-            userDoc.profile_image = req.file.path;
+            userDoc.profile_image = BASEURL+req.file.path;
           }
-          const result = await userModel.updateAdmin(
-            userDoc
-          );
+          const result = await userModel.updateUser(userDoc,id);
           if (result instanceof Error) {
             return res.status(403).send(utils.error(result.message));
           } else {
@@ -308,6 +307,25 @@ try {
         };
         
         const result = await userModel.myEnquery(body);
+        return res.status(200).send(utils.response(result));
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+    rateVendor: async (req, res) => {
+      try {
+        if (req.role !== "USER" && req.role !== "VENDOR") {
+          return res
+            .status(401)
+            .send(utils.error("Only User can see!"));
+        }
+        const body = {
+          vid: req.body.vendorId,
+          uid: req.userId,
+          rate: req.body.rate,
+        };
+        
+        const result = await userModel.myRatetoVendor(body);
         return res.status(200).send(utils.response(result));
       } catch (err) {
         return res.status(403).send(utils.error(err));

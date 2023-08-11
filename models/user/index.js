@@ -1,6 +1,7 @@
 const userSchema = require("./userSchema.js");
 const otpSchema = require("./otpSchema.js");
 const bestDeal = require("./bestDealSchema.js");
+const rating  = require("./ratingSchema.js");
 const vendorBusinessSchema = require("../vendor/vendorBusinessSchema.js");
 const listBusinessSchema = require("./businessListSchema.js");
 const jwt = require("jsonwebtoken");
@@ -119,6 +120,21 @@ try {
         } else {
           return new Error("OTP has been used");
         }
+      } catch (err) {
+        console.log(err);
+        return err;
+      }
+    },
+    updateUser: async (userDoc,id) => {
+      try {
+        const condition = {}
+        for (const key in userDoc) {
+          if (userDoc[key] !== undefined) {
+            condition[key] = userDoc[key];
+          }
+        }
+        const result = await userSchema.findByIdAndUpdate({_id:id},{$set:condition},{new:true});
+        return result
       } catch (err) {
         console.log(err);
         return err;
@@ -255,37 +271,23 @@ try {
         return err;
       }
     },
-    contactus: async (data) => {
+    myRatetoVendor: async (body) => {
       try {
-        heading = "New Request";
-        transporter.sendMail(
-          {
-            to: "rajanbhatia100@gmail.com",
-            from: "newtest960@gmail.com",
-            subject: "New Request",
-            html: `  <div> Dear Admin , </div> <br>
-
-                         <div> Message:  ${data.message} </div><br>
-
-                         <div> Email:   ${data.email}</div>  <br>
-
-                       <div>Name:  ${data.name}</div>
-
-            <br>
-            `,
-          },
-          (err, res) => {
-            if (err) {
-              console.log("err", err);
-            }
-
-            console.log("res", res);
-          }
-        );
-      } catch (error) {
-        return error;
+       if(body.uid === body.vid){
+        return new Error("you can not rate your self")
+       }
+       const abc  = new rating({
+        vendorId : body.vid,
+        userId: body.uid,
+        rate: body.rate
+       })
+       const result = await abc.save();
+       return result;
+      } catch (err) {
+        return err;
       }
     },
+
   };
 } catch (e) {
   log.error(e);

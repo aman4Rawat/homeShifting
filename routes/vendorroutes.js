@@ -8,14 +8,15 @@ try {
   vendorRoutes.post("/vendorbackgroundimage", vendorCtrl.vendorbackgroundimage);
   vendorRoutes.post("/uploaddocuments", vendorCtrl.uploadVendorDocuments);
   vendorRoutes.post("/uploadgallary", vendorCtrl.uploadgallary);
-  vendorRoutes.post("/uploadsocialmedia", vendorCtrl.uploadSocialMedia);
   vendorRoutes.post("/updatebusinessdetails", vendorCtrl.updatebusinessDetails);
   
-  
-  
+
+
   vendorRoutes.post("/reviewthisvendor",JWTAUTH, vendorCtrl.reviewThisVendor);
   vendorRoutes.post("/suggestion",JWTAUTH, vendorCtrl.suggestion);
   vendorRoutes.post("/updatecontactdetails",JWTAUTH, vendorCtrl.updateContactDetails);
+  vendorRoutes.post("/uploadsocialmedia",JWTAUTH, vendorCtrl.uploadSocialMedia);
+  vendorRoutes.post("/uploadtiming",JWTAUTH, vendorCtrl.uploadTiming);
 
 
   

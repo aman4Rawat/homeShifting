@@ -121,9 +121,9 @@ try {
     },
     searchAll: async (search) => {
       try {
-        const service = await serviceSchema.find( { "name" : { $regex : new RegExp(search, "i") } } );
+        // const service = await serviceSchema.find( { "name" : { $regex : new RegExp(search, "i") } } );
         const category = await categorySchema.find( { "name" : { $regex : new RegExp(search, "i") } } );
-        return {service , category};
+        return category;
       } catch (err) {
         return err;
       }
