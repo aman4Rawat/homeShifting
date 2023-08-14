@@ -4,6 +4,7 @@ const gallarySchema = require("./gallarySchema.js");
 const socialMediaSchema = require("./socialMedia.js");
 const {reviewsSchema,suggestionsSchema} = require("./reviews.js");
 const userSchema = require("../user/userSchema.js");
+const ratingSchema = require("../user/ratingSchema.js");
 const BASEURL = process.env.BASEURL;
 try {
   module.exports = {

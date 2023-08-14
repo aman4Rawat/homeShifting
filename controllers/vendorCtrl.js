@@ -247,7 +247,7 @@ try {
     updateContactDetails: async (req, res) => {
       try {
         if(!req.role === "VENDOR"){
-          return  res.status(403).send(utils.error("Only Vender can suggest"));
+          return  res.status(403).send(utils.error("Only Vender can add contact details"));
         }
         const data = {
           contactName: req.body.contactName,
@@ -266,12 +266,12 @@ try {
     uploadTiming: async (req, res) => {
       try {
         if(!req.role === "VENDOR"){
-          return  res.status(403).send(utils.error("Only Vender can suggest"));
+          return  res.status(403).send(utils.error("Only Vender can add there timings"));
         }
         const data = { };
         //data se kaam krna hai
         
-        const result = await vendorModel.contactDetailUpdate(data);
+        const result = await vendorModel.timingDetailUpdate(data);
         return res.status(200).send(utils.response(result));
       } catch (err) {
         return res.status(403).send(utils.error(err));
