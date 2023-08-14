@@ -94,9 +94,11 @@ const vendorBusinessSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    
-    rating:{type:Number, default: 2},
-    ratingCount:{type:Number,default: 34}
+    timing:{
+      type:Array,
+    },
+    rating:{type:Number,},
+    ratingCount:{type:Number,}
   },
   { timestamps: true }
 );

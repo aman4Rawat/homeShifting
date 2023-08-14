@@ -268,10 +268,9 @@ try {
         if(!req.role === "VENDOR"){
           return  res.status(403).send(utils.error("Only Vender can add there timings"));
         }
-        const data = { };
-        //data se kaam krna hai
-        
-        const result = await vendorModel.timingDetailUpdate(data);
+        const id = req.body.vendorId;
+        const data =req.body.timing;
+        const result = await vendorModel.timingDetailUpdate(data,id);
         return res.status(200).send(utils.response(result));
       } catch (err) {
         return res.status(403).send(utils.error(err));

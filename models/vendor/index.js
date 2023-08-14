@@ -230,7 +230,15 @@ try {
         return err;
       }
     },
-
+    timingDetailUpdate: async (data,id) => {
+      try {
+        const abc = await vendorBusinessSchema.findById({_id:id});
+        const result = await vendorBusinessSchema.findByIdAndUpdate({_id:id},{timing:data},{new:true});
+        return result;
+      } catch (err) {
+        return err;
+      }
+    },
 
 
     //===================== Apis only for Vender side ==================
