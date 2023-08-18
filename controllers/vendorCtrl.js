@@ -276,6 +276,28 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
+    uploadPaymentType: async (req, res) => {
+      try {
+        if(!req.role === "VENDOR"){
+          return  res.status(403).send(utils.error("Only Vender can add Payment types"));
+        }
+        const vendorId = req.userId;
+        const data ={
+          phonePay: req.body.phonePay||false,
+          googlePay: req.body.googlePay||false,
+          paytm: req.body.paytm||false,
+          debitCardCreditCard: req.body.debitCardCreditCard||false,
+          netBanking: req.body.netBanking||false,
+          cashOnDelivery: req.body.cashOnDelivery||false,
+          check: req.body.check||false,
+          IMPS: req.body.IMPS||false,
+        };
+        const result = await vendorModel.uploadPayment(data,vendorId);
+        return res.status(200).send(utils.response(result));
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
   };
 } catch (err) {
   console.log(err);

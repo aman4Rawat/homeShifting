@@ -1,10 +1,11 @@
 
 const vendorBusinessSchema = require("./vendorBusinessSchema.js");
 const gallarySchema = require("./gallarySchema.js");
-const socialMediaSchema = require("./socialMedia.js");
+const {socialMediaSchemas,vendorPaymentTypeSchemas} = require("./socialMedia.js");
 const {reviewsSchema,suggestionsSchema} = require("./reviews.js");
 const userSchema = require("../user/userSchema.js");
 const ratingSchema = require("../user/ratingSchema.js");
+const mongoose = require("mongoose");
 const BASEURL = process.env.BASEURL;
 try {
   module.exports = {
@@ -84,16 +85,17 @@ try {
         return err;
       }
     },
-    vendorById: async (id) => {
+    vendorById: async (id,userId) => {
       try {
         const vendor = await vendorBusinessSchema.findById({_id:id});
         if(!vendor){
           return "No vendor found with this category ";
         }
         const gallary = await gallarySchema.find({vendorId:vendor._id});
-        const mediaLinks = await socialMediaSchema.find({vendorId:vendor._id});
+        const mediaLinks = await socialMediaSchemas.find({vendorId:vendor._id});
         const reviews = await reviewsSchema.find({vendorId:vendor._id}).populate("userId");
-        return {vendor,gallary,mediaLinks,reviews};
+        const totalServices = await vendorBusinessSchema.find({userId:vendor.userId},{categoryName:1,categoryId:1,companyName:1});
+        return {vendor,gallary,mediaLinks,reviews,totalServices};
       } catch (err) {
         return err;
       }
@@ -138,9 +140,9 @@ try {
     },
     vendorSocialMedia: async (data, id) => {
       try {
-        const vendor = await socialMediaSchema.findOne({vendorId:id});
+        const vendor = await socialMediaSchemas.findOne({vendorId:id});
         if(!vendor){
-          const account = new socialMediaSchema({
+          const account = new socialMediaSchemas({
             vendorId:id,
             website: data.website,
             facebook: data.facebook,
@@ -162,7 +164,7 @@ try {
               condition[key] = data[key];
             }
           }
-          const xyz = await socialMediaSchema.findByIdAndUpdate({_id:vendor.id,vendorId:id},{$set:condition},{new:true});
+          const xyz = await socialMediaSchemas.findByIdAndUpdate({_id:vendor.id,vendorId:id},{$set:condition},{new:true});
           return xyz;
         }
       } catch (err) {
@@ -239,7 +241,34 @@ try {
         return err;
       }
     },
-
+    uploadPayment: async (data,vendorId) => {
+      try {
+        const abc = await vendorPaymentTypeSchemas.findOne({vendorId:vendorId});
+        if(!abc){
+          const condition={}
+          condition.vendorId = vendorId;
+          for (const key in data) {
+            if (data[key] !== undefined) {
+              condition[key] = data[key];
+            }
+          }
+          const xyz = new vendorPaymentTypeSchemas(condition);
+          const result = await xyz.save();
+          return result;
+        }else{
+          const condition={}
+          for (const key in data) {
+            if (data[key] !== undefined) {
+              condition[key] = data[key];
+            }
+          }
+          const result = await vendorPaymentTypeSchemas.findByIdAndUpdate({_id:abc.id,vendorId:vendorId},{$set:condition},{new:true});
+          return result;
+        }
+      } catch (err) {
+        return err;
+      }
+    },
 
     //===================== Apis only for Vender side ==================
 
