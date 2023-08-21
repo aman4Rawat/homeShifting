@@ -1,7 +1,7 @@
 
 const vendorBusinessSchema = require("./vendorBusinessSchema.js");
 const gallarySchema = require("./gallarySchema.js");
-const {socialMediaSchemas,vendorPaymentTypeSchemas} = require("./socialMedia.js");
+const {socialMediaSchemas,vendorPaymentTypeSchemas,clickSchema} = require("./socialMedia.js");
 const {reviewsSchema,suggestionsSchema} = require("./reviews.js");
 const userSchema = require("../user/userSchema.js");
 const ratingSchema = require("../user/ratingSchema.js");
@@ -85,7 +85,7 @@ try {
         return err;
       }
     },
-    vendorById: async (id,userId) => {
+    vendorById: async (id) => {
       try {
         const vendor = await vendorBusinessSchema.findById({_id:id});
         if(!vendor){
@@ -96,6 +96,17 @@ try {
         const reviews = await reviewsSchema.find({vendorId:vendor._id}).populate("userId");
         const totalServices = await vendorBusinessSchema.find({userId:vendor.userId},{categoryName:1,categoryId:1,companyName:1});
         return {vendor,gallary,mediaLinks,reviews,totalServices};
+      } catch (err) {
+        return err;
+      }
+    },
+    vendorBudinessByUserId: async (id) => {
+      try {
+        const vendor = await vendorBusinessSchema.find({userId:id});
+        if(!vendor){
+          return "No Business found with this category ";
+        }
+        return vendor;
       } catch (err) {
         return err;
       }
@@ -269,7 +280,62 @@ try {
         return err;
       }
     },
+    socialMediaClick: async (body) => {
+      try {
+        const business = await vendorBusinessSchema.findOne({_id:body.vid});
+        if(business.userId != body.uid){
+          const click = new clickSchema({
+            userId:body.uid,
+            businessId:body.vid,
+            vendorId:business.userId,
+            clickType:body.clickType,
+            name:body.name,
+          })
+          const result = await click.save();
+          return result
+        }     
+      } catch (err) {
+        return err;
+      }
+    },
+    businessDashboardVendor: async (body) => {
+      try {
+        const clicks = await clickSchema.find({ businessId: body.bid });
+        const totalCount = await clickSchema.find({businessId:body.bid}).countDocuments();
 
+        const social = [];
+        const call = [];
+        const bestDeal = [];
+        const webSite = [];
+        const direction = [];
+        clicks.map((x)=>{
+          if(x.clickType === 'SOCIAL'){
+            social.push(x);
+          }
+          if(x.clickType === 'WEBSITE'){
+            webSite.push(x);
+          }
+          if(x.clickType === 'BESTDEAL'){
+            bestDeal.push(x);
+          }
+          if(x.clickType === 'CALL'){
+            call.push(x);
+          }
+          if(x.clickType === 'DIRECTION'){
+            direction.push(x);
+          }
+        })
+        socialPercentage = (social.length/totalCount)*100;
+        webSitePercentage = (webSite.length/totalCount)*100;
+        callPercentage = (call.length/totalCount)*100;
+        bestDealPercentage = (bestDeal.length/totalCount)*100;
+        directionPercentage = (direction.length/totalCount)*100;
+        return {socialPercentage,webSitePercentage,callPercentage,bestDealPercentage,directionPercentage}
+       
+      } catch (err) {
+        return err;
+      }
+    },
     //===================== Apis only for Vender side ==================
 
     suggestionOfVender: async (data) => {

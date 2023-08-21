@@ -69,6 +69,20 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
+    findVendorBusinessByToken: async (req, res) => {
+      try {
+        if (req.role !== "VENDOR") {
+          return res
+            .status(401)
+            .send(utils.error("Only Vendors have Business"));
+        }
+        const id = req.userId;
+        const result = await vendorModel.vendorBudinessByUserId(id);
+        return res.status(200).send(utils.response(result));
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
     vendorprofileimage: async (req, res, next) => {
       try {
         upload(req, res, async (err) => {
@@ -293,6 +307,42 @@ try {
           IMPS: req.body.IMPS||false,
         };
         const result = await vendorModel.uploadPayment(data,vendorId);
+        return res.status(200).send(utils.response(result));
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+    clickOnSocialMedia: async (req, res) => {
+      try {
+        if (req.role !== "USER" && req.role !== "VENDOR") {
+          return res
+            .status(401)
+            .send(utils.error("your role must be buer or vendor"));
+        }
+        const body = {
+          vid: req.body.businessId,
+          uid: req.userId,
+          clickType: req.body.clickType,
+          name: req.body.name,
+        };
+        const result = await vendorModel.socialMediaClick(body);
+        return res.status(200).send(utils.response(result));
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+    businessDashboard: async (req, res) => {
+      try {
+        if (req.role !== "VENDOR") {
+          return res
+            .status(401)
+            .send(utils.error("Only Vendor can see there Dashboard"));
+        }
+        const body = {
+          bid: req.body.businessId,
+          uid: req.userId,
+        };
+        const result = await vendorModel.businessDashboardVendor(body);
         return res.status(200).send(utils.response(result));
       } catch (err) {
         return res.status(403).send(utils.error(err));

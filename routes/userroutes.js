@@ -21,6 +21,7 @@ try {
   userroutes.post("/bestdeal",JWTAUTH, userCtrl.bestDeal);
   userroutes.post("/enquerylist",JWTAUTH, userCtrl.enqueryList);
   userroutes.post("/ratevendor",JWTAUTH, userCtrl.rateVendor);
+
   
 
 

@@ -4,6 +4,7 @@ const JWTAUTH = require('../middlewares/auth.js');
 try {
   vendorRoutes.post("/findvendorbycategoryid", vendorCtrl.findVendorbyCategoryId);
   vendorRoutes.post("/findvendorbyid", vendorCtrl.findVendorbyId);
+  vendorRoutes.post("/findvendorbusinessbytoken",JWTAUTH, vendorCtrl.findVendorBusinessByToken);
   vendorRoutes.post("/vendorprofileimage", vendorCtrl.vendorprofileimage);
   vendorRoutes.post("/vendorbackgroundimage", vendorCtrl.vendorbackgroundimage);
   vendorRoutes.post("/uploaddocuments", vendorCtrl.uploadVendorDocuments);
@@ -16,6 +17,8 @@ try {
   vendorRoutes.post("/uploadsocialmedia",JWTAUTH, vendorCtrl.uploadSocialMedia);
   vendorRoutes.post("/uploadtiming",JWTAUTH, vendorCtrl.uploadTiming);
   vendorRoutes.post("/uploadpaymenttype",JWTAUTH, vendorCtrl.uploadPaymentType);
+  vendorRoutes.post("/clickonsocialmedia",JWTAUTH, vendorCtrl.clickOnSocialMedia);
+  vendorRoutes.post("/businessdashboard",JWTAUTH, vendorCtrl.businessDashboard);
 
 
 

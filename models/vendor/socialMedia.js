@@ -77,7 +77,32 @@ const vendorPaymentTypeSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+const clicksSchema = new mongoose.Schema(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
+    },
+    businessId: {
+      type: mongoose.Schema.Types.ObjectId,
+    },
+    vendorId: {
+      type: mongoose.Schema.Types.ObjectId,
+    },
+   clickType:{
+    type: String,
+    enum : ["WEBSITE",'SOCIAL','CALL','BESTDEAL','DIRECTION'],
+   },
+   name:{
+    type: String,
+    enum : ["FACEBOOK",'WHATSAPP','INSTAGRAM','WEBSITE','TWITTER','CALL','BESTDEAL','YOUTUBE','LINKEDIN','OTHERS','SNAPCHAT'],
+   },
+  },
+  { timestamps: true }
+);
+
 const socialMediaSchemas = mongoose.model("socialMedia", socialMediaSchema);
 const vendorPaymentTypeSchemas = mongoose.model("venderPaymentType", vendorPaymentTypeSchema);
+const clickSchema = mongoose.model("click", clicksSchema);
 
-module.exports = {socialMediaSchemas,vendorPaymentTypeSchemas}
+module.exports = {socialMediaSchemas,vendorPaymentTypeSchemas,clickSchema}
