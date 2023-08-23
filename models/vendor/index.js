@@ -282,15 +282,16 @@ try {
     },
     socialMediaClick: async (body) => {
       try {
-        const business = await vendorBusinessSchema.findOne({_id:body.vid});
-        if(business.userId != body.uid){
-          const click = new clickSchema({
-            userId:body.uid,
-            businessId:body.vid,
-            vendorId:business.userId,
-            clickType:body.clickType,
-            name:body.name,
-          })
+        const business = await vendorBusinessSchema.findOne({_id:body.businessId});
+        if(business.userId != body.userId){
+          const condition = {};
+          condition.vendorId=business.userId;
+          for (const key in body) {
+            if (body[key] !== undefined) {
+              condition[key] = body[key];
+            }
+          }
+          const click = new clickSchema(condition)
           const result = await click.save();
           return result
         }     
@@ -331,6 +332,45 @@ try {
         bestDealPercentage = (bestDeal.length/totalCount)*100;
         directionPercentage = (direction.length/totalCount)*100;
         return {socialPercentage,webSitePercentage,callPercentage,bestDealPercentage,directionPercentage}
+       
+      } catch (err) {
+        return err;
+      }
+    },
+    dashboardCallLeadsVendor: async (body) => {
+      try {
+        const callLeads = await clickSchema.find({ businessId: body.bid, clickType:body.type }).populate("userId").populate("businessId").skip((body.page -1)*body.limit).limit(body.limit);;
+        return callLeads
+       
+      } catch (err) {
+        return err;
+      }
+    },
+    dashboardAllLeads: async (body) => {
+      try {
+        const condition = {}
+        condition.businessId = body.bid;
+        if(body.startDate && body.endDate){
+          condition.createdAt = {$gte: startDate,$lte: endDate};
+        }
+        if(body.isNew){
+          condition.isNew = true;
+        }
+        if(body.isRead){
+          condition.isRead = true;
+        }
+        const callLeads = await clickSchema.find(condition).populate("userId").populate("businessId").skip((body.page -1)*body.limit).limit(body.limit);
+        return callLeads
+       
+      } catch (err) {
+        return err;
+      }
+    },
+    dashboardSingleLeadInfo: async (body) => {
+      try {
+        
+        const callLeads = await clickSchema.findByIdAndUpdate({_id:body.lid},{$set:{isNew:false,isRead:true}},{new:true}).populate("userId").populate("businessId");
+        return callLeads
        
       } catch (err) {
         return err;

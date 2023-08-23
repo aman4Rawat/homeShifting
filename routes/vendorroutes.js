@@ -19,6 +19,10 @@ try {
   vendorRoutes.post("/uploadpaymenttype",JWTAUTH, vendorCtrl.uploadPaymentType);
   vendorRoutes.post("/clickonsocialmedia",JWTAUTH, vendorCtrl.clickOnSocialMedia);
   vendorRoutes.post("/businessdashboard",JWTAUTH, vendorCtrl.businessDashboard);
+  vendorRoutes.post("/dashboardcallleads",JWTAUTH, vendorCtrl.dashboardCallLeads);
+  vendorRoutes.post("/dashboardleads",JWTAUTH, vendorCtrl.dashboardLeads);
+  vendorRoutes.post("/dashboardleadsbyid",JWTAUTH, vendorCtrl.dashboardLeadById);
+
 
 
 

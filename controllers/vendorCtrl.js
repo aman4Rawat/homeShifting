@@ -216,9 +216,7 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
-
-
-
+    
 
 
 
@@ -320,10 +318,14 @@ try {
             .send(utils.error("your role must be buer or vendor"));
         }
         const body = {
-          vid: req.body.businessId,
-          uid: req.userId,
+          businessId: req.body.businessId,
+          userId: req.userId,
           clickType: req.body.clickType,
           name: req.body.name,
+          userName: req.body.userName,
+          userNumber : req.body.userNumber,
+          userEmail: req.body.userEmail,
+          userQuery: req.body.userQuery,
         };
         const result = await vendorModel.socialMediaClick(body);
         return res.status(200).send(utils.response(result));
@@ -343,6 +345,66 @@ try {
           uid: req.userId,
         };
         const result = await vendorModel.businessDashboardVendor(body);
+        return res.status(200).send(utils.response(result));
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+    dashboardCallLeads: async (req, res) => {
+      try {
+        if (req.role !== "VENDOR") {
+          return res
+            .status(401)
+            .send(utils.error("Only Vendor can see there Dashboard call leads"));
+        }
+        const body = {
+          bid: req.body.businessId,
+          uid: req.userId,
+          type: req.body.type,
+          limit: req.body.limit || 10,
+          page: req.body.page || 1,
+
+        };
+        const result = await vendorModel.dashboardCallLeadsVendor(body);
+        return res.status(200).send(utils.response(result));
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+    dashboardLeads: async (req, res) => {
+      try {
+        if (req.role !== "VENDOR") {
+          return res
+            .status(401)
+            .send(utils.error("Only Vendor can see there Dashboard call leads"));
+        }
+        const body = {
+          bid: req.body.businessId,
+          uid: req.userId,
+          startDate:req.body.startDate,
+          endDate:req.body.endDate,
+          isNew:req.body.isNew,
+          isRead:req.body.endDate,
+          limit: req.body.limit || 10,
+          page: req.body.page || 1,
+        };
+        const result = await vendorModel.dashboardAllLeads(body);
+        return res.status(200).send(utils.response(result));
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+    dashboardLeadById: async (req, res) => {
+      try {
+        if (req.role !== "VENDOR") {
+          return res
+            .status(401)
+            .send(utils.error("Only Vendor can see there Dashboard call lead"));
+        }
+        const body = {
+          lid:req.body.leadId,
+        };
+        const result = await vendorModel.dashboardSingleLeadInfo(body);
         return res.status(200).send(utils.response(result));
       } catch (err) {
         return res.status(403).send(utils.error(err));

@@ -85,6 +85,7 @@ const clicksSchema = new mongoose.Schema(
     },
     businessId: {
       type: mongoose.Schema.Types.ObjectId,
+      ref:"venderBusiness"
     },
     vendorId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -96,6 +97,26 @@ const clicksSchema = new mongoose.Schema(
    name:{
     type: String,
     enum : ["FACEBOOK",'WHATSAPP','INSTAGRAM','WEBSITE','TWITTER','CALL','BESTDEAL','YOUTUBE','LINKEDIN','OTHERS','SNAPCHAT'],
+   },
+   userName:{
+    type:String,
+   },
+   userNumber:{
+    type:String,
+   },
+   userEmail:{
+    type:String,
+   },
+   userQuery:{
+    type:String,
+   },
+   isNew:{
+    type:Boolean,
+    default:true,
+   },
+   isRead:{
+    type:Boolean,
+    default:false,
    },
   },
   { timestamps: true }
