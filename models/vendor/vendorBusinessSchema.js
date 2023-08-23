@@ -98,7 +98,8 @@ const vendorBusinessSchema = new mongoose.Schema(
       type:Array,
     },
     rating:{type:Number,},
-    ratingCount:{type:Number,}
+    ratingCount:{type:Number,},
+    wallet:{type:Number,default:0,}
   },
   { timestamps: true }
 );

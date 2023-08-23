@@ -348,6 +348,7 @@ try {
     },
     dashboardAllLeads: async (body) => {
       try {
+        const businessNameAndAmount = await vendorBusinessSchema.findOne({_id:body.bid},{wallet:1,companyName:1});
         const condition = {}
         condition.businessId = body.bid;
         if(body.startDate && body.endDate){
@@ -360,7 +361,7 @@ try {
           condition.isRead = true;
         }
         const callLeads = await clickSchema.find(condition).populate("userId").populate("businessId").skip((body.page -1)*body.limit).limit(body.limit);
-        return callLeads
+        return {businessNameAndAmount,callLeads}
        
       } catch (err) {
         return err;
