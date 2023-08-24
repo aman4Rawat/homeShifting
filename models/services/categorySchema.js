@@ -9,7 +9,7 @@ const categorySchema = new mongoose.Schema({
     type:String
   },
   serviceId:{
-    type:mongoose.Types.ObjectId,
+    type:mongoose.Schema.Types.ObjectId,
     ref:'service'
   },
   serviceName:{

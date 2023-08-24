@@ -181,6 +181,25 @@ try {
         return res.status(403).send(utils.error(err.message));
       }
     },
+    createPackage: async (req, res, next) => {
+      try {
+        // if (req.role !== "ADMIN") { return res.status(401).send(utils.error("Only Admin can create package")); }
+        const body={
+          packageName: req.body.packageName,
+          packageAmount: req.body.packageAmount,
+          packageDuration: req.body.packageDuration,
+          packageDetalis: req.body.packageDetails,
+        }
+        const result = await adminModel.createNewPackage(body);
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(201).send(utils.response(result));
+        }
+      } catch (err) {
+        return res.status(403).send(utils.error(err.message));
+      }
+    },
 
   };
 } catch (err) {

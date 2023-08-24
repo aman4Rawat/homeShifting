@@ -1,11 +1,11 @@
 
 const vendorBusinessSchema = require("./vendorBusinessSchema.js");
+const packageSchame = require("../admin/packageSchame.js");
 const gallarySchema = require("./gallarySchema.js");
-const {socialMediaSchemas,vendorPaymentTypeSchemas} = require("./socialMedia.js");
+const {socialMediaSchemas,vendorPaymentTypeSchemas,clickSchema} = require("./socialMedia.js");
 const {reviewsSchema,suggestionsSchema} = require("./reviews.js");
 const userSchema = require("../user/userSchema.js");
 const ratingSchema = require("../user/ratingSchema.js");
-const mongoose = require("mongoose");
 const BASEURL = process.env.BASEURL;
 try {
   module.exports = {
@@ -85,7 +85,7 @@ try {
         return err;
       }
     },
-    vendorById: async (id,userId) => {
+    vendorById: async (id) => {
       try {
         const vendor = await vendorBusinessSchema.findById({_id:id});
         if(!vendor){
@@ -96,6 +96,17 @@ try {
         const reviews = await reviewsSchema.find({vendorId:vendor._id}).populate("userId");
         const totalServices = await vendorBusinessSchema.find({userId:vendor.userId},{categoryName:1,categoryId:1,companyName:1});
         return {vendor,gallary,mediaLinks,reviews,totalServices};
+      } catch (err) {
+        return err;
+      }
+    },
+    vendorBudinessByUserId: async (id) => {
+      try {
+        const vendor = await vendorBusinessSchema.find({userId:id});
+        if(!vendor){
+          return "No Business found with this category ";
+        }
+        return vendor;
       } catch (err) {
         return err;
       }
@@ -269,7 +280,103 @@ try {
         return err;
       }
     },
+    socialMediaClick: async (body) => {
+      try {
+        const business = await vendorBusinessSchema.findOne({_id:body.businessId});
+        if(business.userId != body.userId){
+          const condition = {};
+          condition.vendorId=business.userId;
+          for (const key in body) {
+            if (body[key] !== undefined) {
+              condition[key] = body[key];
+            }
+          }
+          const click = new clickSchema(condition)
+          const result = await click.save();
+          return result
+        }     
+      } catch (err) {
+        return err;
+      }
+    },
+    businessDashboardVendor: async (body) => {
+      try {
+        const clicks = await clickSchema.find({ businessId: body.bid });
+        const totalCount = await clickSchema.find({businessId:body.bid}).countDocuments();
 
+        const social = [];
+        const call = [];
+        const bestDeal = [];
+        const webSite = [];
+        const direction = [];
+        clicks.map((x)=>{
+          if(x.clickType === 'SOCIAL'){
+            social.push(x);
+          }
+          if(x.clickType === 'WEBSITE'){
+            webSite.push(x);
+          }
+          if(x.clickType === 'BESTDEAL'){
+            bestDeal.push(x);
+          }
+          if(x.clickType === 'CALL'){
+            call.push(x);
+          }
+          if(x.clickType === 'DIRECTION'){
+            direction.push(x);
+          }
+        })
+        socialPercentage = (social.length/totalCount)*100;
+        webSitePercentage = (webSite.length/totalCount)*100;
+        callPercentage = (call.length/totalCount)*100;
+        bestDealPercentage = (bestDeal.length/totalCount)*100;
+        directionPercentage = (direction.length/totalCount)*100;
+        return {socialPercentage,webSitePercentage,callPercentage,bestDealPercentage,directionPercentage}
+       
+      } catch (err) {
+        return err;
+      }
+    },
+    dashboardCallLeadsVendor: async (body) => {
+      try {
+        const callLeads = await clickSchema.find({ businessId: body.bid, clickType:body.type }).populate("userId").populate("businessId").skip((body.page -1)*body.limit).limit(body.limit);;
+        return callLeads
+       
+      } catch (err) {
+        return err;
+      }
+    },
+    dashboardAllLeads: async (body) => {
+      try {
+        const businessNameAndAmount = await vendorBusinessSchema.findOne({_id:body.bid},{wallet:1,companyName:1});
+        const condition = {}
+        condition.businessId = body.bid;
+        if(body.startDate && body.endDate){
+          condition.createdAt = {$gte: startDate,$lte: endDate};
+        }
+        if(body.isNew){
+          condition.isNaya = true;
+        }
+        if(body.isRead){
+          condition.isRead = true;
+        }
+        const callLeads = await clickSchema.find(condition).populate("userId").populate("businessId").skip((body.page -1)*body.limit).limit(body.limit);
+        return {businessNameAndAmount,callLeads}
+       
+      } catch (err) {
+        return err;
+      }
+    },
+    dashboardSingleLeadInfo: async (body) => {
+      try {
+        
+        const callLeads = await clickSchema.findByIdAndUpdate({_id:body.lid},{$set:{isNaya:false,isRead:true}},{new:true}).populate("userId").populate("businessId");
+        return callLeads
+       
+      } catch (err) {
+        return err;
+      }
+    },
     //===================== Apis only for Vender side ==================
 
     suggestionOfVender: async (data) => {
@@ -281,6 +388,45 @@ try {
         })
         const xyz = await abc.save();
         return xyz;
+      } catch (err) {
+        return err;
+      }
+    },
+    detailsofPackage: async () => {
+      try {
+       const result = await packageSchame.find();
+        return result;
+      } catch (err) {
+        return err;
+      }
+    },
+    detailsSinglePackagebyId: async (pid) => {
+      try {
+       const package = await packageSchame.findById({_id:pid});
+       const packageDetails = package.packageDetalis;
+       const amount = package.packageAmount;
+       const gst = (amount * 18)/100 ;
+       const totalAmount = amount+gst;
+
+        return {packageDetails,amount,gst,totalAmount};
+      } catch (err) {
+        return err;
+      }
+    },
+    packagePurchase: async (body) => {
+      try {
+        const package = await packageSchame.findById({_id:body.packageId});
+        const business = await vendorBusinessSchema.findById({_id:body.businessId});
+        const user = await userSchema.findById({_id:body.userId});
+        const amount = package.packageAmount;
+        const gst = (amount * 18)/100 ;
+        const totalAmount = amount+gst;
+        const expireDate = new Date(new Date(Date.now()).setMonth(new Date(Date.now()).getMonth()+package.packageDuration));
+        const userPlane = new userPlaneSchema({
+          //here I have to use the perametor from schema accordingly
+        })
+        const result = await userPlane.save();
+        return result;
       } catch (err) {
         return err;
       }

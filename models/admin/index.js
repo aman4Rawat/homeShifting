@@ -1,9 +1,9 @@
 const adminSchema = require("./adminSchema.js");
 const bannerSchema = require("./bannerSchema.js");
 const banner3Schema = require("./banner3Schema.js");
+const packageSchema = require("./packageSchame.js");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { default: mongoose } = require("mongoose");
 const JWTSECRET = process.env.JWTSECRET;
 const BASEURL = process.env.BASEURL;
 try {
@@ -98,7 +98,21 @@ try {
         return err;
       }
     },
-
+    createNewPackage: async (body) => {
+      try {
+        let condition={};
+        for (let key in body) {
+          if (body[key] !== undefined) {
+            condition[key] = body[key];
+          }
+        }
+        const package = new packageSchema(condition);
+        const result = await package.save();
+        return result;
+      } catch (err) {
+        return err
+      }
+    },
 
   };
 } catch (e) {
