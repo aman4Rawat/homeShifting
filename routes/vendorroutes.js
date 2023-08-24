@@ -28,8 +28,11 @@ try {
 
   
 
-
-
+  vendorRoutes.post("/packagedetails",JWTAUTH, vendorCtrl.packageDetails);
+  vendorRoutes.post("/singlepackagedetailsbyid",JWTAUTH, vendorCtrl.singlePackageDetailsById);
+  vendorRoutes.post("/purchasePackage",JWTAUTH, vendorCtrl.pruchasePackage);
+  
+  
   module.exports = vendorRoutes;
 } catch (error) {
   console.log(error);

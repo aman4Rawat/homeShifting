@@ -110,7 +110,7 @@ const clicksSchema = new mongoose.Schema(
    userQuery:{
     type:String,
    },
-   isNew:{
+   isNaya:{
     type:Boolean,
     default:true,
    },

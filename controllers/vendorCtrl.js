@@ -410,6 +410,52 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
+    packageDetails: async (req, res) => {
+      try {
+        if (req.role === "USER") {
+          return res
+            .status(401)
+            .send(utils.error("user can't see package details"));
+        }
+        const result = await vendorModel.detailsofPackage();
+        return res.status(200).send(utils.response(result));
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+    singlePackageDetailsById: async (req, res) => {
+      try {
+        if (req.role === "USER") {
+          return res
+            .status(401)
+            .send(utils.error("user can't see package details"));
+        }
+        const pid = req.body.packageId;
+        const result = await vendorModel.detailsSinglePackagebyId(pid);
+        return res.status(200).send(utils.response(result));
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+    pruchasePackage: async (req, res) => {
+      try {
+        if (req.role !== "VENDOR") {
+          return res
+            .status(401)
+            .send(utils.error("user can't purchase package"));
+        }
+        const body={
+          packageId:req.body.packageId,
+          userId:req.userId,
+          businessId:req.businessId,
+        }
+        const result = await vendorModel.packagePurchase(body);
+        return res.status(200).send(utils.response(result));
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+    
   };
 } catch (err) {
   console.log(err);

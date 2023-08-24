@@ -1,11 +1,11 @@
 
 const vendorBusinessSchema = require("./vendorBusinessSchema.js");
+const packageSchame = require("../admin/packageSchame.js");
 const gallarySchema = require("./gallarySchema.js");
 const {socialMediaSchemas,vendorPaymentTypeSchemas,clickSchema} = require("./socialMedia.js");
 const {reviewsSchema,suggestionsSchema} = require("./reviews.js");
 const userSchema = require("../user/userSchema.js");
 const ratingSchema = require("../user/ratingSchema.js");
-const mongoose = require("mongoose");
 const BASEURL = process.env.BASEURL;
 try {
   module.exports = {
@@ -355,7 +355,7 @@ try {
           condition.createdAt = {$gte: startDate,$lte: endDate};
         }
         if(body.isNew){
-          condition.isNew = true;
+          condition.isNaya = true;
         }
         if(body.isRead){
           condition.isRead = true;
@@ -370,7 +370,7 @@ try {
     dashboardSingleLeadInfo: async (body) => {
       try {
         
-        const callLeads = await clickSchema.findByIdAndUpdate({_id:body.lid},{$set:{isNew:false,isRead:true}},{new:true}).populate("userId").populate("businessId");
+        const callLeads = await clickSchema.findByIdAndUpdate({_id:body.lid},{$set:{isNaya:false,isRead:true}},{new:true}).populate("userId").populate("businessId");
         return callLeads
        
       } catch (err) {
@@ -388,6 +388,45 @@ try {
         })
         const xyz = await abc.save();
         return xyz;
+      } catch (err) {
+        return err;
+      }
+    },
+    detailsofPackage: async () => {
+      try {
+       const result = await packageSchame.find();
+        return result;
+      } catch (err) {
+        return err;
+      }
+    },
+    detailsSinglePackagebyId: async (pid) => {
+      try {
+       const package = await packageSchame.findById({_id:pid});
+       const packageDetails = package.packageDetalis;
+       const amount = package.packageAmount;
+       const gst = (amount * 18)/100 ;
+       const totalAmount = amount+gst;
+
+        return {packageDetails,amount,gst,totalAmount};
+      } catch (err) {
+        return err;
+      }
+    },
+    packagePurchase: async (body) => {
+      try {
+        const package = await packageSchame.findById({_id:body.packageId});
+        const business = await vendorBusinessSchema.findById({_id:body.businessId});
+        const user = await userSchema.findById({_id:body.userId});
+        const amount = package.packageAmount;
+        const gst = (amount * 18)/100 ;
+        const totalAmount = amount+gst;
+        const expireDate = new Date(new Date(Date.now()).setMonth(new Date(Date.now()).getMonth()+package.packageDuration));
+        const userPlane = new userPlaneSchema({
+          //here I have to use the perametor from schema accordingly
+        })
+        const result = await userPlane.save();
+        return result;
       } catch (err) {
         return err;
       }
