@@ -315,7 +315,7 @@ try {
         if (req.role !== "USER" && req.role !== "VENDOR") {
           return res
             .status(401)
-            .send(utils.error("your role must be buer or vendor"));
+            .send(utils.error("your role must be user or vendor"));
         }
         const body = {
           businessId: req.body.businessId,

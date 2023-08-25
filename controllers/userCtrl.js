@@ -274,7 +274,7 @@ try {
     },
     bestDeal: async (req, res) => {
       try {
-        if (req.role !== "USER") {
+        if (req.role !== "USER" && req.role !== "VENDOR") {
           return res
             .status(401)
             .send(utils.error("Only User can Apply!"));
