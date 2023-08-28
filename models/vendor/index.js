@@ -102,7 +102,7 @@ try {
     },
     vendorBudinessByUserId: async (id) => {
       try {
-        const vendor = await vendorBusinessSchema.find({userId:id});
+        const vendor = await vendorBusinessSchema.find({userId:id},{categoryName:1,categoryId:1,companyName:1,name:1,profileImage:1});
         if(!vendor){
           return "No Business found with this category ";
         }
