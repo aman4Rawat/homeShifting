@@ -379,7 +379,6 @@ try {
             .send(utils.error("Only Vendor can see there Dashboard call leads"));
         }
         const body = {
-          bid: req.body.businessId,
           uid: req.userId,
           startDate:req.body.startDate,
           endDate:req.body.endDate,

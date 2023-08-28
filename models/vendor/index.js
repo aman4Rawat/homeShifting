@@ -348,7 +348,7 @@ try {
     },
     dashboardAllLeads: async (body) => {
       try {
-        const businessNameAndAmount = await vendorBusinessSchema.findOne({_id:body.bid},{wallet:1,companyName:1});
+        const businessNameAndAmount = await vendorBusinessSchema.findOne({userId:body.uid},{wallet:1,companyName:1});
         const condition = {}
         condition.businessId = body.bid;
         if(body.startDate && body.endDate){
