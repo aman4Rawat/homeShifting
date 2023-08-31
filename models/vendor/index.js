@@ -348,9 +348,9 @@ try {
     },
     dashboardAllLeads: async (body) => {
       try {
-        const businessNameAndAmount = await vendorBusinessSchema.findOne({userId:body.uid},{wallet:1,companyName:1});
+        const businessNameAndAmount = await vendorBusinessSchema.findOne({userId:body.uid},{wallet:1,companyName:1}).sort({createdAt:1});
         const condition = {}
-        condition.businessId = body.bid;
+        condition.businessId = businessNameAndAmount._id;
         if(body.startDate && body.endDate){
           condition.createdAt = {$gte: startDate,$lte: endDate};
         }
@@ -360,7 +360,7 @@ try {
         if(body.isRead){
           condition.isRead = true;
         }
-        const callLeads = await clickSchema.find(condition).populate("userId").populate("businessId").skip((body.page -1)*body.limit).limit(body.limit);
+        const callLeads = await clickSchema.find(condition).populate("userId").populate("businessId",{timing:0}).skip((body.page -1)*body.limit).limit(body.limit);
         return {businessNameAndAmount,callLeads}
        
       } catch (err) {
