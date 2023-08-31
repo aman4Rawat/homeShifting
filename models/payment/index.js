@@ -23,7 +23,7 @@ try {
             return `${timestamp}-${randomId}`;
           };
           const orderId = generateOrderId();
-            const result = await paymentGateway.orders.createOrders({
+            const a = await paymentGateway.orders.createOrders({
                 orderId: orderId,
                 orderAmount: body.amount,
                 orderCurrency: 'INR',
@@ -40,6 +40,23 @@ try {
                     });
                 await payment.save();
                 return result;
+      } catch (err) {
+        return err;
+      }
+    },
+    getPayment: async (body) => {
+      try {
+        const paymentGateway = new PaymentGateway({
+            env: 'TEST',
+            apiVersion: '2021-05-21',
+            appId: PAYMENTKEY,
+            secretKey: PAYMENTSECTRET,
+            });
+            const a = await paymentGateway.orders.getStatus({
+                orderId: body.orderId,
+                });
+            const payment = await paymentSchema.findOneAndUpdate({orderId:body.orderId},{paymentStatus:a.txStatus,referenceId:a.referenceId,paymentMode:a.paymentMode},{new:true});
+                return a;
       } catch (err) {
         return err;
       }

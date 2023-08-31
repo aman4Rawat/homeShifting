@@ -4,6 +4,8 @@ const jwtauth = require("../middlewares/auth");
 
 try {
     paymentRoute.post("/createpayment",jwtauth, paymentCtrl.createPayment);
+    paymentRoute.post("/getpaymentstatus",jwtauth, paymentCtrl.getPaymentStatus);
+
 
   module.exports = paymentRoute;
 } catch (error) {

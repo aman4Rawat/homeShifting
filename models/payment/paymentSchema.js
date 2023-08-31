@@ -21,7 +21,13 @@ const paymentSchema = new mongoose.Schema(
     },
     orderId: {
         type: String,
-    }
+    },
+    referenceId: {
+        type: String,
+    },
+    paymentMode: {
+        type: String,
+    },
   },
   { timestamps: true }
 );
