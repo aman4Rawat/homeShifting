@@ -3,7 +3,6 @@ const axios = require('axios');
 const { PaymentGateway } = require('@cashfreepayments/cashfree-sdk');
 const paymentSchema = require('./paymentSchema.js');
 const userSchema = require('../user/userSchema.js');
-const businessSchema = require('../vendor/vendorBusinessSchema.js');
 const PAYMENTKEY = process.env.TESTPAYMENTKEY;
 const PAYMENTSECTRET = process.env.TESTPAYMENTSECRET;
 try {
