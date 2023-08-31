@@ -12,6 +12,7 @@ const user = require("./routes/userroutes.js");
 const admin = require("./routes/adminroutes.js");
 const service = require("./routes/servicesroutes.js");
 const vendor = require("./routes/vendorroutes.js");
+const payment = require("./routes/paymentrouter.js");
 
 
 var dataDate = new Date();
@@ -22,33 +23,6 @@ try {
   app.use("/image",express.static('image'))
   app.use(helmet());
   app.use(compression());
-//   const options = {
-//     swaggerDefinition: {
-//       info: {
-//         description: "API documentation for LMS exam API",
-//         title: "LMS Exam API",
-//         version: "1.0.0",
-//       },
-//       // host: `dev.armax.com:${DATASTOREPORT}`,
-//       basePath: "",
-//       produces: ["application/json", "application/xml"],
-
-//       // schemes: schemeshttpmethod,
-//       securityDefinitions: {
-//         JWT: {
-//           type: "apiKey",
-//           in: "header",
-//           name: "Authorization",
-//           description: "",
-//         },
-//       },
-//     },
-//     basedir: __dirname, // app absolute path
-//     files: ["./routes/**/*.js"], // Path to the API handle folder
-//   };
-
-//   const expressSwagger = expressSwaggerGenerator(app);
-//   expressSwagger(options);
   app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
@@ -76,13 +50,11 @@ try {
   app.get("/test", (req, res) => {
     res.render('index');
   });
-  app.use('/api',async(req,res)=>{
-    res.send("House Shifting Apis")
-  })
    app.use("/user", user);
    app.use("/admin", admin);
    app.use("/service",service);
    app.use("/vendor",vendor);
+   app.use("/payment",payment);
   
   mongoose.set('strictQuery', false);
   (async () => {
