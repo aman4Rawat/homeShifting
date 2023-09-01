@@ -1,5 +1,4 @@
 
-const axios = require('axios');
 const { PaymentGateway } = require('@cashfreepayments/cashfree-sdk');
 const paymentSchema = require('./paymentSchema.js');
 const userSchema = require('../user/userSchema.js');

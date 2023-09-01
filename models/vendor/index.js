@@ -370,7 +370,7 @@ try {
     dashboardSingleLeadInfo: async (body) => {
       try {
         
-        const callLeads = await clickSchema.findByIdAndUpdate({_id:body.lid},{$set:{isNaya:false,isRead:true}},{new:true}).populate("userId").populate("businessId");
+        const callLeads = await clickSchema.findByIdAndUpdate({_id:body.lid},{$set:{isNaya:false,isRead:true}},{new:true}).populate("userId").populate("businessId",{timing:0,uniqueId:0,profileImage:0,categoryId:0,categoryName:0,userId:0,__v:0,_id:0,area:0,designation:0});
         return callLeads
        
       } catch (err) {
