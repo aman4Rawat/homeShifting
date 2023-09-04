@@ -92,11 +92,11 @@ const clicksSchema = new mongoose.Schema(
     },
    clickType:{
     type: String,
-    enum : ["WEBSITE",'SOCIAL','CALL','BESTDEAL','DIRECTION'],
+    enum : ["WEBSITE",'SOCIAL','CALL','BESTDEAL','DIRECTION','CHAT', 'INQUERY','OTHERS'],
    },
    name:{
     type: String,
-    enum : ["FACEBOOK",'WHATSAPP','INSTAGRAM','WEBSITE','TWITTER','CALL','BESTDEAL','YOUTUBE','LINKEDIN','OTHERS','SNAPCHAT'],
+    enum : ['FACEBOOK','INSTAGRAM','TWITTER','YOUTUBE','LINKEDIN','OTHERS','SNAPCHAT'],
    },
    userName:{
     type:String,
@@ -109,6 +109,7 @@ const clicksSchema = new mongoose.Schema(
    },
    userQuery:{
     type:String,
+    default:null,
    },
    isNaya:{
     type:Boolean,

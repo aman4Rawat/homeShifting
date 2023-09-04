@@ -321,7 +321,6 @@ try {
           businessId: req.body.businessId,
           userId: req.userId,
           clickType: req.body.clickType,
-          name: req.body.name,
           userName: req.body.userName,
           userNumber : req.body.userNumber,
           userEmail: req.body.userEmail,

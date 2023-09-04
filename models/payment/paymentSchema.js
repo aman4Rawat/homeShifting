@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const paymentSchema = new mongoose.Schema(
+const paymentSchemas = new mongoose.Schema(
   {
     paymentId: {
       type: String,
@@ -32,4 +32,16 @@ const paymentSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("payment", paymentSchema);
+const suggestionPlaneSchemas = new mongoose.Schema(
+  {
+    amount: {
+        type: Number,
+    },
+  },
+  { timestamps: true }
+);
+
+const paymentSchema = mongoose.model("payment", paymentSchemas);
+const suggestionPlaneSchema = mongoose.model("suggestionPlane", suggestionPlaneSchemas);
+
+module.exports = {paymentSchema,suggestionPlaneSchema}

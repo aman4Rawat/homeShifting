@@ -2,6 +2,7 @@
 const vendorBusinessSchema = require("./vendorBusinessSchema.js");
 const packageSchame = require("../admin/packageSchame.js");
 const gallarySchema = require("./gallarySchema.js");
+const CategorySchema = require("../services/categorySchema.js");
 const {socialMediaSchemas,vendorPaymentTypeSchemas,clickSchema} = require("./socialMedia.js");
 const {reviewsSchema,suggestionsSchema} = require("./reviews.js");
 const userSchema = require("../user/userSchema.js");
@@ -15,8 +16,9 @@ try {
         if(!user){
           return new Error("No user found with this number Please register first");
         }
-        console.log(user,"this is user for user.id or user._id")
+       
         const condition = {};
+        
         for (const key in body) {
           if (body[key] !== undefined) {
             condition[key] = body[key];
@@ -26,8 +28,14 @@ try {
         if(results.length>0){
           return results
         }else{
-          const code = Date.now();
-          condition.userId = user.id;
+          if(body.categoryId){ 
+            const category = await CategorySchema.findById({_id:body.categoryId});
+           }else{
+            return new Error("Please select category");
+            }
+            const code = Date.now();
+            condition.userId = user.id;
+            condition.categoryName = category.name;
           condition.uniqueId = code;
           const newBusiness = new vendorBusinessSchema(condition);
           const results = await newBusiness.save();
@@ -294,7 +302,10 @@ try {
           const click = new clickSchema(condition)
           const result = await click.save();
           return result
-        }     
+        }  
+        else{
+          return "You can't Increase click on your own business";
+        }   
       } catch (err) {
         return err;
       }
@@ -339,7 +350,7 @@ try {
     },
     dashboardCallLeadsVendor: async (body) => {
       try {
-        const callLeads = await clickSchema.find({ businessId: body.bid, clickType:body.type }).populate("userId").populate("businessId").skip((body.page -1)*body.limit).limit(body.limit);;
+        const callLeads = await clickSchema.find({ businessId: body.bid, clickType:body.type }).populate("userId",{createdAt:0}).populate("businessId",{createdAt:0, timing:0}).skip((body.page -1)*body.limit).limit(body.limit);;
         return callLeads
        
       } catch (err) {
@@ -360,7 +371,7 @@ try {
         if(body.isRead){
           condition.isRead = true;
         }
-        const callLeads = await clickSchema.find(condition).populate("userId").populate("businessId",{timing:0}).skip((body.page -1)*body.limit).limit(body.limit);
+        const callLeads = await clickSchema.find(condition).populate("userId",{createdAt:0}).populate("businessId",{timing:0,createdAt:0}).skip((body.page -1)*body.limit).limit(body.limit);
         return {businessNameAndAmount,callLeads}
        
       } catch (err) {
@@ -370,7 +381,7 @@ try {
     dashboardSingleLeadInfo: async (body) => {
       try {
         
-        const callLeads = await clickSchema.findByIdAndUpdate({_id:body.lid},{$set:{isNaya:false,isRead:true}},{new:true}).populate("userId").populate("businessId",{timing:0,uniqueId:0,profileImage:0,categoryId:0,categoryName:0,userId:0,__v:0,_id:0,area:0,designation:0});
+        const callLeads = await clickSchema.findByIdAndUpdate({_id:body.lid},{$set:{isNaya:false,isRead:true}},{new:true}).populate("userId").populate("businessId",{timing:0,uniqueId:0,profileImage:0,userId:0,__v:0,_id:0,area:0,designation:0});
         return callLeads
        
       } catch (err) {

@@ -40,6 +40,59 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
+
+    suggestionPlaneAdd: async (req, res) => {
+      try {
+
+        const body = {
+          amount: req.body.amount,
+          }
+
+          const result = await paymentModel.addSuggestionPayment(body);
+          if (result instanceof Error) {
+            return res.status(403).send(utils.error(result.message));
+          } else {
+            return res.status(201).send(utils.response(result));
+          }
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+    suggestionPlaneList: async (req, res) => {
+      try {
+          
+          const result = await paymentModel.getSuggestionPayment();
+          if (result instanceof Error) {
+            return res.status(403).send(utils.error(result.message));
+          } else {
+            return res.status(200).send(utils.response(result));
+          }
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+
+
+
+
+
+    invoice: async (req, res) => {
+      try {
+
+        const body = {
+          userId: req.userId,
+          }
+
+          const result = await paymentModel.getInvoice(body);
+          if (result instanceof Error) {
+            return res.status(403).send(utils.error(result.message));
+          } else {
+            return res.status(200).send(utils.response(result));
+          }
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    }
   };
 } catch (err) {
   console.log(err);

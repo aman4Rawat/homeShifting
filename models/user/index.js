@@ -116,6 +116,7 @@ try {
             { user_id: newUser._id, role: newUser.role },
             JWTSECRET
           );
+          console.log(token,"<<<<<<<<<<<<<<<<<<Token>>>>>>>>>>>>>>>>>>>>>>");
           return { token, newUser };
         } else {
           return new Error("OTP has been used");
