@@ -81,6 +81,8 @@ try {
 
         const body = {
           userId: req.userId,
+          startDate: req.body.startDate,
+          endDate: req.body.endDate,
           }
 
           const result = await paymentModel.getInvoice(body);

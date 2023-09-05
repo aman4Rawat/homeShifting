@@ -359,11 +359,14 @@ try {
     },
     dashboardAllLeads: async (body) => {
       try {
-        const businessNameAndAmount = await vendorBusinessSchema.findOne({userId:body.uid},{wallet:1,companyName:1}).sort({createdAt:1});
+        const businessNameAndAmount = await vendorBusinessSchema.findOne({userId:body.userId},{wallet:1,companyName:1}).sort({createdAt:1});
         const condition = {}
         condition.businessId = businessNameAndAmount._id;
-        if(body.startDate && body.endDate){
-          condition.createdAt = {$gte: startDate,$lte: endDate};
+        if(body.startDate && !body.endDate){ return "please enter end date as well"}
+        if(body.startDate){
+          const edate = new Date(body.endDate.split("/").reverse().join("/"));
+          const sdate = new Date(body.startDate.split("/").reverse().join("/"));
+          condition.createdAt = {$gte: sdate,$lte: edate};
         }
         if(body.isNew){
           condition.isNaya = true;
@@ -375,7 +378,7 @@ try {
         return {businessNameAndAmount,callLeads}
        
       } catch (err) {
-        return err;
+        return new Error(err);
       }
     },
     dashboardSingleLeadInfo: async (body) => {

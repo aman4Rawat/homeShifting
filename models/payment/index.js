@@ -21,9 +21,11 @@ try {
           return `${timestamp}-${randomId}`;
         };
         const orderId = generateOrderId();
+        const tatti = Number(body.amount)
+        const TotalAmount = (tatti*0.18 )+tatti;
         const result = await paymentGateway.orders.createOrders({
           orderId: orderId,
-          orderAmount: body.amount,
+          orderAmount: TotalAmount,
           orderCurrency: "INR",
           orderNote: "Test Order",
           customerName: user.name,
@@ -33,15 +35,17 @@ try {
         const payment = new paymentSchema({
           orderId: orderId,
           amount: body.amount,
+          paidAmount: TotalAmount,
           userId: body.userId,
           businessId: body.businessId,
         });
         await payment.save();
-        return result;
+        return {result, orderId};
       } catch (err) {
         return err;
       }
     },
+
     getPayment: async (body) => {
       try {
         const paymentGateway = new PaymentGateway({
@@ -67,6 +71,7 @@ try {
         return err;
       }
     },
+
     addSuggestionPayment: async (body) => {
       try {
         const suggestionPlane = new suggestionPlaneSchema({
@@ -78,6 +83,7 @@ try {
         return err;
       }
     },
+
     getSuggestionPayment: async () => {
       try {
         const suggestionPlane = await suggestionPlaneSchema.find().sort({amount: 1});
@@ -92,14 +98,21 @@ try {
         const businessId = await businessSchema
           .findOne({ userId: body.userId })
           .sort({ createdAt: 1 });
-        const payment = await paymentSchema.find({
-          businessId: businessId._id,
-        });
+
+          const condition = {businessId: businessId._id,};
+          if (body.startDate && body.endDate) {
+            condition.createdAt = {
+              $gte: new Date(body.startDate.split("/").reverse().join("/")),
+              $lte: new Date(body.endDatestart_date.split("/").reverse().join("/")),
+            };
+          }
+        const payment = await paymentSchema.find(condition).sort({ createdAt: -1 });
         return payment;
       } catch (err) {
         return err;
       }
     },
+    
   };
 } catch (e) {
   log.error(e);

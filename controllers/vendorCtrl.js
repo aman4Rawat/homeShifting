@@ -78,7 +78,11 @@ try {
         }
         const id = req.userId;
         const result = await vendorModel.vendorBudinessByUserId(id);
-        return res.status(200).send(utils.response(result));
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(200).send(utils.response(result));
+        }
       } catch (err) {
         return res.status(403).send(utils.error(err));
       }
@@ -378,16 +382,26 @@ try {
             .send(utils.error("Only Vendor can see there Dashboard call leads"));
         }
         const body = {
-          uid: req.userId,
+          userId: req.userId,
           startDate:req.body.startDate,
           endDate:req.body.endDate,
           isNew:req.body.isNew,
-          isRead:req.body.endDate,
+          isRead:req.body.isRead,
           limit: req.body.limit || 10,
           page: req.body.page || 1,
         };
-        const result = await vendorModel.dashboardAllLeads(body);
-        return res.status(200).send(utils.response(result));
+        const data = {}
+        for (const key in body) {
+          if (body[key] !== undefined) {
+            data[key] = body[key];
+          }
+        }
+        const result = await vendorModel.dashboardAllLeads(data);
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(200).send(utils.response(result));
+        }
       } catch (err) {
         return res.status(403).send(utils.error(err));
       }

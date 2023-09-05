@@ -184,12 +184,21 @@ try {
     createPackage: async (req, res, next) => {
       try {
         // if (req.role !== "ADMIN") { return res.status(401).send(utils.error("Only Admin can create package")); }
-        const body={
+        const data={
           packageName: req.body.packageName,
           packageAmount: req.body.packageAmount,
           packageDuration: req.body.packageDuration,
           packageDetalis: req.body.packageDetails,
+          callCharges: req.body.callCharges,
+          bestDealCharges: req.body.bestDealCharges,
+          socialMediaCharges: req.body.socialMediaCharges,
+          websiteCharges: req.body.websiteCharges,
+          directionCharges: req.body.directionCharges,
+          inqueryCharges: req.body.inqueryCharges,
+          othersCharges: req.body.othersCharges,
+          chatCharges: req.body.chatCharges,
         }
+        const body = await adminValidation.createPackageValidation.validateAsync(data);
         const result = await adminModel.createNewPackage(body);
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
