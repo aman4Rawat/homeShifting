@@ -221,6 +221,36 @@ try {
         return err;
       }
     },
+    addressUpdate: async (data,id) => {
+      try {
+          const business = await vendorBusinessSchema.findOne({_id:id});
+          if(!business){return new Error("vendor id galat hai")};
+          const condition = {}
+          for (const key in data) {
+            if (data[key] !== undefined) {
+              condition[key] = data[key];
+            }
+          }
+
+          const result = await vendorBusinessSchema.findByIdAndUpdate({_id:business.id},{$set:{address:condition}},{new:true});
+          return result;
+      } catch (err) {
+        return err;
+      }
+    },
+    paymentTypeUpdate: async (data,id) => {
+      try {
+
+        const business =  await vendorBusinessSchema.findById({_id:id});
+        if(!business){return new Error("vendor id galat hai")};
+        
+        const result = await vendorBusinessSchema.findByIdAndUpdate({_id:business.id},{$set:{paymentType:data.paymentType}},{new:true});
+        return result;
+      } catch (err) {
+        return err;
+      }
+    },
+
     reviewByUser: async (data) => {
       try {
         const abc = new reviewsSchema({
@@ -260,6 +290,7 @@ try {
         return err;
       }
     },
+    // depricated uploadPayment
     uploadPayment: async (data,vendorId) => {
       try {
         const abc = await vendorPaymentTypeSchemas.findOne({vendorId:vendorId});
@@ -445,6 +476,56 @@ try {
         return err;
       }
     },
+
+
+
+
+
+
+
+
+
+
+
+
+
+    support: async (data) => {
+      try {
+        const user = await userSchema.findById({_id:data.userId},{name:1});
+        const business = await vendorBusinessSchema.findOne({userId:data.userId},{companyName:1,uniqueId:1, name:1}).sort({createdAt:-1});
+
+        if(!user){
+          return new Error("No user found with this Id");
+        }
+        let poplu = user.name.split(" ").join("%20")
+        let sexa = business.companyName.split(" ").join("%20");
+        if(data.type === "business"){
+          const number = process.env.WHATSAPPNUMBER;
+        const massage = `Hello%20Team%2C%0AI%20want%20to%20change%20something%20in%20my%20business%20profile%2C%0AID%3A'${business.uniqueId}'%0ABusiness%20Name%3A%20'${sexa}'%0AOwner%3A%20'${poplu}'%0A`
+        return {number, massage};
+      }
+        if(data.type === "leads"){
+          const number = process.env.WHATSAPPNUMBER;
+          const massage = `Hello%20Team%2C%0AI%20want%20to%20discuss%20something%20about%20*Leads*%2C%0AID%3A'${business.uniqueId}'%0ABusiness%20Name%3A%20'${sexa}'%0AOwner%3A%20'${poplu}'%0A`
+          return {number, massage};
+      }
+        if(data.type === "payment"){
+          const number = process.env.WHATSAPPNUMBER;
+        const massage = `Hello%20Team%2C%0AI%20want%20to%20discuss%20something%20about%20*Payment*%2C%0AID%3A'${business.uniqueId}'%0ABusiness%20Name%3A%20'${sexa}'%0AOwner%3A%20'${poplu}'%0A`
+        return {number, massage};
+      }
+        if(data.type === "other"){
+          const number = process.env.WHATSAPPNUMBER;
+          const massage = `Hello%20Team%2C%0AI%20want%20to%20discuss%20something%20about%20*Other*%2C%0AID%3A'${business.uniqueId}'%0ABusiness%20Name%3A%20'${sexa}'%0AOwner%3A%20'${poplu}'%0A`
+          return {number, massage};
+      }
+      } catch (err) {
+        return err;
+      }
+    }
+
+
+
 
   };
 } catch (e) {

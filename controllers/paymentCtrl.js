@@ -23,6 +23,25 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
+    createOrder: async (req, res) => {
+      try {
+
+        const body = {
+          amount: req.body.amount,
+          userId: req.userId,
+          businessId: req.body.businessId,
+          }
+
+          const result = await paymentModel.orderCreate(body);
+          if (result instanceof Error) {
+            return res.status(403).send(utils.error(result.message));
+          } else {
+            return res.status(201).send(utils.response(result));
+          }
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
     getPaymentStatus: async (req, res) => {
       try {
 
@@ -72,6 +91,29 @@ try {
       }
     },
 
+    purchasePackage: async (req, res) => {
+      try {
+        
+        const body = {
+          userId: req.userId,
+          packageId: req.body.packageId,
+          amount: req.body.amount,
+          }
+          const result = await paymentModel.purchasePackage(body);
+          if (result instanceof Error) {
+            return res.status(403).send(utils.error(result.message));
+          }
+          else if(result == "already purchased"){
+            return res.status(403).send(utils.error(result));
+          }
+          else {
+            return res.status(201).send(utils.response(result));
+          }
+
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
 
 
 

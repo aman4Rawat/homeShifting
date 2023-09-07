@@ -42,6 +42,7 @@ const vendorBusinessSchema = new mongoose.Schema(
     },
     yearOfEsteblish:{
         type:String,
+        default:"0",
     },
     aadharImage:{
         type:String,
@@ -97,6 +98,8 @@ const vendorBusinessSchema = new mongoose.Schema(
     timing:{
       type:Array,
     },
+    address:[],
+    paymentType:[],
     rating:{type:Number,},
     ratingCount:{type:Number,},
     wallet:{type:Number,default:0,}

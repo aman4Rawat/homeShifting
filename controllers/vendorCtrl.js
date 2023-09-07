@@ -220,6 +220,52 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
+    updateAdderss: async (req, res, next) => {
+      try {
+        
+        const data = {
+          buldingName:req.body.buldingName,
+          streetName:req.body.streetName,
+          landmark:req.body.landmark,
+          area:req.body.area,
+          pinCode:req.body.pinCode,
+          city:req.body.city,
+          state:req.body.state,
+          country:req.body.country,
+        }
+        const id = req.body.businessId;
+        const result = await vendorModel.addressUpdate(data,id);
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(200).send(utils.response(result));
+        }
+      }
+      catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+    updatePatmentType: async (req, res, next) => {
+      try {
+        
+
+        const data = {
+         paymentType:req.body.paymentType,
+        };
+        const id = req.body.businessId;
+        const result = await vendorModel.paymentTypeUpdate(data,id);
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(200).send(utils.response(result));
+        }
+      }
+      catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+
+
     
 
 
@@ -292,6 +338,7 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
+  // depricated uploadPaymentType
     uploadPaymentType: async (req, res) => {
       try {
         if(!req.role === "VENDOR"){
@@ -468,7 +515,34 @@ try {
       }
     },
     
+
+
+
+
+
+    support: async (req, res) => {
+        const body = {
+          userId: req.userId,
+          type: req.body.type
+        };
+        if(body.type !== "business" && body.type !== "payment" && body.type !== "leads" && body.type !== "other"){
+          return res.status(403).send(utils.error("type must be business or payment or leads or other"));
+        }
+        const result = await vendorModel.support(body);
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(200).send(utils.response(result));
+        }
+
+      },
+      
+
+
+
+
   };
 } catch (err) {
   console.log(err);
 }
+

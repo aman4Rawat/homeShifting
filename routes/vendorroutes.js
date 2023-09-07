@@ -10,12 +10,15 @@ try {
   vendorRoutes.post("/uploaddocuments", vendorCtrl.uploadVendorDocuments);
   vendorRoutes.post("/uploadgallary", vendorCtrl.uploadgallary);
   vendorRoutes.post("/updatebusinessdetails", vendorCtrl.updatebusinessDetails);
+  vendorRoutes.post("/updateadderess", vendorCtrl.updateAdderss);
+  vendorRoutes.post("/updateapaymenttype", vendorCtrl.updatePatmentType);
   
   vendorRoutes.post("/reviewthisvendor",JWTAUTH, vendorCtrl.reviewThisVendor);
   vendorRoutes.post("/suggestion",JWTAUTH, vendorCtrl.suggestion);
   vendorRoutes.post("/updatecontactdetails",JWTAUTH, vendorCtrl.updateContactDetails);
   vendorRoutes.post("/uploadsocialmedia",JWTAUTH, vendorCtrl.uploadSocialMedia);
   vendorRoutes.post("/uploadtiming",JWTAUTH, vendorCtrl.uploadTiming);
+  // depricated  uploadpaymenttype
   vendorRoutes.post("/uploadpaymenttype",JWTAUTH, vendorCtrl.uploadPaymentType);
   vendorRoutes.post("/clickonsocialmedia",JWTAUTH, vendorCtrl.clickOnSocialMedia);
   vendorRoutes.post("/businessdashboard",JWTAUTH, vendorCtrl.businessDashboard);
@@ -31,6 +34,9 @@ try {
   vendorRoutes.post("/packagedetails",JWTAUTH, vendorCtrl.packageDetails);
   vendorRoutes.post("/singlepackagedetailsbyid",JWTAUTH, vendorCtrl.singlePackageDetailsById);
   vendorRoutes.post("/purchasePackage",JWTAUTH, vendorCtrl.pruchasePackage);
+
+
+  vendorRoutes.post("/support",JWTAUTH, vendorCtrl.support);
   
   
   module.exports = vendorRoutes;

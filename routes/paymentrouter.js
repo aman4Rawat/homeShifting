@@ -4,9 +4,12 @@ const jwtauth = require("../middlewares/auth");
 
 try {
     paymentRoute.post("/createpayment",jwtauth, paymentCtrl.createPayment);
+    paymentRoute.post("/createorder",jwtauth, paymentCtrl.createOrder);
     paymentRoute.post("/getpaymentstatus",jwtauth, paymentCtrl.getPaymentStatus);
     paymentRoute.post("/suggestionplaneadd",jwtauth, paymentCtrl.suggestionPlaneAdd);
     paymentRoute.post("/suggestionplanelist",jwtauth, paymentCtrl.suggestionPlaneList);
+    paymentRoute.post("/purchasepackage",jwtauth, paymentCtrl.purchasePackage);
+    
 
     
     
