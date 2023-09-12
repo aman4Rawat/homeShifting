@@ -98,6 +98,7 @@ try {
           userId: req.userId,
           packageId: req.body.packageId,
           amount: req.body.amount,
+          businessId: req.body.businessId,
           }
           const result = await paymentModel.purchasePackage(body);
           if (result instanceof Error) {
@@ -114,7 +115,29 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
+    verifyPurchasePackage: async (req, res) => {
+      try {
+          
+          const body = {
+            userId: req.userId,
+            packageId: req.body.packageId,
+            orderId: req.body.orderId,
+            }
+            const result = await paymentModel.verifyPurchasePackage(body);
+            if (result instanceof Error) {
+              return res.status(403).send(utils.error(result.message));
+            }
+            else if(result == "already purchased"){
+              return res.status(403).send(utils.error(result));
+            }
+            else {
+              return res.status(201).send(utils.response(result));
+            }
 
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
 
 
 

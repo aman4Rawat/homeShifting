@@ -12,8 +12,12 @@ try {
   vendorRoutes.post("/updatebusinessdetails", vendorCtrl.updatebusinessDetails);
   vendorRoutes.post("/updateadderess", vendorCtrl.updateAdderss);
   vendorRoutes.post("/updateapaymenttype", vendorCtrl.updatePatmentType);
-  
+  //reviewsssssssssssss
   vendorRoutes.post("/reviewthisvendor",JWTAUTH, vendorCtrl.reviewThisVendor);
+  vendorRoutes.post("/businessreviewlist",JWTAUTH, vendorCtrl.businessReviewList);
+  vendorRoutes.post("/responsereviewbyid",JWTAUTH, vendorCtrl.responseReviewById);
+
+
   vendorRoutes.post("/suggestion",JWTAUTH, vendorCtrl.suggestion);
   vendorRoutes.post("/updatecontactdetails",JWTAUTH, vendorCtrl.updateContactDetails);
   vendorRoutes.post("/uploadsocialmedia",JWTAUTH, vendorCtrl.uploadSocialMedia);
@@ -32,11 +36,13 @@ try {
   
 
   vendorRoutes.post("/packagedetails",JWTAUTH, vendorCtrl.packageDetails);
+  vendorRoutes.post("/currentpackage",JWTAUTH, vendorCtrl.currentPackageDetails);
   vendorRoutes.post("/singlepackagedetailsbyid",JWTAUTH, vendorCtrl.singlePackageDetailsById);
-  vendorRoutes.post("/purchasePackage",JWTAUTH, vendorCtrl.pruchasePackage);
 
 
   vendorRoutes.post("/support",JWTAUTH, vendorCtrl.support);
+  vendorRoutes.post("/askrating",JWTAUTH, vendorCtrl.askForRating);
+
   
   
   module.exports = vendorRoutes;

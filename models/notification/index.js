@@ -30,7 +30,6 @@ try {
     usersNotification: async (id) => {
       try {
         const notification = await notificationSchema.find({userId:id}).sort({createdAt:-1});
-        if(notification.length === 0){return "No Notification Found"}
         return notification;
       } catch (err) {
         return err;

@@ -320,9 +320,10 @@ try {
             .send(utils.error("Only User can see!"));
         }
         const body = {
-          vid: req.body.vendorId,
+          vid: req.body.businessId,
           uid: req.userId,
           rate: req.body.rate,
+          review: req.body.review,
         };
         
         const result = await userModel.myRatetoVendor(body);

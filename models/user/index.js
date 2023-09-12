@@ -1,7 +1,6 @@
 const userSchema = require("./userSchema.js");
 const otpSchema = require("./otpSchema.js");
 const bestDeal = require("./bestDealSchema.js");
-const rating  = require("./ratingSchema.js");
 const vendorBusinessSchema = require("../vendor/vendorBusinessSchema.js");
 const listBusinessSchema = require("./businessListSchema.js");
 const jwt = require("jsonwebtoken");
@@ -272,22 +271,23 @@ try {
         return err;
       }
     },
-    myRatetoVendor: async (body) => {
-      try {
-       if(body.uid === body.vid){
-        return new Error("you can not rate your self")
-       }
-       const abc  = new rating({
-        vendorId : body.vid,
-        userId: body.uid,
-        rate: body.rate
-       })
-       const result = await abc.save();
-       return result;
-      } catch (err) {
-        return err;
-      }
-    },
+    // myRatetoVendor: async (body) => {
+    //   try {
+    //    if(body.uid === body.vid){
+    //     return new Error("you can not rate your self")
+    //    }
+    //    const abc  = new rating({
+    //     businessId : body.vid,
+    //     userId: body.uid,
+    //     rate: body.rate,
+    //     review: body.review,
+    //    })
+    //    const result = await abc.save();
+    //    return result;
+    //   } catch (err) {
+    //     return err;
+    //   }
+    // },
 
   };
 } catch (e) {

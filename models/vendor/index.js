@@ -3,10 +3,11 @@ const vendorBusinessSchema = require("./vendorBusinessSchema.js");
 const packageSchame = require("../admin/packageSchame.js");
 const gallarySchema = require("./gallarySchema.js");
 const CategorySchema = require("../services/categorySchema.js");
-const {socialMediaSchemas,vendorPaymentTypeSchemas,clickSchema} = require("./socialMedia.js");
+const {socialMediaSchemas,clickSchema} = require("./socialMedia.js");
 const {reviewsSchema,suggestionsSchema} = require("./reviews.js");
+const {pruchasedPackageSchema} = require("../payment/paymentSchema.js");
 const userSchema = require("../user/userSchema.js");
-const ratingSchema = require("../user/ratingSchema.js");
+const notificationSchema = require("../notification/notificationSchema.js");
 const BASEURL = process.env.BASEURL;
 try {
   module.exports = {
@@ -100,10 +101,10 @@ try {
           return "No vendor found with this category ";
         }
         const gallary = await gallarySchema.find({vendorId:vendor._id});
-        const mediaLinks = await socialMediaSchemas.find({vendorId:vendor._id});
         const reviews = await reviewsSchema.find({vendorId:vendor._id}).populate("userId");
         const totalServices = await vendorBusinessSchema.find({userId:vendor.userId},{categoryName:1,categoryId:1,companyName:1});
-        return {vendor,gallary,mediaLinks,reviews,totalServices};
+        const links = await socialMediaSchemas.findOne({vendorId:totalServices._id});
+        return {vendor,gallary,links,reviews,totalServices};
       } catch (err) {
         return err;
       }
@@ -157,7 +158,7 @@ try {
         return err;
       }
     },
-    vendorSocialMedia: async (data, id) => {
+    vendorSocialMedia: async (data,id) => {
       try {
         const vendor = await socialMediaSchemas.findOne({vendorId:id});
         if(!vendor){
@@ -169,21 +170,18 @@ try {
             twitter: data.twitter,
             youtube: data.youtube,
             linkedin: data.linkedin,
-            snapchat: data.snapchat,
-            whatsapp: data.whatsapp,
             other: data.other,
-            
           });
           const abc = await account.save();
           return abc;
         }else{
           const condition = {};
           for (const key in data) {
-            if (data[key] !== undefined) {
+            if (data[key] !== undefined && data[key] !== null && data[key] !== "") {
               condition[key] = data[key];
             }
           }
-          const xyz = await socialMediaSchemas.findByIdAndUpdate({_id:vendor.id,vendorId:id},{$set:condition},{new:true});
+          const xyz = await socialMediaSchemas.findOneAndUpdate({vendorId:id},{$set:condition},{new:true});
           return xyz;
         }
       } catch (err) {
@@ -291,34 +289,34 @@ try {
       }
     },
     // depricated uploadPayment
-    uploadPayment: async (data,vendorId) => {
-      try {
-        const abc = await vendorPaymentTypeSchemas.findOne({vendorId:vendorId});
-        if(!abc){
-          const condition={}
-          condition.vendorId = vendorId;
-          for (const key in data) {
-            if (data[key] !== undefined) {
-              condition[key] = data[key];
-            }
-          }
-          const xyz = new vendorPaymentTypeSchemas(condition);
-          const result = await xyz.save();
-          return result;
-        }else{
-          const condition={}
-          for (const key in data) {
-            if (data[key] !== undefined) {
-              condition[key] = data[key];
-            }
-          }
-          const result = await vendorPaymentTypeSchemas.findByIdAndUpdate({_id:abc.id,vendorId:vendorId},{$set:condition},{new:true});
-          return result;
-        }
-      } catch (err) {
-        return err;
-      }
-    },
+    // uploadPayment: async (data,vendorId) => {
+    //   try {
+    //     const abc = await vendorPaymentTypeSchemas.findOne({vendorId:vendorId});
+    //     if(!abc){
+    //       const condition={}
+    //       condition.vendorId = vendorId;
+    //       for (const key in data) {
+    //         if (data[key] !== undefined) {
+    //           condition[key] = data[key];
+    //         }
+    //       }
+    //       const xyz = new vendorPaymentTypeSchemas(condition);
+    //       const result = await xyz.save();
+    //       return result;
+    //     }else{
+    //       const condition={}
+    //       for (const key in data) {
+    //         if (data[key] !== undefined) {
+    //           condition[key] = data[key];
+    //         }
+    //       }
+    //       const result = await vendorPaymentTypeSchemas.findByIdAndUpdate({_id:abc.id,vendorId:vendorId},{$set:condition},{new:true});
+    //       return result;
+    //     }
+    //   } catch (err) {
+    //     return err;
+    //   }
+    // },
     socialMediaClick: async (body) => {
       try {
         const business = await vendorBusinessSchema.findOne({_id:body.businessId});
@@ -368,11 +366,11 @@ try {
             direction.push(x);
           }
         })
-        socialPercentage = (social.length/totalCount)*100;
-        webSitePercentage = (webSite.length/totalCount)*100;
-        callPercentage = (call.length/totalCount)*100;
-        bestDealPercentage = (bestDeal.length/totalCount)*100;
-        directionPercentage = (direction.length/totalCount)*100;
+        socialPercentage = parseFloat((social.length/totalCount)*100);
+        webSitePercentage = parseFloat( (webSite.length/totalCount)*100);
+        callPercentage = parseFloat((call.length/totalCount)*100);
+        bestDealPercentage = parseFloat((bestDeal.length/totalCount)*100);
+        directionPercentage = parseFloat((direction.length/totalCount)*100);
         return {socialPercentage,webSitePercentage,callPercentage,bestDealPercentage,directionPercentage}
        
       } catch (err) {
@@ -381,7 +379,7 @@ try {
     },
     dashboardCallLeadsVendor: async (body) => {
       try {
-        const callLeads = await clickSchema.find({ businessId: body.bid, clickType:body.type }).populate("userId",{createdAt:0}).populate("businessId",{createdAt:0, timing:0}).skip((body.page -1)*body.limit).limit(body.limit);;
+        const callLeads = await clickSchema.find({ businessId: body?.bid, clickType:body.type }).populate("userId",{createdAt:0}).populate("businessId",{createdAt:0, timing:0}).skip((body.page -1)*body.limit).limit(body.limit);;
         return callLeads
        
       } catch (err) {
@@ -392,12 +390,12 @@ try {
       try {
         const businessNameAndAmount = await vendorBusinessSchema.findOne({userId:body.userId},{wallet:1,companyName:1}).sort({createdAt:1});
         const condition = {}
-        condition.businessId = businessNameAndAmount._id;
+        condition.businessId = businessNameAndAmount?._id ?? "64ca05ef24a527edc66a0ea1";
         if(body.startDate && !body.endDate){ return "please enter end date as well"}
         if(body.startDate){
           const edate = new Date(body.endDate.split("/").reverse().join("/"));
           const sdate = new Date(body.startDate.split("/").reverse().join("/"));
-          condition.createdAt = {$gte: sdate,$lte: edate};
+          condition.createdAt = {$gte: sdate,$lte: edate}; //I'll fix it soon
         }
         if(body.isNew){
           condition.isNaya = true;
@@ -405,7 +403,8 @@ try {
         if(body.isRead){
           condition.isRead = true;
         }
-        const callLeads = await clickSchema.find(condition).populate("userId",{createdAt:0}).populate("businessId",{timing:0,createdAt:0}).skip((body.page -1)*body.limit).limit(body.limit);
+        // const callLeads = await clickSchema.find(condition).populate("userId",{createdAt:0}).populate("businessId",{timing:0,createdAt:0}).skip((body.page -1)*body.limit).limit(body.limit);
+        const callLeads = await clickSchema.find(condition).sort({createdAt:-1}).populate("userId",{createdAt:0}).populate("businessId",{timing:0,createdAt:0});
         return {businessNameAndAmount,callLeads}
        
       } catch (err) {
@@ -439,12 +438,28 @@ try {
     },
     detailsofPackage: async () => {
       try {
-       const result = await packageSchame.find();
+        const business = await vendorBusinessSchema.find({},{packageId:1});
+        const id = business[0].packageId._id;
+        console.log(id);
+        const result = await packageSchame.find({ _id: { $ne: id } });
         return result;
       } catch (err) {
         return err;
       }
     },
+    currentPackageDetails: async (userId) => {
+      try {
+        const result = await vendorBusinessSchema.findOne({userId:userId},{packageId:1}).populate("packageId");
+        if(!result){
+          return "No package found with this user";
+        }
+        const packageDetails = await pruchasedPackageSchema.findOne({businessId:result._id,packageId:result.packageId._id}).sort({createdAt:1});
+        return packageDetails;
+      } catch (err) {
+        return err;
+      }
+    },
+
     detailsSinglePackagebyId: async (pid) => {
       try {
        const package = await packageSchame.findById({_id:pid});
@@ -458,32 +473,6 @@ try {
         return err;
       }
     },
-    packagePurchase: async (body) => {
-      try {
-        const package = await packageSchame.findById({_id:body.packageId});
-        const business = await vendorBusinessSchema.findById({_id:body.businessId});
-        const user = await userSchema.findById({_id:body.userId});
-        const amount = package.packageAmount;
-        const gst = (amount * 18)/100 ;
-        const totalAmount = amount+gst;
-        const expireDate = new Date(new Date(Date.now()).setMonth(new Date(Date.now()).getMonth()+package.packageDuration));
-        const userPlane = new userPlaneSchema({
-          //here I have to use the perametor from schema accordingly
-        })
-        const result = await userPlane.save();
-        return result;
-      } catch (err) {
-        return err;
-      }
-    },
-
-
-
-
-
-
-
-
 
 
 
@@ -497,35 +486,80 @@ try {
         if(!user){
           return new Error("No user found with this Id");
         }
-        let poplu = user.name.split(" ").join("%20")
-        let sexa = business.companyName.split(" ").join("%20");
+        let poplu = user?.name.split(" ").join("%20")
+        let sexa = business?.companyName.split(" ").join("%20");
         if(data.type === "business"){
           const number = process.env.WHATSAPPNUMBER;
-        const massage = `Hello%20Team%2C%0AI%20want%20to%20change%20something%20in%20my%20business%20profile%2C%0AID%3A'${business.uniqueId}'%0ABusiness%20Name%3A%20'${sexa}'%0AOwner%3A%20'${poplu}'%0A`
+        const massage = `Hello%20Team%2C%0AI%20want%20to%20change%20something%20in%20my%20business%20profile%2C%0AID%3A'${business?.uniqueId}'%0ABusiness%20Name%3A%20'${sexa}'%0AOwner%3A%20'${poplu}'%0A`
         return {number, massage};
       }
         if(data.type === "leads"){
           const number = process.env.WHATSAPPNUMBER;
-          const massage = `Hello%20Team%2C%0AI%20want%20to%20discuss%20something%20about%20*Leads*%2C%0AID%3A'${business.uniqueId}'%0ABusiness%20Name%3A%20'${sexa}'%0AOwner%3A%20'${poplu}'%0A`
+          const massage = `Hello%20Team%2C%0AI%20want%20to%20discuss%20something%20about%20*Leads*%2C%0AID%3A'${business?.uniqueId}'%0ABusiness%20Name%3A%20'${sexa}'%0AOwner%3A%20'${poplu}'%0A`
           return {number, massage};
       }
         if(data.type === "payment"){
           const number = process.env.WHATSAPPNUMBER;
-        const massage = `Hello%20Team%2C%0AI%20want%20to%20discuss%20something%20about%20*Payment*%2C%0AID%3A'${business.uniqueId}'%0ABusiness%20Name%3A%20'${sexa}'%0AOwner%3A%20'${poplu}'%0A`
+        const massage = `Hello%20Team%2C%0AI%20want%20to%20discuss%20something%20about%20*Payment*%2C%0AID%3A'${business?.uniqueId}'%0ABusiness%20Name%3A%20'${sexa}'%0AOwner%3A%20'${poplu}'%0A`
         return {number, massage};
       }
         if(data.type === "other"){
           const number = process.env.WHATSAPPNUMBER;
-          const massage = `Hello%20Team%2C%0AI%20want%20to%20discuss%20something%20about%20*Other*%2C%0AID%3A'${business.uniqueId}'%0ABusiness%20Name%3A%20'${sexa}'%0AOwner%3A%20'${poplu}'%0A`
+          const massage = `Hello%20Team%2C%0AI%20want%20to%20discuss%20something%20about%20*Other*%2C%0AID%3A'${business?.uniqueId}'%0ABusiness%20Name%3A%20'${sexa}'%0AOwner%3A%20'${poplu}'%0A`
           return {number, massage};
       }
       } catch (err) {
         return err;
       }
-    }
+    },
 
+    askForRating: async (body) => {
+      try {
+        const user = await userSchema.findOne({mobile_number:body.customerNumber});
+        if(!user){
+          return new Error("No user found with this number Please enter registered number");
+        }
+        const vendor = await vendorBusinessSchema.findOne({userId:body.userId});
+        const title = "Please rate me";
+        const description = `Hey ${body.customerName}, </br> please rate me on my profile, it will help me to grow my business. </br> best regards ${vendor.companyName}`;
 
+        const notification = new notificationSchema({
+          title:title,
+          description:description,
+          userId: user._id,
+          image: BASEURL+"images/i/defaultuser.jpg",
+          from: vendor.name,
+        })
+        await notification.save();
+        return "notification send"
+       
+      }
+      catch (err) {
+        return err;
+      }
+    },
+    businessReviewList: async (body) => {
+      try {
+        const reviews = await reviewsSchema.find({vendorId:body.businessId}).populate("userId",{createdAt:0});
+        return reviews;
+      } catch (err) {
+        return err;
+      }
+    },
+    responseReviewById: async (body) => {
+      try {
+        const business = await vendorBusinessSchema.findById({_id:body.businessId},{companyName:1,profileImage:1});
+        const obj = {
+          companyName:business.companyName,
+          profileImage:business.profileImage,
+          response:body.response
+        }
+        const response = await reviewsSchema.findByIdAndUpdate({_id:body.reviewId},{$push:{response:obj}},{new:true});
 
+      } catch (err) {
+        return err;
+      }
+    },
 
   };
 } catch (e) {

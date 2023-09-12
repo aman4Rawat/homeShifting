@@ -46,3 +46,26 @@
 
 // const months = ['jan','june','july','august','september','feb','march','april','may','october','november','december'];
 // console.log(months.sort()); // [ 'april', 'august', 'december', 'feb', 'jan', 'july', 'june', 'march', 'may', 'november', 'october', 'september' ]
+
+
+//create a function for setImmediate
+// function setImmediate(callback) {
+//     const startTime = new Date().getTime();
+//     while (new Date().getTime() < startTime + 0) { }
+//     callback();
+// }
+// setImmediate(() => {
+//     console.log('hello');
+// }
+// );
+// //write a function for set time out
+// function setTimeOut(callback, time) {
+//     const startTime = new Date().getTime();
+//     while (new Date().getTime() < startTime + time) { }
+//     callback();
+// }
+
+// setTimeOut(() => {
+//     console.log('hello');
+// }, 5000);
+

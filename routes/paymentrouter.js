@@ -9,6 +9,7 @@ try {
     paymentRoute.post("/suggestionplaneadd",jwtauth, paymentCtrl.suggestionPlaneAdd);
     paymentRoute.post("/suggestionplanelist",jwtauth, paymentCtrl.suggestionPlaneList);
     paymentRoute.post("/purchasepackage",jwtauth, paymentCtrl.purchasePackage);
+    paymentRoute.post("/verifypurchasepackage",jwtauth, paymentCtrl.verifyPurchasePackage);
     
 
     

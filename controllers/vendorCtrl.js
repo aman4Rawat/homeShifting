@@ -190,7 +190,8 @@ try {
           snapchat:req.body.snapchat,
           other:req.body.other,
         }
-        const id = req.userId;
+      const id =req.body.businessId;
+
         const result = await vendorModel.vendorSocialMedia(data,id);
         return res.status(200).send(utils.response(result));
 
@@ -264,11 +265,6 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
-
-
-    
-
-
 
     reviewThisVendor: async (req, res) => {
       try {
@@ -482,6 +478,21 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
+    currentPackageDetails: async (req, res) => {
+      try {
+        if (req.role === "USER") { 
+          return res.status(401).send(utils.error("user can't see package details"));
+        }
+        const userId = req.userId;
+        const result = await vendorModel.currentPackageDetails(userId);
+        return res.status(200).send(utils.response(result));
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+
+
+
     singlePackageDetailsById: async (req, res) => {
       try {
         if (req.role === "USER") {
@@ -496,30 +507,6 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
-    pruchasePackage: async (req, res) => {
-      try {
-        if (req.role !== "VENDOR") {
-          return res
-            .status(401)
-            .send(utils.error("user can't purchase package"));
-        }
-        const body={
-          packageId:req.body.packageId,
-          userId:req.userId,
-          businessId:req.businessId,
-        }
-        const result = await vendorModel.packagePurchase(body);
-        return res.status(200).send(utils.response(result));
-      } catch (err) {
-        return res.status(403).send(utils.error(err));
-      }
-    },
-    
-
-
-
-
-
     support: async (req, res) => {
         const body = {
           userId: req.userId,
@@ -537,6 +524,73 @@ try {
 
       },
       
+      askForRating: async (req, res) => {
+        try {
+          if (req.role !== "VENDOR") {
+            return res
+              .status(401)
+              .send(utils.error("Only Vendor can see there Dashboard call leads"));
+          }
+          const body = {
+            userId: req.userId,
+            customerName: req.body.customerName,
+            customerNumber: req.body.customerNumber,
+          };
+          const result = await vendorModel.askForRating(body);
+          if (result instanceof Error) {
+            return res.status(403).send(utils.error(result.message));
+          } else {
+            return res.status(200).send(utils.response(result));
+          }
+        } catch (err) {
+          return res.status(403).send(utils.error(err));
+        } 
+      },
+
+      businessReviewList: async (req, res) => {
+        try {
+          if (req.role !== "VENDOR") {
+            return res
+              .status(401)
+              .send(utils.error("Only Vendor can see there Dashboard reviews"));
+          }
+          const body = {
+            userId: req.userId,
+            businessId: req.body.businessId,
+          };
+          const result = await vendorModel.businessReviewList(body);
+          if (result instanceof Error) {
+            return res.status(403).send(utils.error(result.message));
+          } else {
+            return res.status(200).send(utils.response(result));
+          }
+        } catch (err) {
+          return res.status(403).send(utils.error(err));
+        } 
+      },
+      responseReviewById: async (req, res) => {
+        try {
+          if (req.role !== "VENDOR") {
+            return res
+              .status(401)
+              .send(utils.error("Only Vendor can see there Dashboard reviews"));
+          }
+          const body = {
+            userId: req.userId,
+            businessId: req.body.businessId,
+            reviewId: req.body.reviewId,
+            response: req.body.response,
+          };
+          const result = await vendorModel.responseReviewById(body);
+          if (result instanceof Error) {
+            return res.status(403).send(utils.error(result.message));
+          } else {
+            return res.status(200).send(utils.response(result));
+          }
+        } catch (err) {
+          return res.status(403).send(utils.error(err));
+        } 
+      },
 
 
 

@@ -102,7 +102,8 @@ const vendorBusinessSchema = new mongoose.Schema(
     paymentType:[],
     rating:{type:Number,},
     ratingCount:{type:Number,},
-    wallet:{type:Number,default:0,}
+    wallet:{type:Number,default:0,},
+    packageId:{type:mongoose.Schema.Types.ObjectId,ref:"package"},
   },
   { timestamps: true }
 );

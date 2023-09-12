@@ -4,6 +4,7 @@ const reviewaSchema = new mongoose.Schema(
   {
     vendorId: {
       type: mongoose.Schema.Types.ObjectId,
+      ref:"venderBusiness"
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -15,6 +16,7 @@ const reviewaSchema = new mongoose.Schema(
     rating:{
         type:Number,
     },
+    response:[],
   },
   { timestamps: true }
 );

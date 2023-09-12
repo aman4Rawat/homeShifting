@@ -7,71 +7,32 @@ const socialMediaSchema = new mongoose.Schema(
     },
     website:{
       type:String,
+      default: "",
+      
     },
     facebook:{
       type:String,
+      default: "",
     },
     instagram:{
       type:String,
+      default: "",
     },
     twitter:{
       type:String,
+      default: "",
     },
     youtube:{
       type:String,
+      default: "",
     },
     linkedin:{
       type:String,
-    },
-    whatsapp:{
-      type:String,
-    },
-    snapchat:{
-      type:String,
+      default: "",
     },
     other:{
       type:String,
-    },
-  },
-  { timestamps: true }
-);
-
-const vendorPaymentTypeSchema = new mongoose.Schema(
-  {
-    vendorId: {
-      type: mongoose.Schema.Types.ObjectId,
-    },
-    phonePay:{
-        type:Boolean,
-        default:false
-    },
-    googlePay:{
-        type:Boolean,
-        default:false
-    },
-    paytm:{
-        type:Boolean,
-        default:false
-    },
-    debitCardCreditCard:{
-        type:Boolean,
-        default:false
-    },
-    netBanking:{
-        type:Boolean,
-        default:false
-    },
-    cashOnDelivery:{
-        type:Boolean,
-        default:false
-    },
-    check:{
-        type:Boolean,
-        default:false
-    },
-    IMPS:{
-        type:Boolean,
-        default:false
+      default: "",
     },
   },
   { timestamps: true }
@@ -124,7 +85,6 @@ const clicksSchema = new mongoose.Schema(
 );
 
 const socialMediaSchemas = mongoose.model("socialMedia", socialMediaSchema);
-const vendorPaymentTypeSchemas = mongoose.model("venderPaymentType", vendorPaymentTypeSchema);
 const clickSchema = mongoose.model("click", clicksSchema);
 
-module.exports = {socialMediaSchemas,vendorPaymentTypeSchemas,clickSchema}
+module.exports = {socialMediaSchemas,clickSchema}
