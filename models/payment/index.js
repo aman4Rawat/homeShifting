@@ -7,6 +7,7 @@ const {
 const { paymentSchema, suggestionPlaneSchema, pruchasedPackageSchema} = require("./paymentSchema.js");
 const packageSchame = require("../admin/packageSchame.js");
 const businessSchema = require("../vendor/vendorBusinessSchema.js");
+const passbookSchema = require("../vendor/passbookSchema.js");
 const userSchema = require("../user/userSchema.js");
 const PAYMENTKEY = process.env.TESTPAYMENTKEY;
 const PAYMENTSECTRET = process.env.TESTPAYMENTSECRET;
@@ -66,8 +67,8 @@ try {
         const paidAmount = Number(body.amount) * process.env.GST + Number(body.amount);
         var customerDetails = new CFCustomerDetails();
         customerDetails.customerId = body.userId;
-        customerDetails.customerPhone = "8130289007";
-        customerDetails.customerEmail = "farhan@cashfree.com";
+        customerDetails.customerPhone = body?.mobileNumber ?? "8130289007";
+        customerDetails.customerEmail = body?.email ?? "developerfarhan7@gmail.com";
         var d = {};
         d["order_tag_01"] = "TESTING IT";
 
@@ -119,6 +120,16 @@ try {
             { $inc: { wallet: payment.amount} },
             { new: true }
           );
+
+          const passbook = new passbookSchema({
+            businessId:payment.businessId,
+            userId:body?.userId,
+            title:"Payment Received",
+            amount:payment.amount,
+            transactionType:"CREDIT",
+            availableBalance:business?.wallet,
+           });
+            await passbook.save();
 
         return {status: 'PAID', payment: payment, business: business?.wallet}
 
@@ -253,11 +264,6 @@ try {
             },
             { new: true }
           );
-         const business = await businessSchema.findOneAndUpdate(
-            { _id: payment.businessId },
-            { $inc: { wallet: payment.amount}, $set: {packageId: body.packageId} },
-            { new: true }
-          );
           
           const some = new pruchasedPackageSchema({
             userId: body.userId,
@@ -265,11 +271,25 @@ try {
             package: package,
             amount: payment.amount,
             paidAmount: paidAmount,
-            businessId: business._id,
+            businessId: payment.businessId,
             expireDate: new Date().setDate(new Date().getMonth() + package.packageDuration),
             orderId: result?.cfOrder?.orderId,
           });
           const purchase = await some.save();
+          const business = await businessSchema.findOneAndUpdate(
+            { _id: payment.businessId },
+            { $inc: { wallet: payment.amount}, $set: {packageId: body.packageId, packagePurchaseId: purchase._id} },
+            { new: true }
+          );
+          const passbook = new passbookSchema({
+            businessId:payment.businessId,
+            userId:body?.userId,
+            title:"Purchase Package",
+            amount:payment.amount,
+            transactionType:"CREDIT",
+            availableBalance:business?.wallet,
+           });
+            await passbook.save();
         return {status: 'PAID', payment: payment, business: business?.wallet, purchase: purchase}
 
         }

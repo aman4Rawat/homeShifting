@@ -14,6 +14,7 @@ try {
   vendorRoutes.post("/updateapaymenttype", vendorCtrl.updatePatmentType);
   //reviewsssssssssssss
   vendorRoutes.post("/reviewthisvendor",JWTAUTH, vendorCtrl.reviewThisVendor);
+  vendorRoutes.post("/getmyreviewofthisvendor",JWTAUTH, vendorCtrl.getMyReviewOfThisVendor);
   vendorRoutes.post("/businessreviewlist",JWTAUTH, vendorCtrl.businessReviewList);
   vendorRoutes.post("/responsereviewbyid",JWTAUTH, vendorCtrl.responseReviewById);
 
@@ -42,6 +43,8 @@ try {
 
   vendorRoutes.post("/support",JWTAUTH, vendorCtrl.support);
   vendorRoutes.post("/askrating",JWTAUTH, vendorCtrl.askForRating);
+  vendorRoutes.post("/passbooklisting",JWTAUTH, vendorCtrl.passbookListing);
+
 
   
   

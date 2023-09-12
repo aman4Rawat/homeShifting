@@ -47,6 +47,7 @@ try {
 
         const body = {
           orderId: req.body.orderId,
+          userId: req.userId,
           }
 
           const result = await paymentModel.getPayment(body);

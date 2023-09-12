@@ -6,6 +6,7 @@ const CategorySchema = require("../services/categorySchema.js");
 const {socialMediaSchemas,clickSchema} = require("./socialMedia.js");
 const {reviewsSchema,suggestionsSchema} = require("./reviews.js");
 const {pruchasedPackageSchema} = require("../payment/paymentSchema.js");
+const passbookSchema = require("./passbookSchema.js");
 const userSchema = require("../user/userSchema.js");
 const notificationSchema = require("../notification/notificationSchema.js");
 const BASEURL = process.env.BASEURL;
@@ -251,14 +252,28 @@ try {
 
     reviewByUser: async (data) => {
       try {
-        const abc = new reviewsSchema({
-          vendorId:data.vid,
-          review: data.review,
-          rating:data.rating,
-          userId:data.userId
-        })
-        const xyz = await abc.save();
-        return xyz;
+        const sex = await reviewsSchema.findOne({vendorId:data.businessId,userId:data.userId}).sort({createdAt:-1});
+        if(!sex){
+          const abc = new reviewsSchema({
+            vendorId:data.vid,
+            review: data.review,
+            rating:data.rating,
+            userId:data.userId
+          })
+          const xyz = await abc.save();
+          return xyz;
+        }else{
+          await reviewsSchema.findOneAndUpdate({vendorId:data.businessId,userId:data.userId},{$set:{review:data.review,rating:data.rating}},{new:true});
+        }
+        
+      } catch (err) {
+        return err;
+      }
+    },
+    myReviewOfVendor: async (data) => {
+      try {
+        const abc = await reviewsSchema.findOne({vendorId:data.businessId,userId:data.userId}).sort({createdAt:-1});
+        return abc;
       } catch (err) {
         return err;
       }
@@ -319,22 +334,225 @@ try {
     // },
     socialMediaClick: async (body) => {
       try {
-        const business = await vendorBusinessSchema.findOne({_id:body.businessId});
-        if(business.userId != body.userId){
-          const condition = {};
-          condition.vendorId=business.userId;
-          for (const key in body) {
-            if (body[key] !== undefined) {
-              condition[key] = body[key];
+        const business = await vendorBusinessSchema.findOne({_id:body.businessId}).populate("packagePurchaseId");
+        if(!business?.packagePurchaseId && business?.packagePurchaseId.expireDate < new Date(Date.now())){return new Error("Package not found or expire with this business")};
+        if(body.clickType === "SOCIAL"){
+          if(business?.packagePurchaseId?.package?.socialMediaCharges > business?.wallet){return new Error("you don't have enough balance in your wallet")};
+          if(business.userId != body.userId){
+            const condition = {};
+            condition.vendorId=business.userId;
+            for (const key in body) {
+              if (body[key] !== undefined) {
+                condition[key] = body[key];
+              }
             }
-          }
-          const click = new clickSchema(condition)
-          const result = await click.save();
-          return result
+            const click = new clickSchema(condition)
+            const result = await click.save();
+            const sex = await vendorBusinessSchema.findByIdAndUpdate({_id:body.businessId},{$inc:{wallet:-business?.packagePurchaseId?.package?.socialMediaCharges}},{new:true});
+              const passbook = new passbookSchema({
+                businessId:body.businessId,
+                userId:body.userId,
+                title:"Social Media Charges",
+                amount:business?.packagePurchaseId?.package?.socialMediaCharges,
+                transactionType:"DEBIT",
+                availableBalance:sex?.wallet,
+               });
+                await passbook.save();
+            return result
+          }  
+          else{
+            return "You can't Increase click on your own business";
+          } 
+        }else if(body.clickType === "WEBSITE"){
+          if(business?.packagePurchaseId?.package?.websiteCharges > business?.wallet){return new Error("you don't have enough balance in your wallet")};
+          if(business.userId != body.userId){
+            const condition = {};
+            condition.vendorId=business.userId;
+            for (const key in body) {
+              if (body[key] !== undefined) {
+                condition[key] = body[key];
+              }
+            }
+            const click = new clickSchema(condition)
+            const result = await click.save();
+            const sex = await vendorBusinessSchema.findByIdAndUpdate({_id:body.businessId},{$inc:{wallet:-business?.packagePurchaseId?.package?.websiteCharges}},{new:true});
+            const passbook = new passbookSchema({
+              businessId:body.businessId,
+              userId:body.userId,
+              title:"Website Charges",
+              amount:business?.packagePurchaseId?.package?.socialMediaCharges,
+              transactionType:"DEBIT",
+              availableBalance:sex?.wallet,
+             });
+              await passbook.save();
+            return result
+          }  
+          else{
+            return "You can't Increase click on your own business";
+          } 
+        }else if(body.clickType === "BESTDEAL"){
+          if(business?.packagePurchaseId?.package?.bestDealCharges > business?.wallet){return new Error("you don't have enough balance in your wallet")};
+          if(business.userId != body.userId){
+            const condition = {};
+            condition.vendorId=business.userId;
+            for (const key in body) {
+              if (body[key] !== undefined) {
+                condition[key] = body[key];
+              }
+            }
+            const click = new clickSchema(condition)
+            const result = await click.save();
+            const sex = await vendorBusinessSchema.findByIdAndUpdate({_id:body.businessId},{$inc:{wallet:-business?.packagePurchaseId?.package?.bestDealCharges}},{new:true});
+            const passbook = new passbookSchema({
+              businessId:body.businessId,
+              userId:body.userId,
+              title:"Best Deal Charges",
+              amount:business?.packagePurchaseId?.package?.socialMediaCharges,
+              transactionType:"DEBIT",
+              availableBalance:sex?.wallet,
+             });
+              await passbook.save();
+            return result
+          }  
+          else{
+            return "You can't Increase click on your own business";
+          } 
+        }else if(body.clickType === "CALL"){
+          if(business?.packagePurchaseId?.package?.callCharges > business?.wallet){return new Error("you don't have enough balance in your wallet")};
+          if(business.userId != body.userId){
+            const condition = {};
+            condition.vendorId=business.userId;
+            for (const key in body) {
+              if (body[key] !== undefined) {
+                condition[key] = body[key];
+              }
+            }
+            const click = new clickSchema(condition)
+            const result = await click.save();
+            const sex = await vendorBusinessSchema.findByIdAndUpdate({_id:body.businessId},{$inc:{wallet:-business?.packagePurchaseId?.package?.callCharges}},{new:true});
+            const passbook = new passbookSchema({
+              businessId:body.businessId,
+              userId:body.userId,
+              title:"Call Charges",
+              amount:business?.packagePurchaseId?.package?.socialMediaCharges,
+              transactionType:"DEBIT",
+              availableBalance:sex?.wallet,
+             });
+              await passbook.save();
+            return result
+          }  
+          else{
+            return "You can't Increase click on your own business";
+          } 
+        }else if(body.clickType === "DIRECTION"){
+          if(business?.packagePurchaseId?.package?.directionCharges > business?.wallet){return new Error("you don't have enough balance in your wallet")};
+          if(business.userId != body.userId){
+            const condition = {};
+            condition.vendorId=business.userId;
+            for (const key in body) {
+              if (body[key] !== undefined) {
+                condition[key] = body[key];
+              }
+            }
+            const click = new clickSchema(condition)
+            const result = await click.save();
+            const sex = await vendorBusinessSchema.findByIdAndUpdate({_id:body.businessId},{$inc:{wallet:-business?.packagePurchaseId?.package?.directionCharges}},{new:true});
+            const passbook = new passbookSchema({
+              businessId:body.businessId,
+              userId:body.userId,
+              title:"Direction Charges",
+              amount:business?.packagePurchaseId?.package?.socialMediaCharges,
+              transactionType:"DEBIT",
+              availableBalance:sex?.wallet,
+             });
+              await passbook.save();
+            return result
+          }  
+          else{
+            return "You can't Increase click on your own business";
+          } 
+        }else if(body.clickType === "CHAT"){
+          if(business?.packagePurchaseId?.package?.chatCharges > business?.wallet){return new Error("you don't have enough balance in your wallet")};
+          if(business.userId != body.userId){
+            const condition = {};
+            condition.vendorId=business.userId;
+            for (const key in body) {
+              if (body[key] !== undefined) {
+                condition[key] = body[key];
+              }
+            }
+            const click = new clickSchema(condition)
+            const result = await click.save();
+            const sex = await vendorBusinessSchema.findByIdAndUpdate({_id:body.businessId},{$inc:{wallet:-business?.packagePurchaseId?.package?.chatCharges}},{new:true});
+            const passbook = new passbookSchema({
+              businessId:body.businessId,
+              userId:body.userId,
+              title:"Chat Charges",
+              amount:business?.packagePurchaseId?.package?.socialMediaCharges,
+              transactionType:"DEBIT",
+              availableBalance:sex?.wallet,
+             });
+              await passbook.save();
+            return result
+          }  
+          else{
+            return "You can't Increase click on your own business";
+          } 
+        }else if(body.clickType === "INQUERY"){
+          if(business?.packagePurchaseId?.package?.inqueryCharges > business?.wallet){return new Error("you don't have enough balance in your wallet")};
+          if(business.userId != body.userId){
+            const condition = {};
+            condition.vendorId=business.userId;
+            for (const key in body) {
+              if (body[key] !== undefined) {
+                condition[key] = body[key];
+              }
+            }
+            const click = new clickSchema(condition)
+            const result = await click.save();
+            const sex = await vendorBusinessSchema.findByIdAndUpdate({_id:body.businessId},{$inc:{wallet:-business?.packagePurchaseId?.package?.inqueryCharges}},{new:true});
+            const passbook = new passbookSchema({
+              businessId:body.businessId,
+              userId:body.userId,
+              title:"Inquery Charges",
+              amount:business?.packagePurchaseId?.package?.socialMediaCharges,
+              transactionType:"DEBIT",
+              availableBalance:sex?.wallet,
+             });
+              await passbook.save();
+            return result
+          }  
+          else{
+            return "You can't Increase click on your own business";
+          } 
+        }else{
+          if(business?.packagePurchaseId?.package?.otherCharges > business?.wallet){return new Error("you don't have enough balance in your wallet")};
+          if(business.userId != body.userId){
+            const condition = {};
+            condition.vendorId=business.userId;
+            for (const key in body) {
+              if (body[key] !== undefined) {
+                condition[key] = body[key];
+              }
+            }
+            const click = new clickSchema(condition)
+            const result = await click.save();
+            const sex = await vendorBusinessSchema.findByIdAndUpdate({_id:body.businessId},{$inc:{wallet:-business?.packagePurchaseId?.package?.otherCharges}},{new:true});
+            const passbook = new passbookSchema({
+              businessId:body.businessId,
+              userId:body.userId,
+              title:"Other Charges",
+              amount:business?.packagePurchaseId?.package?.socialMediaCharges,
+              transactionType:"DEBIT",
+              availableBalance:sex?.wallet,
+             });
+              await passbook.save();
+            return result
+          }  
+          else{
+            return "You can't Increase click on your own business";
+          } 
         }  
-        else{
-          return "You can't Increase click on your own business";
-        }   
       } catch (err) {
         return err;
       }
@@ -371,6 +589,16 @@ try {
         callPercentage = parseFloat((call.length/totalCount)*100);
         bestDealPercentage = parseFloat((bestDeal.length/totalCount)*100);
         directionPercentage = parseFloat((direction.length/totalCount)*100);
+
+        const count = {
+          social: social.length,
+          webSite: webSite.length,
+          call: call.length,
+          bestDeal: bestDeal.length,
+          direction: direction.length,
+          allLeads: totalCount,
+        }
+        //add count in return object
         return {socialPercentage,webSitePercentage,callPercentage,bestDealPercentage,directionPercentage}
        
       } catch (err) {
@@ -533,6 +761,19 @@ try {
         await notification.save();
         return "notification send"
        
+      }
+      catch (err) {
+        return err;
+      }
+    },
+    passbookListing: async (body) => {
+      try {
+        if(!body.bisinessId){
+          const business = await vendorBusinessSchema.findOne({userId:body.userId}).sort({createdAt:1});
+          body.bisinessId = business?._id;
+        };
+         const passbook = await passbookSchema.find({businessId:body.bisinessId}).sort({createdAt:-1});
+         return passbook;
       }
       catch (err) {
         return err;

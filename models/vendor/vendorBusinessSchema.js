@@ -104,6 +104,10 @@ const vendorBusinessSchema = new mongoose.Schema(
     ratingCount:{type:Number,},
     wallet:{type:Number,default:0,},
     packageId:{type:mongoose.Schema.Types.ObjectId,ref:"package"},
+    packagePurchaseId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "pruchasedPackage",
+    },
   },
   { timestamps: true }
 );

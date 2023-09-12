@@ -266,6 +266,7 @@ try {
       }
     },
 
+    //reviews apis
     reviewThisVendor: async (req, res) => {
       try {
         if(!req.role === "USER"){
@@ -284,6 +285,24 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
+    getMyReviewOfThisVendor: async (req, res) => {
+      try {
+        
+        const data = {
+          businessId:req.body.businessId,
+          userId:req.userId,
+        }
+        const result = await vendorModel.myReviewOfVendor(data);
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(200).send(utils.response(result));
+        }
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+    
     //======== Apis for Vender side as only ==============
 
     suggestion: async (req, res) => {
@@ -374,7 +393,11 @@ try {
           userQuery: req.body.userQuery,
         };
         const result = await vendorModel.socialMediaClick(body);
+        if(result instanceof Error){
+          return res.status(403).send(utils.error(result.message));
+        }else{
         return res.status(200).send(utils.response(result));
+        }
       } catch (err) {
         return res.status(403).send(utils.error(err));
       }
@@ -545,6 +568,26 @@ try {
         } catch (err) {
           return res.status(403).send(utils.error(err));
         } 
+      },
+
+      passbookListing: async (req, res) => {
+        try {
+          if (req.role !== "VENDOR") {
+            return res.status(401).send(utils.error("Only Vendor can see there passbook details"));
+          }
+          const body = {
+            userId: req.userId,
+            businessId: req.body.businessId,
+          }
+          const result = await vendorModel.passbookListing(body);
+          if (result instanceof Error) {
+            return res.status(403).send(utils.error(result.message));
+          } else {
+            return res.status(200).send(utils.response(result));
+          }
+        } catch (err) {
+          return res.status(403).send(utils.error(err));
+        }
       },
 
       businessReviewList: async (req, res) => {
