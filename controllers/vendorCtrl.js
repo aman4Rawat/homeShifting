@@ -506,9 +506,16 @@ try {
         if (req.role === "USER") { 
           return res.status(401).send(utils.error("user can't see package details"));
         }
-        const userId = req.userId;
-        const result = await vendorModel.currentPackageDetails(userId);
+        const body = {
+          userId: req.userId,
+          businessId: req.body.businessId,
+        }
+        const result = await vendorModel.currentPackageDetails(body);
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
         return res.status(200).send(utils.response(result));
+        }
       } catch (err) {
         return res.status(403).send(utils.error(err));
       }
@@ -578,6 +585,8 @@ try {
           const body = {
             userId: req.userId,
             businessId: req.body.businessId,
+            startDate:req.body.startDate,
+            endDate:req.body.endDate,
           }
           const result = await vendorModel.passbookListing(body);
           if (result instanceof Error) {

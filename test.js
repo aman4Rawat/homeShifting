@@ -54,6 +54,7 @@
 //     while (new Date().getTime() < startTime + 0) { }
 //     callback();
 // }
+
 // setImmediate(() => {
 //     console.log('hello');
 // }
@@ -69,3 +70,9 @@
 //     console.log('hello');
 // }, 5000);
 
+// const a = {
+//     type: 'number',
+// }
+
+// a.type = 'string';
+// console.log(a.type);

@@ -100,8 +100,8 @@ const vendorBusinessSchema = new mongoose.Schema(
     },
     address:[],
     paymentType:[],
-    rating:{type:Number,},
-    ratingCount:{type:Number,},
+    rating:{type:Number, default:0},
+    ratingCount:{type:Number, default:0},
     wallet:{type:Number,default:0,},
     packageId:{type:mongoose.Schema.Types.ObjectId,ref:"package"},
     packagePurchaseId: {

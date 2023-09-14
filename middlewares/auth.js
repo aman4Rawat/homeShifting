@@ -13,7 +13,8 @@ module.exports = (req, res, next) => {
   try {
     decodedToken = jwt.verify(token,JWTSECRET);
   } catch (err) {
-    return res.status(500).send(utils.error(err));
+    const error = new Error("Please Login First.");
+    return res.status(500).send(utils.error(error.message));
   }
   if (!decodedToken) {
     const error = new Error("Not authenticated.");

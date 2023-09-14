@@ -11,7 +11,9 @@ const userSchema = require("../user/userSchema.js");
 const notificationSchema = require("../notification/notificationSchema.js");
 const BASEURL = process.env.BASEURL;
 try {
+
   module.exports = {
+
     vendorProfile: async (body) => {
       try {
         const user = await userSchema.findOne({mobile_number:body.mobileNumber});
@@ -102,9 +104,22 @@ try {
           return "No vendor found with this category ";
         }
         const gallary = await gallarySchema.find({vendorId:vendor._id});
-        const reviews = await reviewsSchema.find({vendorId:vendor._id}).populate("userId");
+        const reviewsData = await reviewsSchema.find({vendorId:vendor._id}).populate("userId");
         const totalServices = await vendorBusinessSchema.find({userId:vendor.userId},{categoryName:1,categoryId:1,companyName:1});
         const links = await socialMediaSchemas.findOne({vendorId:totalServices._id});
+        let abc = 0;
+        let count = 0;
+        reviewsData.map((x)=>{
+          abc = abc + x.rating;
+          count = count + 1;
+        })  
+        const totalRating = (abc/count).toFixed(1);
+        const reviews = {
+          totalRating:totalRating,
+          totalReviews:count,
+          reviewsData:reviewsData
+        }
+        await vendorBusinessSchema.findByIdAndUpdate({_id:vendor._id},{$set:{rating:totalRating,ratingCount:count}},{new:true});
         return {vendor,gallary,links,reviews,totalServices};
       } catch (err) {
         return err;
@@ -335,7 +350,7 @@ try {
     socialMediaClick: async (body) => {
       try {
         const business = await vendorBusinessSchema.findOne({_id:body.businessId}).populate("packagePurchaseId");
-        if(!business?.packagePurchaseId && business?.packagePurchaseId.expireDate < new Date(Date.now())){return new Error("Package not found or expire with this business")};
+        if(!business?.packagePurchaseId || business?.packagePurchaseId?.expireDate < new Date(Date.now())){return new Error("Package not found or expire with this business")};
         if(body.clickType === "SOCIAL"){
           if(business?.packagePurchaseId?.package?.socialMediaCharges > business?.wallet){return new Error("you don't have enough balance in your wallet")};
           if(business.userId != body.userId){
@@ -361,7 +376,7 @@ try {
             return result
           }  
           else{
-            return "You can't Increase click on your own business";
+           return new Error("You can't Increase click on your own business");
           } 
         }else if(body.clickType === "WEBSITE"){
           if(business?.packagePurchaseId?.package?.websiteCharges > business?.wallet){return new Error("you don't have enough balance in your wallet")};
@@ -388,7 +403,7 @@ try {
             return result
           }  
           else{
-            return "You can't Increase click on your own business";
+           return new Error("You can't Increase click on your own business");
           } 
         }else if(body.clickType === "BESTDEAL"){
           if(business?.packagePurchaseId?.package?.bestDealCharges > business?.wallet){return new Error("you don't have enough balance in your wallet")};
@@ -415,7 +430,7 @@ try {
             return result
           }  
           else{
-            return "You can't Increase click on your own business";
+           return new Error("You can't Increase click on your own business");
           } 
         }else if(body.clickType === "CALL"){
           if(business?.packagePurchaseId?.package?.callCharges > business?.wallet){return new Error("you don't have enough balance in your wallet")};
@@ -442,7 +457,7 @@ try {
             return result
           }  
           else{
-            return "You can't Increase click on your own business";
+           return new Error("You can't Increase click on your own business");
           } 
         }else if(body.clickType === "DIRECTION"){
           if(business?.packagePurchaseId?.package?.directionCharges > business?.wallet){return new Error("you don't have enough balance in your wallet")};
@@ -469,7 +484,7 @@ try {
             return result
           }  
           else{
-            return "You can't Increase click on your own business";
+           return new Error("You can't Increase click on your own business");
           } 
         }else if(body.clickType === "CHAT"){
           if(business?.packagePurchaseId?.package?.chatCharges > business?.wallet){return new Error("you don't have enough balance in your wallet")};
@@ -496,7 +511,7 @@ try {
             return result
           }  
           else{
-            return "You can't Increase click on your own business";
+           return new Error("You can't Increase click on your own business");
           } 
         }else if(body.clickType === "INQUERY"){
           if(business?.packagePurchaseId?.package?.inqueryCharges > business?.wallet){return new Error("you don't have enough balance in your wallet")};
@@ -523,7 +538,7 @@ try {
             return result
           }  
           else{
-            return "You can't Increase click on your own business";
+           return new Error("You can't Increase click on your own business");
           } 
         }else{
           if(business?.packagePurchaseId?.package?.otherCharges > business?.wallet){return new Error("you don't have enough balance in your wallet")};
@@ -550,7 +565,7 @@ try {
             return result
           }  
           else{
-            return "You can't Increase click on your own business";
+           return new Error("You can't Increase click on your own business");
           } 
         }  
       } catch (err) {
@@ -599,7 +614,7 @@ try {
           allLeads: totalCount,
         }
         //add count in return object
-        return {socialPercentage,webSitePercentage,callPercentage,bestDealPercentage,directionPercentage}
+        return {socialPercentage,webSitePercentage,callPercentage,bestDealPercentage,directionPercentage,count}
        
       } catch (err) {
         return err;
@@ -675,13 +690,21 @@ try {
         return err;
       }
     },
-    currentPackageDetails: async (userId) => {
+    currentPackageDetails: async (body) => {
       try {
-        const result = await vendorBusinessSchema.findOne({userId:userId},{packageId:1}).populate("packageId");
-        if(!result){
+        if(!body.businessId){
+          const business = await vendorBusinessSchema.findOne({userId:body.userId}).sort({createdAt:1});
+          body.businessId = business._id;
+          body.packageId = business?.packageId;
+        }else{
+          const business = await vendorBusinessSchema.findOne({_id:businessId}).sort({createdAt:1});
+          body.packageId = business?.packageId;
+        }
+               
+        const packageDetails = await pruchasedPackageSchema.findOne({businessId:body.businessId,packageId:body.packageId}).sort({createdAt:1});
+        if(!packageDetails){
           return "No package found with this user";
         }
-        const packageDetails = await pruchasedPackageSchema.findOne({businessId:result._id,packageId:result.packageId._id}).sort({createdAt:1});
         return packageDetails;
       } catch (err) {
         return err;
@@ -701,11 +724,6 @@ try {
         return err;
       }
     },
-
-
-
-
-
     support: async (data) => {
       try {
         const user = await userSchema.findById({_id:data.userId},{name:1});
@@ -772,8 +790,28 @@ try {
           const business = await vendorBusinessSchema.findOne({userId:body.userId}).sort({createdAt:1});
           body.bisinessId = business?._id;
         };
-         const passbook = await passbookSchema.find({businessId:body.bisinessId}).sort({createdAt:-1});
-         return passbook;
+        const condition = {};
+        condition.businessId = body.bisinessId;
+        if(body.startDate && !body.endDate){ return "please enter end date as well"}
+        if(body.startDate){
+          const edate = new Date(body.endDate.split("/").reverse().join("/"));
+          const sdate = new Date(body.startDate.split("/").reverse().join("/"));
+          condition.createdAt = {$gte: sdate,$lte: edate}; //I'll fix it soon
+        }
+        const passbook = await passbookSchema.aggregate([
+          {$match:condition},
+          {
+            $group: {
+              _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+              result: { $push: "$$ROOT" },
+          }
+          },
+          {
+              $sort: { _id: -1 }
+          }
+      ])
+      const balance = await vendorBusinessSchema.findOne({_id:body.bisinessId},{wallet:1});
+        return passbook;
       }
       catch (err) {
         return err;
