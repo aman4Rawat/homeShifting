@@ -88,6 +88,7 @@ try {
               paidAmount: paidAmount,
               userId: body.userId,
               businessId: body.businessId,
+
             });
             await payment.save();
           }
@@ -110,8 +111,9 @@ try {
             { orderId: body.orderId },
             {
               paymentStatus: result?.cfOrder?.orderStatus,
-              referenceId: result?.cfOrder?.referenceId,
+              referenceId: result?.cfOrder?.cfOrderId,
               paymentMode: result?.cfOrder?.paymentMode,
+              productName: "Package Purchase",
             },
             { new: true }
           );
@@ -231,6 +233,7 @@ try {
               paidAmount: paidAmount,
               userId: body.userId,
               businessId: business._id,
+              productName: "Recharge Wallet",
             });
            var abc = await payment.save();
           };
@@ -313,11 +316,11 @@ try {
 
     getInvoice: async (body) => {
       try {
-        const businessId = await businessSchema
-          .findOne({ userId: body.userId })
-          .sort({ createdAt: 1 });
-
-        const condition = { businessId: businessId?._id ?? "64ca05ef24a527edc66a0ea1" };
+        if(!body.businessId){
+        const business = await businessSchema.findOne({ userId: body.userId }).sort({ createdAt: 1 });
+        body.businessId = business?._id ?? "64ca05ef24a527edc66a0ea1";
+        }
+        const condition = { businessId: body.businessId };
         if (body.startDate && body.endDate) {
           condition.createdAt = {
             $gte: new Date(body.startDate.split("/").reverse().join("/")),
@@ -327,12 +330,42 @@ try {
         const payment = await paymentSchema
           .find(condition)
           .sort({ createdAt: -1 });
+
+          
+
+          let Invoice = {
+            companyName: process.env.COMPANYNAME ?? "Home Shifting Mart Pvt. Ltd.",
+            companyAddress: process.env.COMPANYADDERSS ?? "S30A 2nd floor sakarpur new delhi 110092",
+            companyGST: process.env.COMPANYGST ?? "07AAGCH2523N1ZG",
+            companyPAN: process.env.COMPANYPAN ?? "AAGCH2523N",
+            comapnyMobileNumber: process.env.COMPANYPHONENUMBER ?? "",
+            companyEmail: process.env.COMPANYEMAIL ?? "account@homeshiftingmart.com",
+            billingName: business?.companyName,
+            billingAddress: business?.address,
+            billingGST: business?.gstNumber,
+            billingPAN: business?.panNumber,
+            payment: payment,
+
+          }
+
         return payment;
         //farhan
       } catch (err) {
         return err;
       }
     },
+
+    getInvoiceById: async (body) => {
+      try{
+
+        
+
+
+      }catch(err){
+          return err
+        }
+    },
+
   };
 } catch (e) {
   log.error(e);

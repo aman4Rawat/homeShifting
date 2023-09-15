@@ -22,6 +22,9 @@ const paymentSchemas = new mongoose.Schema(
     paidAmount: {
         type: Number,
     },
+    gstAmount:{
+        type: Number,
+    },
     orderId: {
         type: String,
     },
@@ -31,6 +34,10 @@ const paymentSchemas = new mongoose.Schema(
     paymentMode: {
         type: String,
     },
+    productName: {
+        type: String,
+    },
+
   },
   { timestamps: true }
 );
@@ -66,6 +73,9 @@ const pruchasedPackageSchemas = new mongoose.Schema(
       type: String,
     },
     paidAmount: {
+      type: String,
+    },
+    gstAmount: {
       type: String,
     },
     package:  {

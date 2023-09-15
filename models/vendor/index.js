@@ -82,16 +82,20 @@ try {
     vendorByCategoryId: async (cId,sort) => {
       try {
        const condition = {};
+       const filter = {};
+       filter.categoryId = cId;
         if(sort==="TOP"){
-          condition.rating = -1
+          condition.ratingCount = -1
         };
+        if(sort==="ALL"){   };
         if(sort==="VERIFIED"){
-          condition.isVerified = -1
+          filter.isVerified = true
         };
         if(sort==="EXPERT"){
-          condition.isExpert = -1
+          filter.isExpert = true
         };
-       const results = await vendorBusinessSchema.find({categoryId:cId}).sort(condition);
+
+       const results = await vendorBusinessSchema.find(filter).sort(condition);
         return results;
       } catch (err) {
         return err;
@@ -631,9 +635,14 @@ try {
     },
     dashboardAllLeads: async (body) => {
       try {
-        const businessNameAndAmount = await vendorBusinessSchema.findOne({userId:body.userId},{wallet:1,companyName:1}).sort({createdAt:1});
+        if(!body.businessId){
+        var businessNameAndAmount = await vendorBusinessSchema.findOne({userId:body.userId},{wallet:1,name:1, address:1}).sort({createdAt:1});
+        body.businessId = businessNameAndAmount?._id ?? "64ca05ef24a527edc66a0ea1";
+        }else{
+          var businessNameAndAmount = await vendorBusinessSchema.findById({_id:body.businessId},{wallet:1,name:1, address:1});
+        }
         const condition = {}
-        condition.businessId = businessNameAndAmount?._id ?? "64ca05ef24a527edc66a0ea1";
+        condition.businessId = body.businessId;
         if(body.startDate && !body.endDate){ return "please enter end date as well"}
         if(body.startDate){
           const edate = new Date(body.endDate.split("/").reverse().join("/"));

@@ -15,6 +15,8 @@ try {
     
     
     paymentRoute.post("/invoice",jwtauth, paymentCtrl.invoice);
+    paymentRoute.post("/invoicebyid",jwtauth, paymentCtrl.invoiceById);
+
 
   module.exports = paymentRoute;
 } catch (error) {

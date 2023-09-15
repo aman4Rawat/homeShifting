@@ -453,6 +453,7 @@ try {
           endDate:req.body.endDate,
           isNew:req.body.isNew,
           isRead:req.body.isRead,
+          businessId:req.body.businessId,
           limit: req.body.limit || 10,
           page: req.body.page || 1,
         };
