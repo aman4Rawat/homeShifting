@@ -18,6 +18,8 @@ try {
             area: req.body.area,
             pinCode: req.body.pinCode,
             categoryId: req.body.businessCategory,
+            latitude: req.body.latitude,
+            longitude: req.body.longitude,
           }
           const result = await vendorModel.vendorProfile(body);
           if (result instanceof Error) {
@@ -233,6 +235,8 @@ try {
           city:req.body.city,
           state:req.body.state,
           country:req.body.country,
+          latitude:req.body.latitude,
+          longitude:req.body.longitude,
         }
         const id = req.body.businessId;
         const result = await vendorModel.addressUpdate(data,id);
@@ -564,6 +568,7 @@ try {
           }
           const body = {
             userId: req.userId,
+            businessId: req.body.businessId,
             customerName: req.body.customerName,
             customerNumber: req.body.customerNumber,
           };

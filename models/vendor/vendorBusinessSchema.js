@@ -108,6 +108,8 @@ const vendorBusinessSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "pruchasedPackage",
     },
+    latitute:{type:String},
+    longitute:{type:String},
   },
   { timestamps: true }
 );

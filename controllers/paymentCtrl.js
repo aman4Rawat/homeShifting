@@ -56,7 +56,6 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
-
     suggestionPlaneAdd: async (req, res) => {
       try {
         const body = {
@@ -85,7 +84,6 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
-
     purchasePackage: async (req, res) => {
       try {
         const body = {
@@ -125,7 +123,6 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
-
     invoice: async (req, res) => {
       try {
         const body = {
@@ -145,7 +142,6 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
-
     invoiceById: async (req, res) => {
       try {
         const body = {

@@ -8,6 +8,7 @@ const { paymentSchema, suggestionPlaneSchema, pruchasedPackageSchema} = require(
 const packageSchame = require("../admin/packageSchame.js");
 const businessSchema = require("../vendor/vendorBusinessSchema.js");
 const passbookSchema = require("../vendor/passbookSchema.js");
+const invoiceSchema = require("./invoiceSchema.js");
 const userSchema = require("../user/userSchema.js");
 const PAYMENTKEY = process.env.TESTPAYMENTKEY;
 const PAYMENTSECTRET = process.env.TESTPAYMENTSECRET;
@@ -132,6 +133,11 @@ try {
             availableBalance:business?.wallet,
            });
             await passbook.save();
+        
+        await invoiceSchema.create({
+          businessId: payment.businessId,
+          payment: payment._id,
+        });
 
         return {status: 'PAID', payment: payment, business: business?.wallet}
 
@@ -293,6 +299,10 @@ try {
             availableBalance:business?.wallet,
            });
             await passbook.save();
+            await invoiceSchema.create({
+              businessId: payment.businessId,
+              payment: payment._id,
+            });
         return {status: 'PAID', payment: payment, business: business?.wallet, purchase: purchase}
 
         }
@@ -306,6 +316,10 @@ try {
             },
             { new: true }
           );
+          await invoiceSchema.create({
+            businessId: payment.businessId,
+            payment: payment._id,
+          });
           return {status: 'FAILED', payment: payment}
         }
 
@@ -327,26 +341,9 @@ try {
             $lte: new Date(body.endDate.split("/").reverse().join("/")),
           };
         }
-        const payment = await paymentSchema
-          .find(condition)
+        const payment = await invoiceSchema
+          .find(condition).populate("payment")
           .sort({ createdAt: -1 });
-
-          
-
-          let Invoice = {
-            companyName: process.env.COMPANYNAME ?? "Home Shifting Mart Pvt. Ltd.",
-            companyAddress: process.env.COMPANYADDERSS ?? "S30A 2nd floor sakarpur new delhi 110092",
-            companyGST: process.env.COMPANYGST ?? "07AAGCH2523N1ZG",
-            companyPAN: process.env.COMPANYPAN ?? "AAGCH2523N",
-            comapnyMobileNumber: process.env.COMPANYPHONENUMBER ?? "",
-            companyEmail: process.env.COMPANYEMAIL ?? "account@homeshiftingmart.com",
-            billingName: business?.companyName,
-            billingAddress: business?.address,
-            billingGST: business?.gstNumber,
-            billingPAN: business?.panNumber,
-            payment: payment,
-
-          }
 
         return payment;
         //farhan
@@ -357,8 +354,70 @@ try {
 
     getInvoiceById: async (body) => {
       try{
+        const data = await invoiceSchema.findOne({_id: body.invoiceId}).populate("payment");
+        if(!data){
+          return new Error("invoice not found");
+        }
+        let invoice = `<div class="container">
+        <hr class="text-dark">
+        <h3 class="text-center fs-6"><strong>Tax Invoice</strong></h3>
+        <div class="row g-3 justify-content-between">
+          <div class="col-6">
+            <div class="border border-dark rounded-4 p-3 invoice-slip">
+              <h6 class="mb-1">Customer Details</h6>
+              <p class="mb-1"><span>Billing Name</span> <span>Krishna Prasad</span></p>
+              <address>
+                <strong>Address</strong>
+                <p class="mb-1">Harola, Near Bharat Gas
+                  Agency,Balaji Complex,</p>
+                <p>Noida Sector
+                  5,Noida,201301</p>
+              </address>
+              <div class="d-flex  align-items-center">
+                <div class="me-5">
+                  <p class="mb-1">State :<span class="ms-4">Uttar Pradesh</span></p>
+                  <p class="mb-1">PAN No : <span class="ms-4">-</span></p>
+                  <p class="mb-1">TAN No : <span class="ms-4">-</span></p>
+                  <p class="mb-1">GST No : <span class="ms-4">-</span></p>
+                </div>
+                <div class="border-start ps-4 border-dark">
+                  <p class="mb-1">Unique/Dynamic Code</p>
+                  <img src="https://user-images.githubusercontent.com/4993276/69906263-8d535d00-139f-11ea-8ee8-6f21a41bc60e.jpeg" alt="" height="100">
+                  <p class="mb-1">PU011010723P7C</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="border border-dark rounded-4 p-3 invoice-slip">
+              <h6 class="mb-1">Customer Details</h6>
+              <p class="mb-1"><span>Billing Name</span> <span>Krishna Prasad</span></p>
+              <address>
+                <strong>Address</strong>
+                <p class="mb-1">Harola, Near Bharat Gas
+                  Agency,Balaji Complex,</p>
+                <p>Noida Sector
+                  5,Noida,201301</p>
+              </address>
+              <div class="d-flex  align-items-center">
+                <div class="me-5">
+                  <p class="mb-1">State :<span class="ms-4">Uttar Pradesh</span></p>
+                  <p class="mb-1">PAN No : <span class="ms-4">-</span></p>
+                  <p class="mb-1">TAN No : <span class="ms-4">-</span></p>
+                  <p class="mb-1">GST No : <span class="ms-4">-</span></p>
+                </div>
+                <div class="border-start ps-4 border-dark">
+                  <p class="mb-1">Unique/Dynamic Code</p>
+                  <img src="https://user-images.githubusercontent.com/4993276/69906263-8d535d00-139f-11ea-8ee8-6f21a41bc60e.jpeg" alt="" height="100">
+                  <p class="mb-1">PU011010723P7C</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>`
 
-        
+      return invoice;    
 
 
       }catch(err){

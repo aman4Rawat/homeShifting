@@ -24,7 +24,7 @@ try {
         const condition = {};
         
         for (const key in body) {
-          if (body[key] !== undefined) {
+          if (body[key] !== undefined && body[key] !== latituse && body[key] !== longitude) {
             condition[key] = body[key];
           }
         }
@@ -33,7 +33,7 @@ try {
           return results
         }else{
           if(body.categoryId){ 
-            const category = await CategorySchema.findById({_id:body.categoryId});
+            var category = await CategorySchema.findById({_id:body.categoryId});
            }else{
             return new Error("Please select category");
             }
@@ -41,6 +41,8 @@ try {
             condition.userId = user.id;
             condition.categoryName = category.name;
           condition.uniqueId = code;
+          condition.latituse = body.latituse;
+          condition.longitude = body.longitude;
           const newBusiness = new vendorBusinessSchema(condition);
           const results = await newBusiness.save();
           await userSchema.findByIdAndUpdate({_id:user.id},{$set:{role:"VENDOR"}},{new:true});
@@ -242,15 +244,17 @@ try {
     addressUpdate: async (data,id) => {
       try {
           const business = await vendorBusinessSchema.findOne({_id:id});
-          if(!business){return new Error("vendor id galat hai")};
+          if(!business){return new Error("business id galat hai")};
           const condition = {}
           for (const key in data) {
             if (data[key] !== undefined) {
               condition[key] = data[key];
             }
           }
-
           const result = await vendorBusinessSchema.findByIdAndUpdate({_id:business.id},{$set:{address:condition}},{new:true});
+          if(data.latituse && data.longitude){
+          await vendorBusinessSchema.findByIdAndUpdate({_id:business.id},{$set:{latituse:data.latituse,longitude:data.longitude}},{new:true});
+          }
           return result;
       } catch (err) {
         return err;
@@ -770,11 +774,15 @@ try {
 
     askForRating: async (body) => {
       try {
+        if(!body.businessId){
+          const business = await vendorBusinessSchema.findOne({userId:body.userId}).sort({createdAt:1});
+          body.businessId = business?._id;
+        };
         const user = await userSchema.findOne({mobile_number:body.customerNumber});
         if(!user){
           return new Error("No user found with this number Please enter registered number");
         }
-        const vendor = await vendorBusinessSchema.findOne({userId:body.userId});
+        const vendor = await vendorBusinessSchema.findOne({_id:body.businessId},{companyName:1,name:1});
         const title = "Please rate me";
         const description = `Hey ${body.customerName}, </br> please rate me on my profile, it will help me to grow my business. </br> best regards ${vendor.companyName}`;
 
@@ -795,12 +803,12 @@ try {
     },
     passbookListing: async (body) => {
       try {
-        if(!body.bisinessId){
+        if(!body.businessId){
           const business = await vendorBusinessSchema.findOne({userId:body.userId}).sort({createdAt:1});
-          body.bisinessId = business?._id;
+          body.businessId = business?._id;
         };
         const condition = {};
-        condition.businessId = body.bisinessId;
+        condition.businessId = body.businessId;
         if(body.startDate && !body.endDate){ return "please enter end date as well"}
         if(body.startDate){
           const edate = new Date(body.endDate.split("/").reverse().join("/"));
