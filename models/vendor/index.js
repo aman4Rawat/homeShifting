@@ -170,11 +170,13 @@ try {
         if(!results){
           return new Error("No vendor found with this Id");
         }
-        const newGallary = new gallarySchema({
-          vendorId:id,
-          image: BASEURL+data
-        })
-        await newGallary.save();
+        data.map(async (x)=>{
+          const newGallary = new gallarySchema({
+            vendorId:id,
+            image: x
+          })
+          await newGallary.save();
+        })          
         return "successfully uploaded"
       } catch (err) {
         return err;
@@ -303,8 +305,12 @@ try {
     },
     contactDetailUpdate: async (data) => {
       try {
+        if(!data.businessId){
+          const business = await vendorBusinessSchema.findOne({userId:data.venderId});
+          data.businessId = business.id;
+        }
         const user = await vendorBusinessSchema.findOne({userId:data.venderId})
-        const result = await vendorBusinessSchema.findByIdAndUpdate({_id:user.id},{$set:
+        const result = await vendorBusinessSchema.findByIdAndUpdate({_id:data.businessId},{$set:
           {
             contactPersonName:data.contactName,
             designation:data.designation,

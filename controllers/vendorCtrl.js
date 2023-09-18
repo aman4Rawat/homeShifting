@@ -2,7 +2,9 @@
 const vendorModel = require("../models/vendor/index.js");
 const upload = require("../middlewares/multer.js");
 const multiUpload = require("../middlewares/multiMulter.js");
+const gallerymultiUpload = require("../middlewares/multerGallery.js");
 const utils = require("../libs/utils");
+const BASEURL = process.env.BASEURL;
 
 try {
 
@@ -160,14 +162,17 @@ try {
     },
     uploadgallary: async (req, res, next) => {
       try {
-        upload(req, res, async (err) => {
+        gallerymultiUpload(req, res, async (err) => {
           if (err) {
             return res.status(500).send(utils.error("Internal server error"));
           }
-          if (!req.file) {
+          if (req.files.length === 0) {
             return res.status(400).send(utils.error("No file uploaded"));
           }
-          const data = req.file.path;
+          const data = [];
+          req.files.map((item) => {
+            data.push(BASEURL+item.path);
+          });
           const id = req.body.id;
           const result = await vendorModel.vendorGallaryUpload(data, id);
           return res.status(200).send(utils.response(result));
@@ -337,6 +342,7 @@ try {
           mobileNumber:req.body.mobileNumber,
           email:req.body.email,
           venderId:req.userId,
+          businessId:req.body.businessId,
         }
         const result = await vendorModel.contactDetailUpdate(data);
         return res.status(200).send(utils.response(result));

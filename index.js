@@ -19,8 +19,10 @@ var dataDate = new Date();
 dataDate.setUTCHours(0,0,0,0)
 try {
   const app = express();
-  app.use(express.static('uploads'))
-  app.use("/image",express.static('image'))
+  app.use(express.static('uploads'));
+  app.use("/image",express.static('image'));
+  app.use("/gallery",express.static('gallery'));
+  app.use("/invoice",express.static('invoice'));
   app.use(helmet());
   app.use(compression());
   app.use((req, res, next) => {
@@ -36,19 +38,10 @@ try {
   app.use(cors());
 
   app.use(bodyParser.json());
-  app.set('view engine', 'ejs');
-  app.set('views', path.join(__dirname, 'views'));
-  app.use('/public',express.static(path.join(__dirname,'views/assets/')));
-  app.get('/', (req, res) => {  
-    res.render('login');
-  });
   module.exports =app;
   app.get("/farhan", (req, res) => {
     console.log("apis working fine...")
     res.send("House Shifting Apis");
-  });
-  app.get("/test", (req, res) => {
-    res.render('index');
   });
    app.use("/user", user);
    app.use("/admin", admin);

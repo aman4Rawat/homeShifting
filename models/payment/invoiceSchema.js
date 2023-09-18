@@ -4,6 +4,7 @@ const invoiceSchema = new mongoose.Schema(
   {
     businessId: {
       type: mongoose.Schema.Types.ObjectId,
+      ref: "venderBusiness",
     },
     payment: {
       type: mongoose.Schema.Types.ObjectId,
