@@ -22,9 +22,6 @@ const storage = multer.diskStorage({
 
 const gallerymultiUpload = multer({
   storage: storage,
-  limits: {
-    fileSize: 10000000,
-  },
   fileFilter(req, file, cb) {
     if (
       !file.originalname.match(

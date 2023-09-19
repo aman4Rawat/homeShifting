@@ -1,13 +1,15 @@
 const puppeteer = require('puppeteer');
-const BASEURL=process.env.BASEURL
+const BASEURL= process.env.BASEURL
+
 async function generatePDF(data) {
     try{
     const browser = await puppeteer.launch();
+    console.log("two");
   
     // Create a new page
     const page = await browser.newPage();
   
-    console.log(data);
+    console.log("three");
     let date  = new Date(data.createdAt).toLocaleDateString();
     let htmlContent = `
     <html lang="en">
@@ -131,14 +133,16 @@ async function generatePDF(data) {
   
     // Set the content of the page
     await page.setContent(htmlContent);
-  
+    console.log("four");
     // Convert to PDF
     const pdf = await page.pdf({
         
       format: 'A4',
       path: `./invoice/${data.payment.orderId}.pdf`,
     });
-  return BASEURL+`invoice/${data.payment.orderId}.pdf`;
+    console.log("five");
+    await browser.close();
+  return BASEURL+ `/invoice/${data.payment.orderId}.pdf`;
 }catch(err){
    return err.message;
 }
@@ -147,3 +151,6 @@ async function generatePDF(data) {
   module.exports = {
     generatePDF
   }
+
+
+  
