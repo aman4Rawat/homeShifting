@@ -274,7 +274,24 @@ try {
         return err;
       }
     },
+    vendorDetailsUpdate: async (data,id) => {
+      try{
+        const business = await vendorBusinessSchema.findById({_id:id});
+        if(!business){return new Error("vendor id galat hai")};
+        let condition = {}
+        for (const key in data) {
+          if (data[key] !== undefined) {
+            condition[key] = data[key];
+          }
+        }
+        const result = await vendorBusinessSchema.findByIdAndUpdate({_id:business.id},{$set:condition},{new:true});
+        return result;
 
+      }catch(err){
+        return err;
+      }
+    },
+    // reviewssssss
     reviewByUser: async (data) => {
       try {
         const sex = await reviewsSchema.findOne({vendorId:data.businessId,userId:data.userId}).sort({createdAt:-1});

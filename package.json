@@ -20,6 +20,7 @@
   "homepage": "https://github.com/pharhan7/house_Shifting#readme",
   "dependencies": {
     "@cashfreepayments/cashfree-sdk": "^0.1.7",
+    "@pspdfkit/nodejs": "^0.0.3",
     "axios": "^1.5.0",
     "bcrypt": "^5.1.0",
     "bcryptjs": "^2.4.3",

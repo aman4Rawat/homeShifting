@@ -275,6 +275,22 @@ try {
       }
     },
 
+    updateVendorDetails: async (req, res, next) => {
+      try {
+        if(!req.role === "VENDOR"){
+          return  res.status(403).send(utils.error("Only Vender can update there details"));
+        }
+        const data = req.body;
+        const id = req.userId;
+        const result = await vendorModel.vendorDetailsUpdate(data,id);
+        return res.status(200).send(utils.response(result));
+
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+
+
     //reviews apis
     reviewThisVendor: async (req, res) => {
       try {

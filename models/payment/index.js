@@ -274,15 +274,17 @@ try {
             },
             { new: true }
           );
+          const sexxx = new Date().getMonth() + package?.packageDuration;
+          const porn  = new Date().setMonth(sexxx);
           
           const some = new pruchasedPackageSchema({
             userId: body.userId,
             packageId: body.packageId,
             package: package,
             amount: payment.amount,
-            paidAmount: paidAmount,
+            paidAmount: Number(payment.amount) * process.env.GST + Number(payment.amount),
             businessId: payment.businessId,
-            expireDate: new Date().setDate(new Date().getMonth() + package.packageDuration),
+            expireDate: new Date(porn),
             orderId: result?.cfOrder?.orderId,
           });
           const purchase = await some.save();

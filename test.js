@@ -76,3 +76,27 @@
 
 // a.type = 'string';
 // console.log(a.type);
+
+//write a function for set interval
+
+// function setInterval(callback, time) {
+//     const startTime = new Date().getTime();
+//     while (true) {
+//         if (new Date().getTime() >= startTime + time) {
+//             callback();
+//             startTime = new Date().getTime();
+
+//         }
+//     }
+// }
+
+// setInterval(() => {
+//     console.log(count);
+// }, 1000);
+
+// const array = [{name:"jatin", age:23}]
+//  array.map((item) => {
+//     for(let i in item){
+//         console.log(i);
+//     }
+// })

@@ -5,6 +5,7 @@ try {
   vendorRoutes.post("/findvendorbycategoryid", vendorCtrl.findVendorbyCategoryId);
   vendorRoutes.post("/findvendorbyid", vendorCtrl.findVendorbyId);
   vendorRoutes.post("/findvendorbusinessbytoken",JWTAUTH, vendorCtrl.findVendorBusinessByToken);
+  //update vendor profile
   vendorRoutes.post("/vendorprofileimage", vendorCtrl.vendorprofileimage);
   vendorRoutes.post("/vendorbackgroundimage", vendorCtrl.vendorbackgroundimage);
   vendorRoutes.post("/uploaddocuments", vendorCtrl.uploadVendorDocuments);
@@ -12,6 +13,8 @@ try {
   vendorRoutes.post("/updatebusinessdetails", vendorCtrl.updatebusinessDetails);
   vendorRoutes.post("/updateadderess", vendorCtrl.updateAdderss);
   vendorRoutes.post("/updateapaymenttype", vendorCtrl.updatePatmentType);
+  vendorRoutes.post("/updatevenderdetails", vendorCtrl.updateVendorDetails);
+
   //reviewsssssssssssss
   vendorRoutes.post("/reviewthisvendor",JWTAUTH, vendorCtrl.reviewThisVendor);
   vendorRoutes.post("/getmyreviewofthisvendor",JWTAUTH, vendorCtrl.getMyReviewOfThisVendor);

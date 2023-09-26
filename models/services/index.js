@@ -29,7 +29,7 @@ try {
       try {
         const page = body.page || 1;
         const limit = body.limit|| 8;
-          const data = await serviceSchema.find().skip((page-1)*limit).limit(limit);
+          const data = await serviceSchema.find({isDeleted:false}).skip((page-1)*limit).limit(limit);
           return data;
       } catch (err) {
         return err;
@@ -37,7 +37,9 @@ try {
     },
     deleteService: async(id)=>{
       try {
-       const result =  await serviceSchema.findByIdAndDelete({_id:id});
+        const categories = await categorySchema.find({serviceId:id});
+        if(categories.length>0){return new Error("First delete all categories of this service")}
+       const result =  await serviceSchema.findByIdAndUpdate({_id:id},{$set:{isDeleted:true}},{new:true});
           return result;
       } catch (err) {
         return err;
@@ -71,8 +73,8 @@ try {
     allCategories: async(body)=>{
       try {
         const page = body.page || 1;
-        const limit = body.limit|| 8;
-          const data = await categorySchema.find().skip((page-1)*limit).limit(limit);
+        const limit = body.limit || 8;
+          const data = await categorySchema.find({isDeleted:false}).skip((page-1)*limit).limit(limit);
           return data;
       } catch (err) {
         return err;

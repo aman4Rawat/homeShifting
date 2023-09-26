@@ -21,6 +21,7 @@ try {
   const app = express();
   app.use(express.static('uploads'));
   app.use("/image",express.static('image'));
+  app.use("/services",express.static('services'));
   app.use("/gallery",express.static('gallery'));
   app.use("/invoice",express.static('invoice'));
   app.use(helmet());
