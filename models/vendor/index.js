@@ -133,7 +133,7 @@ try {
     },
     vendorBudinessByUserId: async (id) => {
       try {
-        const vendor = await vendorBusinessSchema.find({userId:id},{categoryName:1,categoryId:1,companyName:1,name:1,profileImage:1});
+        const vendor = await vendorBusinessSchema.find({userId:id},{categoryName:1,categoryId:1,companyName:1,profileImage:1});
         if(!vendor){
           return "No Business found with this category ";
         }
@@ -274,9 +274,9 @@ try {
         return err;
       }
     },
-    vendorDetailsUpdate: async (data,id) => {
+    vendorDetailsUpdate: async (data,businessId) => {
       try{
-        const business = await vendorBusinessSchema.findById({_id:id});
+        const business = await vendorBusinessSchema.findById({_id:businessId});
         if(!business){return new Error("vendor id galat hai")};
         let condition = {}
         for (const key in data) {
@@ -285,6 +285,7 @@ try {
           }
         }
         const result = await vendorBusinessSchema.findByIdAndUpdate({_id:business.id},{$set:condition},{new:true});
+        console.log(result,"this is fucking result");
         return result;
 
       }catch(err){

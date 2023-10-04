@@ -281,8 +281,8 @@ try {
           return  res.status(403).send(utils.error("Only Vender can update there details"));
         }
         const data = req.body;
-        const id = req.userId;
-        const result = await vendorModel.vendorDetailsUpdate(data,id);
+        const businessId = req.body.businessId;
+        const result = await vendorModel.vendorDetailsUpdate(data,businessId);
         return res.status(200).send(utils.response(result));
 
       } catch (err) {

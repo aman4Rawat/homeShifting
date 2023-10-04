@@ -123,6 +123,34 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
+    updateUserBGImage: async (req, res) => {
+      try {
+        if (req.role !== 'USER' && req.role !== 'VENDOR') {
+          return res
+            .status(401)
+            .send(utils.error("Only User can Apply!"));
+        }
+        upload(req, res, async (err) => {
+          if (err) {
+            return res.status(500).send(utils.error("Internal server error"));
+          }
+          
+          const id=req.userId;
+          const userDoc = { };
+          if(req.file){
+            userDoc.background_image = BASEURL+req.file.path;
+          }
+          const result = await userModel.userBGImageUpdate(userDoc,id);
+          if (result instanceof Error) {
+            return res.status(403).send(utils.error(result.message));
+          } else {
+            return res.status(201).send(utils.response(result));
+          }
+        });
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
     getUserById: async (req, res) => {
       try {
         if (req.role !== "USER" && req.role !== "VENDOR") {

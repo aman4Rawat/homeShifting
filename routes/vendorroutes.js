@@ -11,9 +11,10 @@ try {
   vendorRoutes.post("/uploaddocuments", vendorCtrl.uploadVendorDocuments);
   vendorRoutes.post("/uploadgallary", vendorCtrl.uploadgallary);
   vendorRoutes.post("/updatebusinessdetails", vendorCtrl.updatebusinessDetails);
+  vendorRoutes.post("/updatecontactdetails",JWTAUTH, vendorCtrl.updateContactDetails);
   vendorRoutes.post("/updateadderess", vendorCtrl.updateAdderss);
   vendorRoutes.post("/updateapaymenttype", vendorCtrl.updatePatmentType);
-  vendorRoutes.post("/updatevenderdetails", vendorCtrl.updateVendorDetails);
+  vendorRoutes.post("/updatevenderdetails",JWTAUTH, vendorCtrl.updateVendorDetails);
 
   //reviewsssssssssssss
   vendorRoutes.post("/reviewthisvendor",JWTAUTH, vendorCtrl.reviewThisVendor);
@@ -23,7 +24,6 @@ try {
 
 
   vendorRoutes.post("/suggestion",JWTAUTH, vendorCtrl.suggestion);
-  vendorRoutes.post("/updatecontactdetails",JWTAUTH, vendorCtrl.updateContactDetails);
   vendorRoutes.post("/uploadsocialmedia",JWTAUTH, vendorCtrl.uploadSocialMedia);
   vendorRoutes.post("/uploadtiming",JWTAUTH, vendorCtrl.uploadTiming);
   // depricated  uploadpaymenttype

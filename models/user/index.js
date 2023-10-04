@@ -140,6 +140,21 @@ try {
         return err;
       }
     },
+    userBGImageUpdate: async (userDoc,id) => {
+      try {
+        const condition = {}
+        for (const key in userDoc) {
+          if (userDoc[key] !== undefined) {
+            condition[key] = userDoc[key];
+          }
+        }
+        const result = await userSchema.findByIdAndUpdate({_id:id},{$set:condition},{new:true});
+        return result
+      } catch (err) {
+        console.log(err);
+        return err;
+      }
+    },
     getByIdUser: async (id) => {
       try {
         const user = await userSchema.findOne({

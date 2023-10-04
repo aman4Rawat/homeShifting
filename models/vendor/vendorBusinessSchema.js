@@ -4,8 +4,13 @@ const vendorBusinessSchema = new mongoose.Schema(
   {
     bgImage: {
       type: String,
+      default:"http://13.48.193.62:3001/image/i/noImage.png"
     },
     profileImage: {
+      type: String,
+      default:"http://13.48.193.62:3001/image/i/noImage.png"
+    },
+    name: {
       type: String,
     },
     isVerified: {

@@ -29,13 +29,19 @@ const userSchema = new mongoose.Schema({
     },
   },
   profile_image:{
-    type:String
+    type:String,
+    default:"http://13.48.193.62:3001/image/i/noImage.png"
+  },
+  background_image:{
+    type:String,
+    default:"http://13.48.193.62:3001/image/i/noImage.png"
   },
   gender:{
     type:String
   },
   dob:{
-    type:String
+    type:String,
+    default:""
   },
   refCode:{
     type:String

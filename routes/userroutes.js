@@ -8,6 +8,7 @@ try {
   userroutes.post("/verifyotp", userCtrl.verifyotp);
   userroutes.post("/registeruser", userCtrl.adduser);
   userroutes.post("/updateuser",JWTAUTH, userCtrl.updateuser);
+  userroutes.post("/updateuserbgimage",JWTAUTH, userCtrl.updateUserBGImage);
   userroutes.post("/getuserbyid",JWTAUTH, userCtrl.getUserById);
   userroutes.post("/applyforvendor",JWTAUTH, userCtrl.applyForVendor);
   userroutes.post("/applyforadvertising",JWTAUTH, userCtrl.applyForAdvertising);
