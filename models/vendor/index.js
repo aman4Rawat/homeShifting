@@ -900,7 +900,7 @@ try {
         const condition = {};
         condition.state = body.stateId;
         if(body.search){
-          condition.name = { $regex: search, $options: "i" };
+          condition.name = { $regex: body.search, $options: "i" };
         }
         await City.createIndexes({state:1});
         const city = await City.find(condition).sort({name:1});

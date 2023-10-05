@@ -1,4 +1,3 @@
-const { PaymentGateway } = require("@cashfreepayments/cashfree-sdk");
 const {
   CFConfig,
   CFEnvironment,
