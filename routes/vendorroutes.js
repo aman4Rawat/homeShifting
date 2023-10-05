@@ -15,7 +15,7 @@ try {
   vendorRoutes.post("/updateadderess", vendorCtrl.updateAdderss);
   vendorRoutes.post("/updateapaymenttype", vendorCtrl.updatePatmentType);
   vendorRoutes.post("/updatevenderdetails",JWTAUTH, vendorCtrl.updateVendorDetails);
-
+  
   //reviewsssssssssssss
   vendorRoutes.post("/reviewthisvendor",JWTAUTH, vendorCtrl.reviewThisVendor);
   vendorRoutes.post("/getmyreviewofthisvendor",JWTAUTH, vendorCtrl.getMyReviewOfThisVendor);
@@ -35,10 +35,6 @@ try {
   vendorRoutes.post("/dashboardleadsbyid",JWTAUTH, vendorCtrl.dashboardLeadById);
 
 
-
-
-  
-
   vendorRoutes.post("/packagedetails",JWTAUTH, vendorCtrl.packageDetails);
   vendorRoutes.post("/currentpackage",JWTAUTH, vendorCtrl.currentPackageDetails);
   vendorRoutes.post("/singlepackagedetailsbyid",JWTAUTH, vendorCtrl.singlePackageDetailsById);
@@ -48,7 +44,11 @@ try {
   vendorRoutes.post("/askrating",JWTAUTH, vendorCtrl.askForRating);
   vendorRoutes.post("/passbooklisting",JWTAUTH, vendorCtrl.passbookListing);
 
+  //===================== Apis only for State and City ==================
 
+  vendorRoutes.get("/getstate", vendorCtrl.getState);
+  vendorRoutes.post("/getcity", vendorCtrl.getCity);
+  
   
   
   module.exports = vendorRoutes;

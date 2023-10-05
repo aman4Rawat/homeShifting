@@ -6,6 +6,7 @@ const CategorySchema = require("../services/categorySchema.js");
 const {socialMediaSchemas,clickSchema} = require("./socialMedia.js");
 const {reviewsSchema,suggestionsSchema} = require("./reviews.js");
 const {pruchasedPackageSchema} = require("../payment/paymentSchema.js");
+const {State, City} = require("./stateAndCitySchrma.js");
 const passbookSchema = require("./passbookSchema.js");
 const userSchema = require("../user/userSchema.js");
 const notificationSchema = require("../notification/notificationSchema.js");
@@ -876,6 +877,34 @@ try {
         }
         const response = await reviewsSchema.findByIdAndUpdate({_id:body.reviewId},{$push:{response:obj}},{new:true});
 
+      } catch (err) {
+        return err;
+      }
+    },
+
+    //===================== Apis only for State and City ==================
+
+    getState: async () => {
+      try {
+        const state = await State.find({}).sort({name:1});
+        return state;
+      } catch (err) {
+        return err;
+      }
+    },
+    getCity: async (body) => {
+      try {
+        if(!body.stateId){
+          return new Error("please enter state id");
+        }
+        const condition = {};
+        condition.state = body.stateId;
+        if(body.search){
+          condition.name = { $regex: search, $options: "i" };
+        }
+        await City.createIndexes({state:1});
+        const city = await City.find(condition).sort({name:1});
+        return city;
       } catch (err) {
         return err;
       }

@@ -366,6 +366,7 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
+
     uploadTiming: async (req, res) => {
       try {
         if(!req.role === "VENDOR"){
@@ -672,6 +673,36 @@ try {
         } 
       },
 
+      //===================== Apis only for State and City ==================
+      getState: async (req, res) => {
+        try {
+          const result = await vendorModel.getState();
+          if (result instanceof Error) {
+            return res.status(403).send(utils.error(result.message));
+          } else {
+            return res.status(200).send(utils.response(result));
+          }
+        } catch (err) {
+          return res.status(403).send(utils.error(err));
+        } 
+      },
+      getCity: async (req, res) => {
+        try {
+         const body = {
+            stateId:req.body.stateId,
+            search: req.body.search,
+          }
+          
+          const result = await vendorModel.getCity(body);
+          if (result instanceof Error) {
+            return res.status(403).send(utils.error(result.message));
+          } else {
+            return res.status(200).send(utils.response(result));
+          }
+        } catch (err) {
+          return res.status(403).send(utils.error(err));
+        } 
+      },
 
 
 

@@ -41,9 +41,11 @@ const vendorBusinessSchema = new mongoose.Schema(
     },
     startTime:{
         type:String,
+        default:"08:00 AM",
     },
     endTime:{
         type:String,
+        default:"09:00 PM",
     },
     yearOfEsteblish:{
         type:String,
@@ -100,9 +102,9 @@ const vendorBusinessSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    timing:{
-      type:Array,
-    },
+    // timing:{
+    //   type:Array,
+    // },
     address:[],
     paymentType:[],
     rating:{type:Number, default:0},
