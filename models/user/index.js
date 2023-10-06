@@ -9,6 +9,8 @@ const referralCode = require("referral-code-generator");
 const categorySchema = require("../services/categorySchema.js");
 const BASEURL = process.env.BASEURL;
 const JWTSECRET = process.env.JWTSECRET;
+
+const {imageDelete} = require("../../services/deleteImage.js");
 try {
   module.exports = {
     adduser: async (body) => {
@@ -127,6 +129,11 @@ try {
     },
     updateUser: async (userDoc,id) => {
       try {
+
+        if(userDoc.profile_image){
+          const feild = "profile_image";
+          await imageDelete(id,userSchema,feild);
+        }
         const condition = {}
         for (const key in userDoc) {
           if (userDoc[key] !== undefined) {
@@ -142,16 +149,22 @@ try {
     },
     userBGImageUpdate: async (userDoc,id) => {
       try {
+        if(userDoc.background_image){
+          const feild = "background_image";
+          await imageDelete(id,userSchema,feild);
+        }
+
         const condition = {}
         for (const key in userDoc) {
           if (userDoc[key] !== undefined) {
             condition[key] = userDoc[key];
           }
         }
+
         const result = await userSchema.findByIdAndUpdate({_id:id},{$set:condition},{new:true});
         return result
       } catch (err) {
-        console.log(err);
+        console.log(err.message);
         return err;
       }
     },

@@ -11,6 +11,8 @@ const passbookSchema = require("./passbookSchema.js");
 const userSchema = require("../user/userSchema.js");
 const notificationSchema = require("../notification/notificationSchema.js");
 const BASEURL = process.env.BASEURL;
+const {imageDelete,galaryImageDelete} = require("../../services/deleteImage.js")
+
 try {
 
   module.exports = {
@@ -56,7 +58,10 @@ try {
     },
     vendorprofileimageUpload: async (data, id) => {
       try {
-        
+        if(data){
+          const feild = "profileImage";
+          await imageDelete(id,vendorBusinessSchema,feild);
+        }
         const results = await vendorBusinessSchema.findById({_id:id});
         if(!results){
           return new Error("No vendor found with this Id");
@@ -70,7 +75,10 @@ try {
     },
     vendorBackgroundimageUpload: async (data, id) => {
       try {
-        
+        if(data){
+          const feild = "bgImage";
+          await imageDelete(id,vendorBusinessSchema,feild);
+        }
         const results = await vendorBusinessSchema.findById({_id:id});
         if(!results){
           return new Error("No vendor found with this Id");
@@ -183,6 +191,24 @@ try {
         return err;
       }
     },
+    vendorGallaryDelete: async (imageLink) => {
+      try {
+        const image = imageLink.split("/")[4];
+        if(imageLink){
+          const feild = "image";
+          await galaryImageDelete(imageLink,gallarySchema,feild);
+        }
+        const results = await gallarySchema.findOneAndDelete({image:imageLink});
+        if(!results){
+          return new Error("No image found with this image link");
+        }
+        return "successfully deleted"
+
+      } catch (err) {
+        return err;
+      }
+    },
+
     vendorSocialMedia: async (data,id) => {
       try {
         const vendor = await socialMediaSchemas.findOne({vendorId:id});
@@ -385,7 +411,7 @@ try {
         const business = await vendorBusinessSchema.findOne({_id:body.businessId}).populate("packagePurchaseId");
         if(!business?.packagePurchaseId || business?.packagePurchaseId?.expireDate < new Date(Date.now())){return new Error("Package not found or expire with this business")};
         if(body.clickType === "SOCIAL"){
-          if(business?.packagePurchaseId?.package?.socialMediaCharges > business?.wallet){return new Error("you don't have enough balance in your wallet")};
+          if(business?.packagePurchaseId?.package?.socialMediaCharges > business?.wallet){return new Error("Vendor haven't enough balance in wallet.")};
           if(business.userId != body.userId){
             const condition = {};
             condition.vendorId=business.userId;
@@ -412,7 +438,7 @@ try {
            return new Error("You can't Increase click on your own business");
           } 
         }else if(body.clickType === "WEBSITE"){
-          if(business?.packagePurchaseId?.package?.websiteCharges > business?.wallet){return new Error("you don't have enough balance in your wallet")};
+          if(business?.packagePurchaseId?.package?.websiteCharges > business?.wallet){return new Error("Vendor haven't enough balance in wallet.")};
           if(business.userId != body.userId){
             const condition = {};
             condition.vendorId=business.userId;
@@ -439,7 +465,7 @@ try {
            return new Error("You can't Increase click on your own business");
           } 
         }else if(body.clickType === "BESTDEAL"){
-          if(business?.packagePurchaseId?.package?.bestDealCharges > business?.wallet){return new Error("you don't have enough balance in your wallet")};
+          if(business?.packagePurchaseId?.package?.bestDealCharges > business?.wallet){return new Error("Vendor haven't enough balance in wallet.")};
           if(business.userId != body.userId){
             const condition = {};
             condition.vendorId=business.userId;
@@ -466,7 +492,7 @@ try {
            return new Error("You can't Increase click on your own business");
           } 
         }else if(body.clickType === "CALL"){
-          if(business?.packagePurchaseId?.package?.callCharges > business?.wallet){return new Error("you don't have enough balance in your wallet")};
+          if(business?.packagePurchaseId?.package?.callCharges > business?.wallet){return new Error("Vendor haven't enough balance in wallet.")};
           if(business.userId != body.userId){
             const condition = {};
             condition.vendorId=business.userId;
@@ -493,7 +519,7 @@ try {
            return new Error("You can't Increase click on your own business");
           } 
         }else if(body.clickType === "DIRECTION"){
-          if(business?.packagePurchaseId?.package?.directionCharges > business?.wallet){return new Error("you don't have enough balance in your wallet")};
+          if(business?.packagePurchaseId?.package?.directionCharges > business?.wallet){return new Error("Vendor haven't enough balance in wallet.")};
           if(business.userId != body.userId){
             const condition = {};
             condition.vendorId=business.userId;
@@ -520,7 +546,7 @@ try {
            return new Error("You can't Increase click on your own business");
           } 
         }else if(body.clickType === "CHAT"){
-          if(business?.packagePurchaseId?.package?.chatCharges > business?.wallet){return new Error("you don't have enough balance in your wallet")};
+          if(business?.packagePurchaseId?.package?.chatCharges > business?.wallet){return new Error("Vendor haven't enough balance in wallet.")};
           if(business.userId != body.userId){
             const condition = {};
             condition.vendorId=business.userId;
@@ -547,7 +573,7 @@ try {
            return new Error("You can't Increase click on your own business");
           } 
         }else if(body.clickType === "INQUERY"){
-          if(business?.packagePurchaseId?.package?.inqueryCharges > business?.wallet){return new Error("you don't have enough balance in your wallet")};
+          if(business?.packagePurchaseId?.package?.inqueryCharges > business?.wallet){return new Error("Vendor haven't enough balance in wallet.")};
           if(business.userId != body.userId){
             const condition = {};
             condition.vendorId=business.userId;
@@ -574,7 +600,7 @@ try {
            return new Error("You can't Increase click on your own business");
           } 
         }else{
-          if(business?.packagePurchaseId?.package?.otherCharges > business?.wallet){return new Error("you don't have enough balance in your wallet")};
+          if(business?.packagePurchaseId?.package?.otherCharges > business?.wallet){return new Error("Vendor haven't enough balance in wallet.")};
           if(business.userId != body.userId){
             const condition = {};
             condition.vendorId=business.userId;

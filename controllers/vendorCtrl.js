@@ -181,6 +181,17 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
+    deletegallaryimages: async (req, res, next) => {
+      try {
+        
+          const imageLink = req.body.imageLink;
+          const result = await vendorModel.vendorGallaryDelete(imageLink);
+          return res.status(200).send(utils.response(result));
+        
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
     uploadSocialMedia: async (req, res, next) => {
       try {
         if(!req.role === "VENDOR"){

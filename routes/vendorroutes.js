@@ -10,6 +10,7 @@ try {
   vendorRoutes.post("/vendorbackgroundimage", vendorCtrl.vendorbackgroundimage);
   vendorRoutes.post("/uploaddocuments", vendorCtrl.uploadVendorDocuments);
   vendorRoutes.post("/uploadgallary", vendorCtrl.uploadgallary);
+  vendorRoutes.post("/deleteimages", vendorCtrl.deletegallaryimages);
   vendorRoutes.post("/updatebusinessdetails", vendorCtrl.updatebusinessDetails);
   vendorRoutes.post("/updatecontactdetails",JWTAUTH, vendorCtrl.updateContactDetails);
   vendorRoutes.post("/updateadderess", vendorCtrl.updateAdderss);

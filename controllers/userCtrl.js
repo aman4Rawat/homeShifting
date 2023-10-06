@@ -106,6 +106,7 @@ try {
           const userDoc = {
             is_active: req.body.is_active,
             gender: req.body.gender,
+            email: req.body.email,
             name: req.body.name,
             dob: req.body.dob,
           };
