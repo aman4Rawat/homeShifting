@@ -128,7 +128,10 @@ try {
           abc = abc + x.rating;
           count = count + 1;
         })  
-        const totalRating = (abc/count).toFixed(1);
+        var totalRating = (abc/count).toFixed(1);
+        if(isNaN(totalRating)){
+          totalRating = 0;
+        }
         const reviews = {
           totalRating:totalRating,
           totalReviews:count,
@@ -272,6 +275,7 @@ try {
     },
     addressUpdate: async (data,id) => {
       try {
+        let localArea = data.city + " " + data.area;
           const business = await vendorBusinessSchema.findOne({_id:id});
           if(!business){return new Error("business id galat hai")};
           const condition = {}
@@ -280,7 +284,7 @@ try {
               condition[key] = data[key];
             }
           }
-          const result = await vendorBusinessSchema.findByIdAndUpdate({_id:business.id},{$set:{address:condition}},{new:true});
+          const result = await vendorBusinessSchema.findByIdAndUpdate({_id:business.id},{$set:{address:condition,area:localArea}},{new:true});
           if(data.latituse && data.longitude){
           await vendorBusinessSchema.findByIdAndUpdate({_id:business.id},{$set:{latituse:data.latituse,longitude:data.longitude}},{new:true});
           }
@@ -320,6 +324,26 @@ try {
       }
     },
     // reviewssssss
+    reviewByBusinessId: async (data)=>{
+      try{
+        const condition = {};
+        if(data.sort === 'Heighest' ){
+          condition.rating = -1
+        }
+        if(data.sort === 'Lowest' ){
+          condition.rating = 1
+        }
+        if(data.sort === 'New' ){
+          condition.createdAt = -1
+        }
+
+        const reviewsData = await reviewsSchema.find({vendorId:data.businessId},{response:0}).sort(condition).populate("userId");
+        return reviewsData;
+
+      }catch(err){
+        return err.message
+      }
+    },
     reviewByUser: async (data) => {
       try {
         const sex = await reviewsSchema.findOne({vendorId:data.businessId,userId:data.userId}).sort({createdAt:-1});
@@ -691,10 +715,10 @@ try {
     dashboardAllLeads: async (body) => {
       try {
         if(!body.businessId){
-        var businessNameAndAmount = await vendorBusinessSchema.findOne({userId:body.userId},{wallet:1,name:1, address:1}).sort({createdAt:1});
+        var businessNameAndAmount = await vendorBusinessSchema.findOne({userId:body.userId},{wallet:1,categoryName:1, address:1}).sort({createdAt:1});
         body.businessId = businessNameAndAmount?._id ?? "64ca05ef24a527edc66a0ea1";
         }else{
-          var businessNameAndAmount = await vendorBusinessSchema.findById({_id:body.businessId},{wallet:1,name:1, address:1});
+          var businessNameAndAmount = await vendorBusinessSchema.findById({_id:body.businessId},{wallet:1,categoryName:1, address:1});
         }
         const condition = {}
         condition.businessId = body.businessId;
@@ -710,7 +734,7 @@ try {
         if(body.isRead){
           condition.isRead = true;
         }
-        // const callLeads = await clickSchema.find(condition).populate("userId",{createdAt:0}).populate("businessId",{timing:0,createdAt:0}).skip((body.page -1)*body.limit).limit(body.limit);
+        // const callLeads = await clickSchema.find(condition).populate("userId",{createdAt:0}).popula  te("businessId",{timing:0,createdAt:0}).skip((body.page -1)*body.limit).limit(body.limit);
         const callLeads = await clickSchema.find(condition).sort({createdAt:-1}).populate("userId",{createdAt:0}).populate("businessId",{timing:0,createdAt:0});
         return {businessNameAndAmount,callLeads}
        
@@ -921,14 +945,14 @@ try {
     getCity: async (body) => {
       try {
         if(!body.stateId){
-          return new Error("please enter state id");
+          return new Error("please enter state first");
         }
         const condition = {};
         condition.state = body.stateId;
         if(body.search){
           condition.name = { $regex: body.search, $options: "i" };
         }
-        await City.createIndexes({state:1});
+        
         const city = await City.find(condition).sort({name:1});
         return city;
       } catch (err) {

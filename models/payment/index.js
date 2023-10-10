@@ -3,13 +3,17 @@ const {
   CFEnvironment,
   CFPaymentGateway,
 } = require("cashfree-pg-sdk-nodejs");
-const { paymentSchema, suggestionPlaneSchema, pruchasedPackageSchema} = require("./paymentSchema.js");
+const {
+  paymentSchema,
+  suggestionPlaneSchema,
+  pruchasedPackageSchema,
+} = require("./paymentSchema.js");
 const packageSchame = require("../admin/packageSchame.js");
 const businessSchema = require("../vendor/vendorBusinessSchema.js");
 const passbookSchema = require("../vendor/passbookSchema.js");
 const invoiceSchema = require("./invoiceSchema.js");
 const userSchema = require("../user/userSchema.js");
-const {generatePDF} = require("../../middlewares/pdf.js");
+const { generatePDF } = require("../../middlewares/pdf.js");
 const PAYMENTKEY = process.env.TESTPAYMENTKEY;
 const PAYMENTSECTRET = process.env.TESTPAYMENTSECRET;
 
@@ -19,7 +23,7 @@ var cfConfig = new CFConfig(
   PAYMENTKEY,
   PAYMENTSECTRET
 );
-const {CFCustomerDetails , CFOrderRequest} = require("cashfree-pg-sdk-nodejs");
+const { CFCustomerDetails, CFOrderRequest } = require("cashfree-pg-sdk-nodejs");
 try {
   module.exports = {
     // addPayment: async (body) => {
@@ -65,11 +69,13 @@ try {
 
     orderCreate: async (body) => {
       try {
-        const paidAmount = Number(body.amount) * process.env.GST + Number(body.amount);
+        const paidAmount =
+          Number(body.amount) * process.env.GST + Number(body.amount);
         var customerDetails = new CFCustomerDetails();
         customerDetails.customerId = body.userId;
         customerDetails.customerPhone = body?.mobileNumber ?? "8130289007";
-        customerDetails.customerEmail = body?.email ?? "developerfarhan7@gmail.com";
+        customerDetails.customerEmail =
+          body?.email ?? "developerfarhan7@gmail.com";
         var d = {};
         d["order_tag_01"] = "TESTING IT";
 
@@ -89,7 +95,6 @@ try {
               paidAmount: paidAmount,
               userId: body.userId,
               businessId: body.businessId,
-
             });
             await payment.save();
           }
@@ -105,9 +110,9 @@ try {
     getPayment: async (body) => {
       try {
         var apiInstance = new CFPaymentGateway();
-        var orderId = body.orderId; 
+        var orderId = body.orderId;
         var result = await apiInstance.getOrder(cfConfig, orderId);
-        if(result?.cfOrder?.orderStatus === 'PAID'){
+        if (result?.cfOrder?.orderStatus === "PAID") {
           const payment = await paymentSchema.findOneAndUpdate(
             { orderId: body.orderId },
             {
@@ -118,44 +123,47 @@ try {
             },
             { new: true }
           );
-         const business = await businessSchema.findOneAndUpdate(
+          const business = await businessSchema.findOneAndUpdate(
             { _id: payment.businessId },
-            { $inc: { wallet: payment.amount} },
+            { $inc: { wallet: payment.amount } },
             { new: true }
           );
 
           const passbook = new passbookSchema({
-            businessId:payment.businessId,
-            userId:body?.userId,
-            title:"Payment Received",
-            amount:payment.amount,
-            transactionType:"CREDIT",
-            availableBalance:business?.wallet,
-           });
-            await passbook.save();
-        
-        await invoiceSchema.create({
-          businessId: payment.businessId,
-          payment: payment._id,
-        });
+            businessId: payment.businessId,
+            userId: body?.userId,
+            title: "Payment Received",
+            amount: payment.amount,
+            transactionType: "CREDIT",
+            availableBalance: business?.wallet,
+          });
+          await passbook.save();
 
-        return {status: 'PAID', payment: payment, business: business?.wallet}
+          await invoiceSchema.create({
+            businessId: payment.businessId,
+            payment: payment._id,
+          });
 
+          return {
+            status: "PAID",
+            payment: payment,
+            business: business?.wallet,
+          };
         }
-        if(result?.cfOrder?.orderStatus !== 'PAID' ){
+        if (result?.cfOrder?.orderStatus !== "PAID") {
           const payment = await paymentSchema.findOneAndUpdate(
             { orderId: body.orderId },
             {
-              paymentStatus: 'FAILED',
+              paymentStatus: "FAILED",
               referenceId: result?.cfOrder?.referenceId,
               paymentMode: result?.cfOrder?.paymentMode,
             },
             { new: true }
           );
-          return {status: 'FAILED', payment: payment}
+          return { status: "FAILED", payment: payment };
         }
       } catch (err) {
-          return err;
+        return err;
       }
     },
 
@@ -210,12 +218,20 @@ try {
 
     purchasePackage: async (body) => {
       try {
-        const business = await businessSchema.findOne({ userId: body.userId }).sort({ createdAt: 1 });
+        if (!body.businessId) {
+          var business = await businessSchema
+            .findOne({ userId: body.userId })
+            .sort({ createdAt: 1 });
+        }else{
+          var business = await businessSchema
+            .findOne({ _id: body.businessId });
+        }
         const package = await packageSchame.findOne({ _id: body.packageId });
         if (!package) {
           return new Error("package not found");
         }
-        const paidAmount = Number(body.amount) * process.env.GST + Number(body.amount);
+        const paidAmount =
+          Number(body.amount) * process.env.GST + Number(body.amount);
         var customerDetails = new CFCustomerDetails();
         customerDetails.customerId = body.userId;
         customerDetails.customerPhone = business?.mobileNumber.toString() ?? "";
@@ -231,7 +247,10 @@ try {
         try {
           var apiInstance = new CFPaymentGateway();
 
-         const nayaorder = await apiInstance.orderCreate(cfConfig, cFOrderRequest);
+          const nayaorder = await apiInstance.orderCreate(
+            cfConfig,
+            cFOrderRequest
+          );
           if (nayaorder?.cfOrder?.orderId) {
             const payment = new paymentSchema({
               orderId: nayaorder?.cfOrder?.orderId,
@@ -241,13 +260,12 @@ try {
               businessId: business._id,
               productName: "Recharge Wallet",
             });
-           var abc = await payment.save();
-          };
+            var abc = await payment.save();
+          }
           return nayaorder;
         } catch (e) {
           console.log(e);
         }
-        
       } catch (err) {
         return err;
       }
@@ -255,15 +273,16 @@ try {
 
     verifyPurchasePackage: async (body) => {
       try {
-        const package = await packageSchame.findById({_id: body.packageId});
+        const package = await packageSchame.findById({ _id: body.packageId });
         if (!package) {
           return new Error("package not found");
         }
-        const paidAmount = Number(body.amount) * process.env.GST + Number(body.amount);
+        const paidAmount =
+          Number(body.amount) * process.env.GST + Number(body.amount);
         var apiInstance = new CFPaymentGateway();
-        var orderId = body.orderId; 
+        var orderId = body.orderId;
         var result = await apiInstance.getOrder(cfConfig, orderId);
-        if(result?.cfOrder?.orderStatus === 'PAID'){
+        if (result?.cfOrder?.orderStatus === "PAID") {
           var payment = await paymentSchema.findOneAndUpdate(
             { orderId: body.orderId },
             {
@@ -274,14 +293,15 @@ try {
             { new: true }
           );
           const sexxx = new Date().getMonth() + package?.packageDuration;
-          const porn  = new Date().setMonth(sexxx);
-          
+          const porn = new Date().setMonth(sexxx);
+
           const some = new pruchasedPackageSchema({
             userId: body.userId,
             packageId: body.packageId,
             package: package,
             amount: payment.amount,
-            paidAmount: Number(payment.amount) * process.env.GST + Number(payment.amount),
+            paidAmount:
+              Number(payment.amount) * process.env.GST + Number(payment.amount),
             businessId: payment.businessId,
             expireDate: new Date(porn),
             orderId: result?.cfOrder?.orderId,
@@ -289,30 +309,40 @@ try {
           const purchase = await some.save();
           const business = await businessSchema.findOneAndUpdate(
             { _id: payment.businessId },
-            { $inc: { wallet: payment.amount}, $set: {packageId: body.packageId, packagePurchaseId: purchase._id} },
+            {
+              $inc: { wallet: payment.amount },
+              $set: {
+                packageId: body.packageId,
+                packagePurchaseId: purchase._id,
+              },
+            },
             { new: true }
           );
           const passbook = new passbookSchema({
-            businessId:payment.businessId,
-            userId:body?.userId,
-            title:"Purchase Package",
-            amount:payment.amount,
-            transactionType:"CREDIT",
-            availableBalance:business?.wallet,
-           });
-            await passbook.save();
-            await invoiceSchema.create({
-              businessId: payment.businessId,
-              payment: payment._id,
-            });
-        return {status: 'PAID', payment: payment, business: business?.wallet, purchase: purchase}
-
+            businessId: payment.businessId,
+            userId: body?.userId,
+            title: "Purchase Package",
+            amount: payment.amount,
+            transactionType: "CREDIT",
+            availableBalance: business?.wallet,
+          });
+          await passbook.save();
+          await invoiceSchema.create({
+            businessId: payment.businessId,
+            payment: payment._id,
+          });
+          return {
+            status: "PAID",
+            payment: payment,
+            business: business?.wallet,
+            purchase: purchase,
+          };
         }
-        if(result?.cfOrder?.orderStatus !== 'PAID' ){
+        if (result?.cfOrder?.orderStatus !== "PAID") {
           const payment = await paymentSchema.findOneAndUpdate(
             { orderId: body.orderId },
             {
-              paymentStatus: 'FAILED',
+              paymentStatus: "FAILED",
               referenceId: result?.cfOrder?.referenceId,
               paymentMode: result?.cfOrder?.paymentMode,
             },
@@ -322,9 +352,8 @@ try {
             businessId: payment.businessId,
             payment: payment._id,
           });
-          return {status: 'FAILED', payment: payment}
+          return { status: "FAILED", payment: payment };
         }
-
       } catch (err) {
         return err;
       }
@@ -332,9 +361,11 @@ try {
 
     getInvoice: async (body) => {
       try {
-        if(!body.businessId){
-        const business = await businessSchema.findOne({ userId: body.userId }).sort({ createdAt: 1 });
-        body.businessId = business?._id ?? "64ca05ef24a527edc66a0ea1";
+        if (!body.businessId) {
+          const business = await businessSchema
+            .findOne({ userId: body.userId })
+            .sort({ createdAt: 1 });
+          body.businessId = business?._id ?? "64ca05ef24a527edc66a0ea1";
         }
         const condition = { businessId: body.businessId };
         if (body.startDate && body.endDate) {
@@ -344,7 +375,8 @@ try {
           };
         }
         const payment = await invoiceSchema
-          .find(condition).populate("payment")
+          .find(condition)
+          .populate("payment")
           .sort({ createdAt: -1 });
 
         return payment;
@@ -355,21 +387,20 @@ try {
     },
 
     getInvoiceById: async (body) => {
-      try{
-        const data = await invoiceSchema.findOne({_id: body.invoiceId}).populate("payment");
-        if(!data){
+      try {
+        const data = await invoiceSchema
+          .findOne({ _id: body.invoiceId })
+          .populate("payment");
+        if (!data) {
           return new Error("invoice not found");
         }
 
         const invoice = await generatePDF(data);
         return invoice;
-
-
-      }catch(err){
-          return err
-        }
+      } catch (err) {
+        return err;
+      }
     },
-
   };
 } catch (e) {
   log.error(e);

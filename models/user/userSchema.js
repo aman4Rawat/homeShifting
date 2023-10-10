@@ -55,6 +55,10 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  businessId:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:"venderBusiness"
+  },
 },{timestamps:true});
 
 module.exports = mongoose.model("user", userSchema);

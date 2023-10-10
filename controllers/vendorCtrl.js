@@ -303,6 +303,22 @@ try {
 
 
     //reviews apis
+    reviewByBusinessId: async (req, res) => {
+      try {
+        const data = {
+          businessId:req.body.businessId,
+          sort:req.body.sort,
+        }
+        const result = await vendorModel.reviewByBusinessId(data);
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(200).send(utils.response(result));
+        }
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
     reviewThisVendor: async (req, res) => {
       try {
         if(!req.role === "USER"){
@@ -377,7 +393,7 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
-
+ // depricated uploadTiming
     uploadTiming: async (req, res) => {
       try {
         if(!req.role === "VENDOR"){

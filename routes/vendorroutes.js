@@ -18,6 +18,8 @@ try {
   vendorRoutes.post("/updatevenderdetails",JWTAUTH, vendorCtrl.updateVendorDetails);
   
   //reviewsssssssssssss
+
+  vendorRoutes.post("/reviewbybusinessid", vendorCtrl.reviewByBusinessId);
   vendorRoutes.post("/reviewthisvendor",JWTAUTH, vendorCtrl.reviewThisVendor);
   vendorRoutes.post("/getmyreviewofthisvendor",JWTAUTH, vendorCtrl.getMyReviewOfThisVendor);
   vendorRoutes.post("/businessreviewlist",JWTAUTH, vendorCtrl.businessReviewList);

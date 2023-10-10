@@ -29,7 +29,7 @@ try {
       try {
         const page = body.page || 1;
         const limit = body.limit|| 8;
-          const data = await serviceSchema.find({isDeleted:false}).skip((page-1)*limit).limit(limit);
+          const data = await serviceSchema.find({is_active:true}).skip((page-1)*limit).limit(limit);
           return data;
       } catch (err) {
         return err;
@@ -121,8 +121,48 @@ try {
         return err;
       }
     },
-    searchAll: async (search) => {
+    searchAll: async (body) => {
       try {
+
+        
+
+      if(body.search && !body.city){
+        const search = body.search;
+        const service = await serviceSchema.aggregate([
+          {
+            $match: { "name": { $regex: new RegExp(search, "i") } }
+          },
+          {
+            $project: {
+              isDeleted: 1,
+              _id: 1,
+              image: 1,
+              name: 1,
+              is_active: 1,
+              type: "Service"
+            }
+          },
+        ]);
+        const category = await categorySchema.aggregate([
+          {
+            $match: { "name": { $regex: new RegExp(search, "i") } }
+          },
+          {
+            $project: {
+              isDeleted: 1,
+              _id: 1,
+              image: 1,
+              name: 1,
+              is_active: 1,
+              serviceId:1,
+              serviceName:1,
+              type: "Category"
+            }
+          }
+        ]);
+        return {service, category};
+      }
+
         const category = await categorySchema.find( { "name" : { $regex : new RegExp(search, "i") } } );
         return category;
       } catch (err) {

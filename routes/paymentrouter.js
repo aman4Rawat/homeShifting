@@ -8,6 +8,7 @@ try {
     paymentRoute.post("/getpaymentstatus",jwtauth, paymentCtrl.getPaymentStatus);
     paymentRoute.post("/suggestionplaneadd",jwtauth, paymentCtrl.suggestionPlaneAdd);
     paymentRoute.post("/suggestionplanelist",jwtauth, paymentCtrl.suggestionPlaneList);
+    //package purchase
     paymentRoute.post("/purchasepackage",jwtauth, paymentCtrl.purchasePackage);
     paymentRoute.post("/verifypurchasepackage",jwtauth, paymentCtrl.verifyPurchasePackage);
     

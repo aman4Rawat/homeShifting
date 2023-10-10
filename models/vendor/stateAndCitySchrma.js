@@ -23,8 +23,7 @@ const city = new mongoose.Schema(
     collection: 'city',
   }
 );
-
-
+city.index({state:1});
 const State = mongoose.model("state", state);
 const City = mongoose.model("city", city);
 

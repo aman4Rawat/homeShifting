@@ -76,7 +76,7 @@ try {
       try {
         const body = {
           number: req.body.number,
-          otp: req.body.otp
+          otp: req.body.otp,
         };
         const verify = await userValidation.verifyOTP.validateAsync(body)
         const result = await userModel.verifyotp(verify);
@@ -168,7 +168,7 @@ try {
     },
     applyForVendor: async (req, res) => {
       try {
-        if (req.role !== "USER" || req.role !== "VENDOR") {
+        if (req.role !== "USER" && req.role !== "VENDOR") {
           return res
             .status(401)
             .send(utils.error("Only User or Vendor can Apply!"));

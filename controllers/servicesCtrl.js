@@ -136,9 +136,8 @@ try {
     },
     search: async (req, res) => {
       try {
-       const search = req.body.search;
-        
-        const result = await serviceModel.searchAll(search);
+       const body = req.body;
+        const result = await serviceModel.searchAll(body);
         return res.status(200).send(utils.response(result));
       } catch (err) {
         return res.status(403).send(utils.error(err));

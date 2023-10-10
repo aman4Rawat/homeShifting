@@ -32,6 +32,9 @@ try {
         .messages({
           "string.base": "{#label} should be a type of 'text'",
         }),
+      type: Joi.string().label("type").messages({
+        "string.base": "{#label} should be a string"
+      }),
     }),
     applyforVendor: Joi.object({
       number: Joi.string()

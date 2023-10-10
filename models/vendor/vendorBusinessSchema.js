@@ -10,9 +10,9 @@ const vendorBusinessSchema = new mongoose.Schema(
       type: String,
       default:"http://13.48.193.62:3001/image/i/noImage.png"
     },
-    name: {
-      type: String,
-    },
+    // name: {
+    //   type: String,
+    // },
     isVerified: {
       type: Boolean,
       default:false,
