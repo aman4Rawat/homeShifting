@@ -6,10 +6,12 @@ const CategorySchema = require("../services/categorySchema.js");
 const {socialMediaSchemas,clickSchema} = require("./socialMedia.js");
 const {reviewsSchema,suggestionsSchema} = require("./reviews.js");
 const {pruchasedPackageSchema} = require("../payment/paymentSchema.js");
-const {State, City} = require("./stateAndCitySchrma.js");
+const {State, City, Locality} = require("./stateAndCitySchrma.js");
+const {nameUpdateRequest} = require("./needfullSchema.js")
 const passbookSchema = require("./passbookSchema.js");
 const userSchema = require("../user/userSchema.js");
 const notificationSchema = require("../notification/notificationSchema.js");
+const referralCode = require("referral-code-generator");
 const BASEURL = process.env.BASEURL;
 const {imageDelete,galaryImageDelete} = require("../../services/deleteImage.js")
 
@@ -19,9 +21,15 @@ try {
 
     vendorProfile: async (body) => {
       try {
-        const user = await userSchema.findOne({mobile_number:body.mobileNumber});
+        let user = await userSchema.findOne({mobile_number:body.mobileNumber});
         if(!user){
-          return new Error("No user found with this number Please register first");
+          const codeRef = referralCode.alphaNumeric("uppercase", 2, 2);
+          const newUser = new userSchema({
+            mobile_number:body.mobileNumber,
+            role:"VENDOR",
+            refCode:codeRef
+          })
+          user = await newUser.save();
         }
        
         const condition = {};
@@ -94,7 +102,10 @@ try {
       try {
        const condition = {};
        const filter = {};
+       
        filter.categoryId = cId;
+       filter.wallet = {$gte:10}
+
         if(sort==="TOP"){
           condition.ratingCount = -1
         };
@@ -106,7 +117,7 @@ try {
           filter.isExpert = true
         };
 
-       const results = await vendorBusinessSchema.find(filter).sort(condition);
+       const results = await vendorBusinessSchema.find(filter).populate("packagePurchaseId").sort(condition);
         return results;
       } catch (err) {
         return err;
@@ -120,8 +131,9 @@ try {
         }
         const gallary = await gallarySchema.find({vendorId:vendor._id});
         const reviewsData = await reviewsSchema.find({vendorId:vendor._id}).populate("userId");
-        const totalServices = await vendorBusinessSchema.find({userId:vendor.userId},{categoryName:1,categoryId:1,companyName:1});
-        const links = await socialMediaSchemas.findOne({vendorId:totalServices._id});
+        const sex = await vendorBusinessSchema.find({_id:id},{services:1}).populate("services");
+        const totalServices = sex[0].services;
+        const links = await socialMediaSchemas.findOne({vendorId:vendor._id});
         let abc = 0;
         let count = 0;
         reviewsData.map((x)=>{
@@ -231,7 +243,8 @@ try {
         }else{
           const condition = {};
           for (const key in data) {
-            if (data[key] !== undefined && data[key] !== null && data[key] !== "") {
+            // if (data[key] !== undefined && data[key] !== null && data[key] !== "") {
+            if (data[key]) {
               condition[key] = data[key];
             }
           }
@@ -346,7 +359,7 @@ try {
     },
     reviewByUser: async (data) => {
       try {
-        const sex = await reviewsSchema.findOne({vendorId:data.businessId,userId:data.userId}).sort({createdAt:-1});
+        const sex = await reviewsSchema.findOne({vendorId:data.vid,userId:data.userId}).sort({createdAt:-1});
         if(!sex){
           const abc = new reviewsSchema({
             vendorId:data.vid,
@@ -357,7 +370,7 @@ try {
           const xyz = await abc.save();
           return xyz;
         }else{
-          await reviewsSchema.findOneAndUpdate({vendorId:data.businessId,userId:data.userId},{$set:{review:data.review,rating:data.rating}},{new:true});
+          await reviewsSchema.findOneAndUpdate({vendorId:data.vid,userId:data.userId},{$set:{review:data.review,rating:data.rating}},{new:true});
         }
         
       } catch (err) {
@@ -397,6 +410,20 @@ try {
         const abc = await vendorBusinessSchema.findById({_id:id});
         const result = await vendorBusinessSchema.findByIdAndUpdate({_id:id},{timing:data},{new:true});
         return result;
+      } catch (err) {
+        return err;
+      }
+    },
+    nameUpdateRequest: async (data) => {
+      try {
+    
+        const request = new nameUpdateRequest({
+          name:data.requestedName,
+          businessId:data.businessId,
+          userId:data.venderId
+        })
+        await request.save();
+        
       } catch (err) {
         return err;
       }
@@ -925,10 +952,23 @@ try {
           profileImage:business.profileImage,
           response:body.response
         }
-        const response = await reviewsSchema.findByIdAndUpdate({_id:body.reviewId},{$push:{response:obj}},{new:true});
+
+        const response = await reviewsSchema.findByIdAndUpdate({_id:body.reviewId},{$set:{response:obj}},{new:true});
+        // const response = await reviewsSchema.findByIdAndUpdate({_id:body.reviewId},{$push:{response:obj}},{new:true});
 
       } catch (err) {
         return err;
+      }
+    },
+
+    //add service or subCategories by businessId
+
+    addSubCategoryByBusinessId: async(businessId,subCategories)=>{
+      try{
+        const poplu = await vendorBusinessSchema.findByIdAndUpdate({_id:businessId},{$set:{services:subCategories}},{new:true});
+        return poplu;
+      }catch(meraLund){
+        return meraLund;
       }
     },
 
@@ -959,6 +999,59 @@ try {
         return err;
       }
     },
+    getLocality: async (body) => {
+      try {
+        if(!body.cityId){
+          return new Error("please enter city first");
+        }
+        const condition = {};
+        condition.city = body.cityId;
+        if(body.search){
+          condition.name = { $regex: body.search, $options: "i" };
+        }
+        //Schema change krna hai bus
+        const city = await Locality.find(condition).sort({name:1});
+        return city;
+      } catch (err) {
+        return err;
+      }
+    },
+    searchLocation: async (search) => {
+      try {
+        
+       const name = { $regex: search, $options: "i" };
+      //  const states = await State.find({name:query}).limit(5);
+      //  const cities = await City.find({name:query}).limit(5);
+      //  const localities = await Locality.find({name:query}).limit(5);
+
+
+
+
+    //      const location = await Locality.aggregate([
+    //   {
+    //     $match: {
+    //       $or: [{ name:name }, { cityName:name },{stateName:name}],
+    //       $lookup:{
+    //         from:"City",
+    //         localfeild:"sdfasdf",
+    //         forigenfeild:" dflsadf",
+    //         as:"data"
+    //       }
+    //     },
+    //   },
+    // ]);
+        
+    var location = await Locality.find({$or:[{name:name}, {cityName:name},{stateName:name}]}).limit(8);
+    if(location.length<1){
+       location = await City.find({$or:[{name:name},{stateName:name}]}).limit(8);
+
+    }
+        return location;
+      } catch (err) {
+        return err;
+      }
+    },
+
 
   };
 } catch (e) {

@@ -1,9 +1,14 @@
 const adminSchema = require("./adminSchema.js");
+const vendorBusinessSchema = require("../vendor/vendorBusinessSchema.js")
 const bannerSchema = require("./bannerSchema.js");
 const banner3Schema = require("./banner3Schema.js");
 const packageSchema = require("./packageSchame.js");
+const userSchema = require("../user/userSchema.js");
+const {Locality, City, State} = require("../vendor/stateAndCitySchrma.js");
+const {nameUpdateRequest} = require("../vendor/needfullSchema.js");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { Schema } = require("mongoose");
 const JWTSECRET = process.env.JWTSECRET;
 const BASEURL = process.env.BASEURL;
 try {
@@ -46,7 +51,6 @@ try {
         return err;
       }
     },
-
     addAdmin: async (doc) => {
       try {
         const hashPassword = await bcrypt.hash(doc.password, 12);
@@ -60,6 +64,17 @@ try {
         return await admin.save();
       } catch (err) {
         return new Error(err.errmsg);
+      }
+    },
+    adminById:async(id)=>{
+      try {
+        const result = await adminSchema.findById({_id:id});
+        if(!result){
+          return new Error("No data found")
+        }
+        return result;
+      } catch (err) {
+        return err
       }
     },
     loginAdmin: async (doc) => {
@@ -114,7 +129,151 @@ try {
         return err
       }
     },
+    allUserss:async(body)=>{
+      try {
+        const limit = body.limit || 10;
+        const page = body.page || 1;
+        
+        const condition={};
+        condition.role = "USER";
+        if(body.search){
+          condition.name = { $regex: new RegExp(body.search, "i") }
+        };
 
+        const sex = await userSchema.find(condition).countDocuments();
+        totalPages = Math.ceil(sex/limit);
+        const result = await userSchema.find(condition).skip((page-1)*limit).limit(limit);
+        return {result,totalPages};
+        
+      } catch (error) {
+       return error 
+      }
+    },
+    allVendors:async(body)=>{
+      try {
+        const limit = body.limit || 10;
+        const page = body.page || 1;
+        
+        const condition={};
+        condition.role = "VENDOR";
+        if(body.search){
+          condition.name = { $regex: new RegExp(body.search, "i") }
+        };
+
+        const sex = await userSchema.find(condition).countDocuments();
+        totalPages = Math.ceil(sex/limit);
+        const result = await userSchema.find(condition).skip((page-1)*limit).limit(limit);
+        return {result,totalPages};
+        
+      } catch (error) {
+       return error 
+      }
+    },
+    nameChangeRequestList:async(body)=>{
+      try {
+        const limit = body.limit || 10;
+        const page = body.page || 1;
+        
+        const count = await nameUpdateRequest.find().countDocuments();
+        totalPages = Math.ceil(count/limit);
+        const result = await nameUpdateRequest.find().populate("businessId",{companyName:1}).skip((page-1)*limit).limit(limit);
+        return {result,totalPages};
+        
+      } catch (error) {
+       return error 
+      }
+    },
+    nameChangeRequestUpdate:async(body)=>{
+      try {
+        if(body.what){
+          const result = await vendorBusinessSchema.findByIdAndUpdate({_id:body.businessId},{companyName:body.name},{new:true});
+          await nameUpdateRequest.findByIdAndDelete({_id:body.id});
+          return result;
+        }
+        else{
+          await nameUpdateRequest.findByIdAndDelete({_id:body.id});
+          return "Rejected Successfully"
+        }
+        
+      } catch (error) {
+       return error 
+      }
+    },
+    addlocality: async(data)=>{
+      try{
+        if(!data.cityId || !data.name){
+          return new Error("Please Enter both City and Name")
+        }
+        const city = await City.findById({_id:data.cityId}).populate("state");
+        const condition={};
+          condition.city = data.cityId;
+          condition.name = { $regex: new RegExp(data.name, "i") }
+        const oldData = await Locality.find(condition);
+        if(oldData.length>0){
+          return oldData;
+        }else{
+          const poplu = new Locality({
+            city:data.cityId,
+            cityName: city.name,
+            stateName:city?.state?.name,
+            name: data.name,
+          })
+          const sexa = await poplu.save();
+          return sexa;
+        }
+      }catch(err){return err}
+    },
+    getlocality: async(data)=>{
+      try{
+       const condition={
+        name:{ $regex: new RegExp(data.name, "i") }
+       };
+       if(data.city){
+         condition.cityName = { $regex: new RegExp(data.city, "i") }
+       }
+       
+       const result = await Locality.find(condition).skip((data.page-1)*data.limit).limit(data.limit);
+
+      }catch(err){return err}
+    },
+    updatelocality: async(data)=>{
+      try{
+       if(data.cityId){
+         condition.city = data.cityId;
+         const poplu = await City.findById({_id:data.cityId});
+         condition.cityName = poplu?.name;
+       };
+
+       if(data.name){
+        condition.name = data.name;
+       }
+       if(data.status){
+        condition.isActive = data.ststus;
+       }
+       
+       
+       const result = await Locality.findByIdAndUpdate({_id:data.id},{$set:condition},{new:true});
+       return result;
+
+      }catch(err){return err}
+    },
+    zroorat: async()=>{
+      try{
+       
+      const arr = await City.find().populate("state");
+    const newabro =  arr.map(async(x)=>{
+        if(!x.stateName){
+          console.log("yaha ayiiiiiiiiiiiiiiiiiiiiiiiiiii")
+          await City.findByIdAndUpdate({_id:x.id},{stateName:x.state.name},{new:true});
+        }else{
+          console.log("doneeeeeeeeeeeeeeeeeeeee")
+        }
+      })
+
+      return "sucess"
+
+      }catch(err){return err}
+    },
   };
 } catch (e) {
   log.error(e);

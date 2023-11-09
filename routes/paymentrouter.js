@@ -1,6 +1,7 @@
 const paymentRoute = require("express").Router();
 const paymentCtrl = require("../controllers/paymentCtrl.js");
 const jwtauth = require("../middlewares/auth");
+const apyment = require("../services/payment.js")
 
 try {
     paymentRoute.post("/createpayment",jwtauth, paymentCtrl.createPayment);
@@ -12,7 +13,10 @@ try {
     paymentRoute.post("/purchasepackage",jwtauth, paymentCtrl.purchasePackage);
     paymentRoute.post("/verifypurchasepackage",jwtauth, paymentCtrl.verifyPurchasePackage);
     
-
+    
+    
+    //PhonePe Payment Gateway
+    paymentRoute.post("/payment",jwtauth, apyment.phonePePayment);
     
     
     paymentRoute.post("/invoice",jwtauth, paymentCtrl.invoice);

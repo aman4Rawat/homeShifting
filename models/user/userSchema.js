@@ -7,8 +7,6 @@ const userSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    require: true,
-    unique: true,
     lowercase: true,
     validate: {
       validator: function (v) {
@@ -37,7 +35,8 @@ const userSchema = new mongoose.Schema({
     default:"http://13.48.193.62:3001/image/i/noImage.png"
   },
   gender:{
-    type:String
+    type:String,
+    default:"Male"
   },
   dob:{
     type:String,

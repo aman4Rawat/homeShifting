@@ -30,6 +30,8 @@ try {
   vendorRoutes.post("/uploadsocialmedia",JWTAUTH, vendorCtrl.uploadSocialMedia);
   vendorRoutes.post("/uploadtiming",JWTAUTH, vendorCtrl.uploadTiming);
   // depricated  uploadpaymenttype
+  vendorRoutes.post("/nameupdaterequest",JWTAUTH, vendorCtrl.nameUpdateRequest);
+
   vendorRoutes.post("/uploadpaymenttype",JWTAUTH, vendorCtrl.uploadPaymentType);
   vendorRoutes.post("/clickonsocialmedia",JWTAUTH, vendorCtrl.clickOnSocialMedia);
   vendorRoutes.post("/businessdashboard",JWTAUTH, vendorCtrl.businessDashboard);
@@ -51,6 +53,10 @@ try {
 
   vendorRoutes.get("/getstate", vendorCtrl.getState);
   vendorRoutes.post("/getcity", vendorCtrl.getCity);
+  vendorRoutes.post("/getlocality", vendorCtrl.getLocality);
+  vendorRoutes.post("/searchLocation", vendorCtrl.searchLocation);
+  
+  
   
   
   

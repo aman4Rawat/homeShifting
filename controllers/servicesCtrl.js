@@ -1,6 +1,7 @@
 
 const serviceModel = require('../models/services/index.js');
 const categoryModel = require('../models/services/index.js');
+const subCategoryModel = require('../models/services/index.js');
 const upload = require("../middlewares/multer.js");
 const utils = require("../libs/utils.js");
 const BASEURL = process.env.BASEURL;
@@ -27,7 +28,9 @@ try {
         if (req.role !== "ADMIN") {return res.status(401).send(utils.error("Only Admin can create Services"));}
       upload(req, res, async (err) => {
           if (err) { return res.status(500).send(utils.error("Internal server error")); }
-          const image = req.file.path;
+          if(req.file){
+            var image = req.file.path;
+          }
           const id = req.body.id;
           if(!id){return res.status(404).send(utils.error("Id is required"));}
           const name = req.body.name;
@@ -37,6 +40,9 @@ try {
         }
         if(image){
           data.image = BASEURL+image;
+        }
+        if(req.body.status){
+          data.is_active = req.body.status;
         }
         const result = await serviceModel.updateService(id,data)
         return res.status(200).send(utils.response(result));
@@ -89,7 +95,9 @@ try {
         if (req.role !== "ADMIN") {return res.status(401).send(utils.error("Only Admin can create Services"));}
        upload(req, res, async (err) => {
           if (err) { return res.status(500).send(utils.error("Internal server error")); }
-          const image = req.file.path;
+          if(req.file){
+            var image = req.file.path;
+          }
           const id = req.body.id;
        if(!id){return res.status(401).send(utils.error("Id is required"));}
        const name = req.body.name;
@@ -103,6 +111,9 @@ try {
         }
         if(image){
           data.image = BASEURL+image;
+        }
+        if(req.body.status){
+          data.is_active = req.body.status;
         }
         const result = await categoryModel.updateCategory(id,data)
         return res.status(200).send(utils.response(result));
@@ -141,6 +152,59 @@ try {
         return res.status(200).send(utils.response(result));
       } catch (err) {
         return res.status(403).send(utils.error(err));
+      }
+    },
+
+    //only subCategory mood off
+    createSubCategory: async (req, res) => {
+      try {
+        if (req.role !== "ADMIN") {return res.status(401).send(utils.error("Only Admin can create Services"));}
+          const sex = req.body.name;
+          const id = req.body.categoryId;
+          const result = await subCategoryModel.createSubCategory(sex,id);
+          if(result instanceof Error){
+            return res.status(403).send(utils.error(result.message));
+          }else{
+            return res.status(201).send(utils.response(result));
+          }
+          
+        
+      } catch (err) {
+        return err;
+      }
+    },
+    updateSubCategory: async (req, res) => {
+      try {
+        if (req.role !== "ADMIN") {return res.status(401).send(utils.error("Only Admin can create Services"));}
+          const sex = req.body;
+          const id = req.body.id;
+          const result = await subCategoryModel.updateSubCategory(sex,id);
+          if(result instanceof Error){
+            return res.status(403).send(utils.error(result.message));
+          }else{
+            return res.status(200).send(utils.response(result));
+          }
+        
+      } catch (err) {
+        return err;
+      }
+    },
+    allSubCategories:async (req, res)=>{
+      try{
+        const choot = {
+          boob: req.body.search,
+          fuck: req.body.page,
+          sex: req.body.limit
+        }
+
+        const result = await subCategoryModel.allSubCategories(choot);
+        if(result instanceof Error){
+          return res.status(403).send(utils.error(result.message));
+        }else{
+          return res.status(200).send(utils.response(result));
+        }
+      }catch(err){
+        return err.message;
       }
     },
   };

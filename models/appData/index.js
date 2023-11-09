@@ -1,7 +1,7 @@
 const appDataSchema = require('./appDataSchema.js');
 const bannerSchema = require('../admin/bannerSchema.js');
 const banner3Schema = require('../admin/banner3Schema.js');
-const servicesSchema = require('../services/serviceSchema.js');
+const {serviceSchema} = require('../services/serviceSchema.js');
 const categorySchema = require('../services/categorySchema.js');
 const BASEURL = process.env.BASEURL;
 try {
@@ -42,7 +42,7 @@ try {
       try {
         const mainBanners = await bannerSchema.find();
         const threeBanners = await banner3Schema.find();
-        const allServices = await servicesSchema.find();
+        const allServices = await serviceSchema.find();
         // const categories = await Promise.all(allServices.map(async(x)=>{
         // const serviceName = `${x.name}`
         // const serviceId = `${x.id}`

@@ -198,15 +198,15 @@ try {
           return  res.status(403).send(utils.error("Only Vender can suggest"));
         }
         const data = {
-          website:req.body.website,
-          facebook:req.body.facebook,
-          instagram:req.body.instagram,
-          twitter: req.body.twitter,
-          youtube: req.body.youtube,
-          linkedin:req.body.linkedin,
-          whatsapp:req.body.whatsapp,
-          snapchat:req.body.snapchat,
-          other:req.body.other,
+          website:req.body.website||"null",
+          facebook:req.body.facebook||"null",
+          instagram:req.body.instagram||"null",
+          twitter: req.body.twitter||"null",
+          youtube: req.body.youtube||"null",
+          linkedin:req.body.linkedin||"null",
+          whatsapp:req.body.whatsapp||"null",
+          snapchat:req.body.snapchat||"null",
+          other:req.body.other||"null",
         }
       const id =req.body.businessId;
 
@@ -321,9 +321,7 @@ try {
     },
     reviewThisVendor: async (req, res) => {
       try {
-        if(!req.role === "USER"){
-          return  res.status(403).send(utils.error("Only user can review to Vendor"));
-        }
+        
         const data = {
           vid:req.body.vendorId,
           review: req.body.review,
@@ -408,6 +406,26 @@ try {
       }
     },
   // depricated uploadPaymentType
+
+  nameUpdateRequest: async (req, res) => {
+    try {
+      if(!req.role === "VENDOR"){
+        return  res.status(403).send(utils.error("Only Vender can add Payment types"));
+      }
+      const vendorId = req.userId;
+      const data ={
+        businessId:req.body.businessId,
+        requestedName:req.body.name,
+        venderId:req.userId   
+      };
+      const result = await vendorModel.nameUpdateRequest(data);
+      return res.status(200).send(utils.response(result));
+    } catch (err) {
+      return res.status(403).send(utils.error(err));
+    }
+  },
+
+
     uploadPaymentType: async (req, res) => {
       try {
         if(!req.role === "VENDOR"){
@@ -726,6 +744,42 @@ try {
           } else {
             return res.status(200).send(utils.response(result));
           }
+        } catch (err) {
+          return res.status(403).send(utils.error(err));
+        } 
+      },
+      getLocality: async (req, res) => {
+        try {
+         const body = {
+            cityId:req.body.cityId,
+            search: req.body.search,
+          }
+          
+          const result = await vendorModel.getLocality(body);
+          if (result instanceof Error) {
+            return res.status(403).send(utils.error(result.message));
+          } else {
+            return res.status(200).send(utils.response(result));
+          }
+        } catch (err) {
+          return res.status(403).send(utils.error(err));
+        } 
+      },
+      searchLocation: async (req, res) => {
+        try {
+         const search =  req.body.search;
+         if(search.length<3){
+          process.nextTick();
+         }else{
+          const result = await vendorModel.searchLocation(search);
+          if (result instanceof Error) {
+            return res.status(403).send(utils.error(result.message));
+          } else {
+            return res.status(200).send(utils.response(result));
+          }
+         }
+          
+         
         } catch (err) {
           return res.status(403).send(utils.error(err));
         } 

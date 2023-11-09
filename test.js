@@ -106,3 +106,30 @@
 // child_process.spawn('node', [,'child.js'], {
 //     stdio: 'inherit'
 // });
+// setTimeout(()=>{console.log("TimeOut")},1000)
+// console.log("line 1")
+// setTimeout(()=>{console.log("TimeOut2 2 2 2 2")},0)
+// setImmediate(()=> {
+//     console.log("Immidiate")
+// });
+
+// console.log("line 2")
+
+
+
+// const a = 10;
+// console.log(b);
+// var b = 90;
+// console.log(c);
+// let c = 10;
+// console.log (a);
+// console.log(d);
+// const d =12;
+
+// ()=>{
+// console.log("Inside",b)
+// var b = 10;
+// }
+// var b = 20;
+// console.log("Outside",b)
+

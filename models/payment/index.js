@@ -219,10 +219,12 @@ try {
     purchasePackage: async (body) => {
       try {
         if (!body.businessId) {
+          console.log("this is if condition no businessId so it will take first businessId here")
           var business = await businessSchema
             .findOne({ userId: body.userId })
             .sort({ createdAt: 1 });
         }else{
+          console.log(body.businessId, "this is else condition here is businessId already...")
           var business = await businessSchema
             .findOne({ _id: body.businessId });
         }
@@ -244,6 +246,8 @@ try {
         cFOrderRequest.orderCurrency = "INR";
         cFOrderRequest.customerDetails = customerDetails;
         cFOrderRequest.orderTags = d;
+
+        console.log(cFOrderRequest,"this is cFOrderRequest... fucking nigga")
         try {
           var apiInstance = new CFPaymentGateway();
 
@@ -257,7 +261,7 @@ try {
               amount: body.amount,
               paidAmount: paidAmount,
               userId: body.userId,
-              businessId: business._id,
+              businessId: body.businessId?body.businessId:business._id,
               productName: "Recharge Wallet",
             });
             var abc = await payment.save();

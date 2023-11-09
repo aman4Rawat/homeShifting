@@ -10,9 +10,9 @@ const vendorBusinessSchema = new mongoose.Schema(
       type: String,
       default:"http://13.48.193.62:3001/image/i/noImage.png"
     },
-    // name: {
-    //   type: String,
-    // },
+    name: {
+      type: String,
+    },
     isVerified: {
       type: Boolean,
       default:false,
@@ -102,9 +102,6 @@ const vendorBusinessSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    // timing:{
-    //   type:Array,
-    // },
     address:[],
     paymentType:[],
     rating:{type:Number, default:0},
@@ -117,6 +114,7 @@ const vendorBusinessSchema = new mongoose.Schema(
     },
     latitute:{type:String},
     longitute:{type:String},
+    services:{type:Array, ref:"subCategory"}
   },
   { timestamps: true }
 );

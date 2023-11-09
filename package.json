@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/pharhan7/house_Shifting#readme",
   "dependencies": {
-    "axios": "^1.5.0",
+    "axios": "^1.6.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
     "cashfree-pg-sdk-nodejs": "^2.0.2",

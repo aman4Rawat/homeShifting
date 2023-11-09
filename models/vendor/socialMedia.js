@@ -7,32 +7,32 @@ const socialMediaSchema = new mongoose.Schema(
     },
     website:{
       type:String,
-      default: "",
+      default: null,
       
     },
     facebook:{
       type:String,
-      default: "",
+      default: null,
     },
     instagram:{
       type:String,
-      default: "",
+      default: null,
     },
     twitter:{
       type:String,
-      default: "",
+      default: null,
     },
     youtube:{
       type:String,
-      default: "",
+      default: null,
     },
     linkedin:{
       type:String,
-      default: "",
+      default: null,
     },
     other:{
       type:String,
-      default: "",
+      default: null,
     },
   },
   { timestamps: true }

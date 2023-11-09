@@ -197,8 +197,6 @@ try {
           userId: id,
           requestType: "Business",
         });
-        if(!user || user.isBusinessComplete ===true){
-        if (!user || user.requestType !== "Business") {
           const data = new listBusinessSchema({
             mobileNumber: verify.number,
             fullName: verify.name,
@@ -208,12 +206,7 @@ try {
             city: verify.city,
             requestType: "Business",
           });
-          return await data.save();
-        } else {
-          return new Error("Already applied please contact to admin");
-        }}else {
-          return new Error("Already applied please contact to admin");
-        }
+          return await data.save(); 
       } catch (err) {
         return err;
       }
@@ -240,7 +233,7 @@ try {
           userId: id,
           requestType: "Advertising",
         });
-        if (!user || user.requestType !== "Advertising") {
+       
           const data = new listBusinessSchema({
             mobileNumber: verify.number,
             fullName: verify.name,
@@ -251,9 +244,7 @@ try {
             requestType: "Advertising",
           });
           return await data.save();
-        } else {
-          return new Error("Already applied please contact to admin");
-        }
+        
       } catch (err) {
         return err;
       }

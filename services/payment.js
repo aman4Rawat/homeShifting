@@ -1,41 +1,38 @@
-const Razorpay = require("razorpay");
-const crypto = require("crypto");
+const axios = require('axios');
 
-const { RAZORPAYKEYID, RAZORPAYKEYSECRET } = require("../config");
-
-let instance = new Razorpay({
-  key_id: "rzp_test_ax5R0HtxrLmVyD",
-  key_secret: "GtWiRjjdH8bWjGuIdgXeiewm",
-});
-
-module.exports = {
-  createOrder: async (amount, currency, receipt) => {
-    try {
-      var options = {
-        amount: amount, // amount in the smallest currency unit
-        currency: currency,
-      };
-      const order = await instance.orders.create(options);
-      return order;
-    } catch (error) {
-      console.log(error);
-      return error;
+const phonePePayment = async(req,res)=>{
+try {
+  const {name,number,amount}=req.body;
+  const data = {
+    "merchantId": "PGTESTPAYUAT",
+    "merchantTransactionId": "MT7850590068188104",
+    "merchantUserId": "MUID123",
+    "name":name,
+    "amount": amount*100,
+    "redirectUrl": "http://localhost:3001/payment/status",
+    "redirectMode": "POST",
+    "mobileNumber": number,
+    "paymentInstrument": {
+      "type": "PAY_PAGE"
     }
-  },
-  verifyOrder: async (paymentId, paymentSignature, paymentOrderId) => {
-    try {
-      let body = paymentOrderId + "|" + paymentId;
-      let expectedSignature = crypto
-        .createHmac("sha256", "GtWiRjjdH8bWjGuIdgXeiewm")
-        .update(body.toString())
-        .digest("hex");
-      var response = { signatureIsValid: "false" };
-      if (expectedSignature === paymentSignature)
-        response = { signatureIsValid: "true" };
-      return response;
-    } catch (error) {
-      console.log(error);
-      return error;
-    }
-  },
-};
+  }
+  // const data = {
+  //   "merchantId": "PGTESTPAYUAT",
+  //   "merchantTransactionId": "MT7850590068188104",
+  //   "merchantUserId": "MUID123",
+  //   "amount": 10000,
+  //   "redirectUrl": "https://webhook.site/redirect-url",
+  //   "redirectMode": "REDIRECT",
+  //   "callbackUrl": "https://webhook.site/callback-url",
+  //   "mobileNumber": "9999999999",
+  //   "paymentInstrument": {
+  //     "type": "PAY_PAGE"
+  //   }
+  // }
+  
+} catch (khatra) {
+  return res.status(403).json("khatra")
+}
+}
+
+module.exports={phonePePayment}

@@ -1,4 +1,4 @@
-const serviceSchema = require('./serviceSchema.js');
+const {serviceSchema,subCategory} = require('./serviceSchema.js');
 const categorySchema = require('./categorySchema.js');
 const mongoose = require("mongoose");
 const BASEURL = process.env.BASEURL;
@@ -19,7 +19,7 @@ try {
     updateService: async(id,data)=>{
       try {
        
-        await serviceSchema.findByIdAndUpdate({_id:id},{$set:{image:data.image}},{new:true});
+        await serviceSchema.findByIdAndUpdate({_id:id},{$set:data},{new:true});
           return "Service Updated Successfully"
       } catch (err) {
         return err;
@@ -29,8 +29,10 @@ try {
       try {
         const page = body.page || 1;
         const limit = body.limit|| 8;
-          const data = await serviceSchema.find({is_active:true}).skip((page-1)*limit).limit(limit);
-          return data;
+          const data = await serviceSchema.find({}).skip((page-1)*limit).limit(limit);
+          const count = await serviceSchema.find({}).countDocuments();
+          const totalPages = Math.ceil(count/limit);
+          return {data,totalPages};
       } catch (err) {
         return err;
       }
@@ -64,7 +66,7 @@ try {
     updateCategory: async(id,data)=>{
       try {
         console.log(id,"this is id.....", data, "this is dataaaaaaaa");
-        const abc=   await categorySchema.findByIdAndUpdate({_id:id},{$set:{image:data.image}},{new:true});
+        const abc=   await categorySchema.findByIdAndUpdate({_id:id},{$set:data},{new:true});
           return {msg:"Category Updated Successfully", abc};
       } catch (err) {
         return err;
@@ -74,8 +76,10 @@ try {
       try {
         const page = body.page || 1;
         const limit = body.limit || 8;
-          const data = await categorySchema.find({isDeleted:false}).skip((page-1)*limit).limit(limit);
-          return data;
+          const data = await categorySchema.find({}).skip((page-1)*limit).limit(limit);
+          const count = await categorySchema.find({}).countDocuments();
+          const totalPages = Math.ceil(count/limit);
+          return {data,totalPages};
       } catch (err) {
         return err;
       }
@@ -126,46 +130,105 @@ try {
 
         
 
-      if(body.search && !body.city){
-        const search = body.search;
-        const service = await serviceSchema.aggregate([
-          {
-            $match: { "name": { $regex: new RegExp(search, "i") } }
-          },
-          {
-            $project: {
-              isDeleted: 1,
-              _id: 1,
-              image: 1,
-              name: 1,
-              is_active: 1,
-              type: "Service"
-            }
-          },
-        ]);
-        const category = await categorySchema.aggregate([
-          {
-            $match: { "name": { $regex: new RegExp(search, "i") } }
-          },
-          {
-            $project: {
-              isDeleted: 1,
-              _id: 1,
-              image: 1,
-              name: 1,
-              is_active: 1,
-              serviceId:1,
-              serviceName:1,
-              type: "Category"
-            }
-          }
-        ]);
-        return {service, category};
-      }
+      // if(body.search && !body.city){
+      //   const search = body.search;
+      //   const service = await serviceSchema.aggregate([
+      //     {
+      //       $match: { "name": { $regex: new RegExp(search, "i") } }
+      //     },
+      //     {
+      //       $project: {
+      //         isDeleted: 1,
+      //         _id: 1,
+      //         image: 1,
+      //         name: 1,
+      //         is_active: 1,
+      //         type: "Service"
+      //       }
+      //     },
+      //   ]);
+      //   const category = await categorySchema.aggregate([
+      //     {
+      //       $match: { "name": { $regex: new RegExp(search, "i") } }
+      //     },
+      //     {
+      //       $project: {
+      //         isDeleted: 1,
+      //         _id: 1,
+      //         image: 1,
+      //         name: 1,
+      //         is_active: 1,
+      //         serviceId:1,
+      //         serviceName:1,
+      //         type: "Category"
+      //       }
+      //     }
+      //   ]);
+      //   return {service, category};
+      // }
 
-        const category = await categorySchema.find( { "name" : { $regex : new RegExp(search, "i") } } );
+        const category = await categorySchema.find( { "name" : { $regex : new RegExp(body.search, "i") } } );
         return category;
       } catch (err) {
+        return err;
+      }
+    },
+
+    // Only Sub category mood off
+    createSubCategory: async(sex,id)=>{
+      try {
+          const madarchod = subCategory({
+            name: sex,
+            category:id
+          });
+          await madarchod.save();
+          return "subCategory Created Successfully";
+      } catch (err) {
+        if(err.code === 11000 ){
+          return new Error("Name Already Exist");
+        }
+        return err;
+      }
+    },
+    updateSubCategory: async(sex,id)=>{
+      try {
+        const fuck = await subCategory.findById({_id:id});
+        if(!fuck){ return new Error("no data found with this id") }
+        const fuddi = {};
+        if(sex.name){
+          fuddi.name = sex.name;
+        }
+        if(sex.status){
+          fuddi.is_active = sex.status
+        }
+        if(sex.delete){
+          fuddi.is_active = false,
+          fuddi.isDeleted = true
+        }
+        if(sex.categoryId){fuddi.category = sex.categoryId
+        }
+          const porn = await subCategory.findByIdAndUpdate({_id:id},{$set:fuddi},{new:true});
+          return porn;
+      } catch (err) {
+        return err;
+      }
+    },
+    allSubCategories: async(choot)=>{
+      try{
+        const page = choot.fuck || 1;
+        const limit = choot.sex || 10;
+        const lawda = {};
+        lawda.is_active = true;
+        if(choot.boob){
+          lawda.name = { $regex : new RegExp(choot.boob, "i") } 
+        }
+
+        const result = await subCategory.find(lawda).skip((page-1)*limit).limit(limit).populate("category");
+        const sex = await subCategory.find(lawda).countDocuments();
+        const totalPages = Math.ceil(sex/limit);
+        return {result,totalPages};
+      
+      }catch(err){
         return err;
       }
     },

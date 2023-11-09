@@ -77,6 +77,7 @@ try {
         const body = {
           number: req.body.number,
           otp: req.body.otp,
+          type:req.body.type
         };
         const verify = await userValidation.verifyOTP.validateAsync(body)
         const result = await userModel.verifyotp(verify);
