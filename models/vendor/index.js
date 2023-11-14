@@ -35,7 +35,7 @@ try {
         const condition = {};
         
         for (const key in body) {
-          if (body[key] !== undefined && body[key] !== latituse && body[key] !== longitude) {
+          if (body[key] !== undefined && body[key] !== body.latitude && body[key] !== body.longitude) {
             condition[key] = body[key];
           }
         }
@@ -52,8 +52,12 @@ try {
             condition.userId = user.id;
             condition.categoryName = category.name;
           condition.uniqueId = code;
-          condition.latituse = body.latituse;
-          condition.longitude = body.longitude;
+          if(body.latituse){
+            condition.latituse = body.latitude;
+          }
+          if(body.longitude){
+            condition.longitude = body.longitude;
+          }
           const newBusiness = new vendorBusinessSchema(condition);
           const results = await newBusiness.save();
           await userSchema.findByIdAndUpdate({_id:user.id},{$set:{role:"VENDOR"}},{new:true});
@@ -223,7 +227,6 @@ try {
         return err;
       }
     },
-
     vendorSocialMedia: async (data,id) => {
       try {
         const vendor = await socialMediaSchemas.findOne({vendorId:id});
@@ -1041,9 +1044,9 @@ try {
     //   },
     // ]);
         
-    var location = await Locality.find({$or:[{name:name}, {cityName:name},{stateName:name}]}).limit(8);
+    var location = await Locality.find({$or:[{name:name}, {cityName:name},{stateName:name}]});
     if(location.length<1){
-       location = await City.find({$or:[{name:name},{stateName:name}]}).limit(8);
+       location = await City.find({$or:[{stateName:name},{name:name}]});
 
     }
         return location;

@@ -23,6 +23,7 @@ try {
 
   adminroutes.post("/allusers",jwtauth, adminCtrl.allUsers);
   adminroutes.post("/allvendors",jwtauth, adminCtrl.allVendors);
+  adminroutes.post("/findallbusiness",jwtauth, adminCtrl.findAllBusiness);
   adminroutes.post("/namechangerequestlist",jwtauth, adminCtrl.nameChangeRequestList);
   adminroutes.post("/updatenameofbusiness",jwtauth, adminCtrl.nameChangeRequestUpdate);
 

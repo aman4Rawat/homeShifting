@@ -231,6 +231,23 @@ try {
 
       }catch(err){ return res.status(403).send(utils.error(err));}
     },
+    findAllBusiness:async(req,res)=>{
+      try{
+        if (req.role !== "ADMIN") {
+          return res
+            .status(401)
+            .send(utils.error("Only Admin can see vendors"));
+        }
+        const body= req.body;
+        const result = await adminModel.findAllBusiness(body);
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(200).send(utils.response(result));
+        }
+
+      }catch(err){ return res.status(403).send(utils.error(err));}
+    },
     nameChangeRequestList:async(req,res)=>{
       try{
         if (req.role !== "ADMIN") {
@@ -284,7 +301,9 @@ try {
           mobileNumber: req.body.mobileNumber,
           area: req.body.area,
           pinCode: req.body.pinCode,
-          categoryId: req.body.businessCategory,
+          categoryId: req.body.categoryId,
+          longitude:req.body.longitude,
+          latitude:req.body.latitude,
         }
         const result = await venderBUsinessModel.vendorProfile(body);
         if (result instanceof Error) {

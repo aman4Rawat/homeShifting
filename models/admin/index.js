@@ -169,6 +169,20 @@ try {
        return error 
       }
     },
+    findAllBusiness:async(body)=>{
+      try {
+        const limit = body.limit || 10;
+        const page = body.page || 1;
+       
+        const sex = await vendorBusinessSchema.find().countDocuments();
+        totalPages = Math.ceil(sex/limit);
+        const result = await vendorBusinessSchema.find().skip((page-1)*limit).limit(limit);
+        return {result,totalPages};
+        
+      } catch (error) {
+       return error 
+      }
+    },
     nameChangeRequestList:async(body)=>{
       try {
         const limit = body.limit || 10;
