@@ -114,7 +114,8 @@ const vendorBusinessSchema = new mongoose.Schema(
     },
     latitute:{type:String},
     longitute:{type:String},
-    services:{type:Array, ref:"subCategory"}
+    services:{type:Array},
+    searchAddress:{type:String},
   },
   { timestamps: true }
 );

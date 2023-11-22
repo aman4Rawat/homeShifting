@@ -24,6 +24,7 @@ var cfConfig = new CFConfig(
   PAYMENTSECTRET
 );
 const { CFCustomerDetails, CFOrderRequest } = require("cashfree-pg-sdk-nodejs");
+const { Schema } = require("mongoose");
 try {
   module.exports = {
     // addPayment: async (body) => {

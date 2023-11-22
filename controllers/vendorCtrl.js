@@ -219,8 +219,8 @@ try {
     },
     updatebusinessDetails: async (req, res, next) => {
       try {
-        if(!req.role === "VENDOR"){
-          return  res.status(403).send(utils.error("Only Vender can suggest"));
+        if(!req.role === "VENDOR" || !req.role === "ADMIN"){
+          return  res.status(403).send(utils.error("Only Vender adn Admin can update details"));
         }
         const data = {
           name:req.body.name,
@@ -254,8 +254,10 @@ try {
           latitude:req.body.latitude,
           longitude:req.body.longitude,
         }
+        const searchAddress = (data?.state+data?.city+data?.area).replaceAll(" ","");
+        
         const id = req.body.businessId;
-        const result = await vendorModel.addressUpdate(data,id);
+        const result = await vendorModel.addressUpdate(data,id,searchAddress);
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
         } else {
@@ -300,6 +302,28 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
+
+    addSubcategoryByBusinessId:async(req,res)=>{
+      try{
+         if (req.role !== "VENDOR") {
+          return res
+            .status(401)
+            .send(utils.error("Login as a vendor "));
+        }
+        const subCategories = req.body.subCategoriesname
+        const  businessId=req.body.businessId;
+        const result = await vendorModel.addSubCategoryByBusinessId(businessId,subCategories);
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(200).send(utils.response(result));
+        }
+
+      }catch(error){
+        return error;
+      }
+    },
+
 
 
     //reviews apis

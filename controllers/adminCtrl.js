@@ -181,7 +181,7 @@ try {
             .status(401)
             .send(utils.error("Only Admin can create Vendor business"));
         }
-        const subCategories = req.body.subCategories
+        const subCategories = req.body.subCategoriesname
         const  businessId=req.body.businessId;
         const result = await venderBUsinessModel.addSubCategoryByBusinessId(businessId,subCategories);
         if (result instanceof Error) {
@@ -190,8 +190,8 @@ try {
           return res.status(200).send(utils.response(result));
         }
 
-      }catch(sex){
-        return sex;
+      }catch(error){
+        return error;
       }
     },
 

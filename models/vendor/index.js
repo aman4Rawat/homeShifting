@@ -135,7 +135,7 @@ try {
         }
         const gallary = await gallarySchema.find({vendorId:vendor._id});
         const reviewsData = await reviewsSchema.find({vendorId:vendor._id}).populate("userId");
-        const sex = await vendorBusinessSchema.find({_id:id},{services:1}).populate("services");
+        const sex = await vendorBusinessSchema.find({_id:id},{services:1});
         const totalServices = sex[0].services;
         const links = await socialMediaSchemas.findOne({vendorId:vendor._id});
         let abc = 0;
@@ -289,7 +289,7 @@ try {
         return err;
       }
     },
-    addressUpdate: async (data,id) => {
+    addressUpdate: async (data,id,searchAddress) => {
       try {
         let localArea = data.city + " " + data.area;
           const business = await vendorBusinessSchema.findOne({_id:id});
@@ -300,7 +300,7 @@ try {
               condition[key] = data[key];
             }
           }
-          const result = await vendorBusinessSchema.findByIdAndUpdate({_id:business.id},{$set:{address:condition,area:localArea}},{new:true});
+          const result = await vendorBusinessSchema.findByIdAndUpdate({_id:business.id},{$set:{address:condition,area:localArea,searchAddress:searchAddress}},{new:true});
           if(data.latituse && data.longitude){
           await vendorBusinessSchema.findByIdAndUpdate({_id:business.id},{$set:{latituse:data.latituse,longitude:data.longitude}},{new:true});
           }
@@ -968,10 +968,17 @@ try {
 
     addSubCategoryByBusinessId: async(businessId,subCategories)=>{
       try{
-        const poplu = await vendorBusinessSchema.findByIdAndUpdate({_id:businessId},{$set:{services:subCategories}},{new:true});
-        return poplu;
-      }catch(meraLund){
-        return meraLund;
+        const check = await vendorBusinessSchema.findById({_id:businessId},{services:1});
+        let data = check.services.includes(subCategories);
+        if(!data){
+          check.services.push(subCategories);
+          const poplu = await vendorBusinessSchema.findByIdAndUpdate({_id:businessId},{$set:{services:check.services}},{new:true});
+          return poplu;
+        }else{
+          return new Error("service name is already exist!")
+        }
+      }catch(asas){
+        return asas;
       }
     },
 

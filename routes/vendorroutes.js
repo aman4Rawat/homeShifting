@@ -15,7 +15,8 @@ try {
   vendorRoutes.post("/updatecontactdetails",JWTAUTH, vendorCtrl.updateContactDetails);
   vendorRoutes.post("/updateadderess", vendorCtrl.updateAdderss);
   vendorRoutes.post("/updateapaymenttype", vendorCtrl.updatePatmentType);
-  vendorRoutes.post("/updatevenderdetails",JWTAUTH, vendorCtrl.updateVendorDetails);
+  vendorRoutes.post("/updatevenderdetails",JWTAUTH, vendorCtrl.updateVendorDetails);  //add services as subCategory
+  vendorRoutes.post("/addsubcategorybyvendorid",JWTAUTH, vendorCtrl.addSubcategoryByBusinessId);
   
   //reviewsssssssssssss
 

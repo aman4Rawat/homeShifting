@@ -1,5 +1,6 @@
 const {serviceSchema,subCategory} = require('./serviceSchema.js');
 const categorySchema = require('./categorySchema.js');
+const vendorBusinessSchema = require('../vendor/vendorBusinessSchema.js');
 const mongoose = require("mongoose");
 const BASEURL = process.env.BASEURL;
 try {
@@ -127,52 +128,72 @@ try {
     },
     searchAll: async (body) => {
       try {
-
-        
-
-      // if(body.search && !body.city){
-      //   const search = body.search;
-      //   const service = await serviceSchema.aggregate([
-      //     {
-      //       $match: { "name": { $regex: new RegExp(search, "i") } }
-      //     },
-      //     {
-      //       $project: {
-      //         isDeleted: 1,
-      //         _id: 1,
-      //         image: 1,
-      //         name: 1,
-      //         is_active: 1,
-      //         type: "Service"
-      //       }
-      //     },
-      //   ]);
-      //   const category = await categorySchema.aggregate([
-      //     {
-      //       $match: { "name": { $regex: new RegExp(search, "i") } }
-      //     },
-      //     {
-      //       $project: {
-      //         isDeleted: 1,
-      //         _id: 1,
-      //         image: 1,
-      //         name: 1,
-      //         is_active: 1,
-      //         serviceId:1,
-      //         serviceName:1,
-      //         type: "Category"
-      //       }
-      //     }
-      //   ]);
-      //   return {service, category};
-      // }
-
+        const condition = {};
+        if(body.search){
+          services = { $regex : new RegExp(body.search, "i") }
+        }
+        if(body.location){
+          console.log(body.location,"asdfasdfasdf");
+        }
+        const area = body.location;
+        const vendor = await vendorBusinessSchema.find( { "services" : { $regex : new RegExp(body.search, "i") },searchAddress:area } )
         const category = await categorySchema.find( { "name" : { $regex : new RegExp(body.search, "i") } } );
-        return category;
+        return {vendor,category};
       } catch (err) {
         return err;
       }
     },
+
+    //need to change
+
+    // searchAll: async (body) => {
+    //   try {
+
+        
+
+    //   // if(body.search && !body.city){
+    //   //   const search = body.search;
+    //   //   const service = await serviceSchema.aggregate([
+    //   //     {
+    //   //       $match: { "name": { $regex: new RegExp(search, "i") } }
+    //   //     },
+    //   //     {
+    //   //       $project: {
+    //   //         isDeleted: 1,
+    //   //         _id: 1,
+    //   //         image: 1,
+    //   //         name: 1,
+    //   //         is_active: 1,
+    //   //         type: "Service"
+    //   //       }
+    //   //     },
+    //   //   ]);
+    //   //   const category = await categorySchema.aggregate([
+    //   //     {
+    //   //       $match: { "name": { $regex: new RegExp(search, "i") } }
+    //   //     },
+    //   //     {
+    //   //       $project: {
+    //   //         isDeleted: 1,
+    //   //         _id: 1,
+    //   //         image: 1,
+    //   //         name: 1,
+    //   //         is_active: 1,
+    //   //         serviceId:1,
+    //   //         serviceName:1,
+    //   //         type: "Category"
+    //   //       }
+    //   //     }
+    //   //   ]);
+    //   //   return {service, category};
+    //   // }
+
+    //     const category = await categorySchema.find( { "name" : { $regex : new RegExp(body.search, "i") } } );
+    //     return category;
+    //   } catch (err) {
+    //     return err;
+    //   }
+    // },
 
     // Only Sub category mood off
     createSubCategory: async(sex,id)=>{

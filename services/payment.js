@@ -29,9 +29,20 @@ try {
   //     "type": "PAY_PAGE"
   //   }
   // }
-  
+  const option = {
+    "url":asdfasdfasdf,
+    "method":"POST",
+    "content-type":"application/json",
+
+    body:data
+  }
+
+  //The Option is incorrect just make it and run
+
+  const result = await axios(option)
+  return result
 } catch (khatra) {
-  return res.status(403).json("khatra")
+  return res.status(403).json({"khatra":khatra})
 }
 }
 

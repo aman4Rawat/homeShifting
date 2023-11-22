@@ -25,7 +25,7 @@
 //     return obj;
 //   }
 // }, {}); // { '1': 3, '2': 2, '3': 1, '4': 1, '5': 1, '6': 1,'7': 3, '8': 1, '9': 1, '10': 1, '11': 1, '12': 1,'13': 2 }
-
+// console.log(result4);
 // const value = 'asdsd';
 // console.log(!isNaN(value)); // true if value is a number
 
@@ -133,3 +133,12 @@
 // var b = 20;
 // console.log("Outside",b)
 
+// const arr = ['abc', 'xyz'];
+// const newarr = ['sdfs', 'dgff','werc'];
+
+// const aa =arr.concat( newarr)
+// console.log(aa);
+
+()=>{
+    console.log("avc");
+}
