@@ -130,13 +130,12 @@ try {
       try {
         const condition = {};
         if(body.search){
-          services = { $regex : new RegExp(body.search, "i") }
+          condition.services = { $regex : new RegExp(body.search, "i") }
         }
         if(body.location){
-          console.log(body.location,"asdfasdfasdf");
+          condition.searchAddress={$regex : new RegExp(body.location,"i")};
         }
-        const area = body.location;
-        const vendor = await vendorBusinessSchema.find( { "services" : { $regex : new RegExp(body.search, "i") },searchAddress:area } )
+        const vendor = await vendorBusinessSchema.find( condition )
         const category = await categorySchema.find( { "name" : { $regex : new RegExp(body.search, "i") } } );
         return {vendor,category};
       } catch (err) {
