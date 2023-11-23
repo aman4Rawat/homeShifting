@@ -2,7 +2,8 @@ const axios = require('axios');
 
 const phonePePayment = async(req,res)=>{
 try {
-  const {name,number,amount}=req.body;
+  const {name,number,amount}={name:"farhan",number:"8130289007",amount:"100"};
+  console.log(name,"this si sdlfj lskdfj");
   const data = {
     "merchantId": "PGTESTPAYUAT",
     "merchantTransactionId": "MT7850590068188104",
@@ -29,21 +30,21 @@ try {
   //     "type": "PAY_PAGE"
   //   }
   // }
-  const option = {
-    "url":asdfasdfasdf,
-    "method":"POST",
-    "content-type":"application/json",
-
-    body:data
-  }
+  const options = {
+    method: 'POST',
+    url: 'https://apps-uat.phonepe.com/v3/transaction/sdk-less/initiate',
+    headers: {"Content-Type": 'application/json',
+    data:data}
+  };
 
   //The Option is incorrect just make it and run
 
-  const result = await axios(option)
-  return result
+ const result = await axios(options);
+ return result
 } catch (khatra) {
-  return res.status(403).json({"khatra":khatra})
+  console.log(khatra)
+  // return res.status(403).json({"khatra":khatra})
 }
 }
-
+phonePePayment()
 module.exports={phonePePayment}

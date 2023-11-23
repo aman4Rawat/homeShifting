@@ -254,7 +254,7 @@ try {
           latitude:req.body.latitude,
           longitude:req.body.longitude,
         }
-        const searchAddress = (data?.state+data?.city+data?.area).replaceAll(" ","");
+        const searchAddress = (data?.area+data?.city+data?.state).replaceAll(" ","");
         
         const id = req.body.businessId;
         const result = await vendorModel.addressUpdate(data,id,searchAddress);
