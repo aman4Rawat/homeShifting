@@ -323,6 +323,26 @@ try {
         return error;
       }
     },
+    removeSubcategoryByBusinessId:async(req,res)=>{
+      try{
+         if (req.role !== "VENDOR") {
+          return res
+            .status(401)
+            .send(utils.error("Login as a vendor "));
+        }
+        const subCategories = req.body.subCategoriesname
+        const  businessId=req.body.businessId;
+        const result = await vendorModel.addSubCategoryByBusinessId(businessId,subCategories);
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(200).send(utils.response(result));
+        }
+
+      }catch(error){
+        return error;
+      }
+    },
 
 
 

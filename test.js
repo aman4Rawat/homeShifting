@@ -139,6 +139,13 @@
 // const aa =arr.concat( newarr)
 // console.log(aa);
 
-()=>{
-    console.log("avc");
-}
+// ()=>{
+//     console.log("avc");
+// }
+
+
+// let q = ["avc","abc","xyz","snap","www"]
+
+// const aaa = q.indexOf("abc");
+// q.(aaa);
+// console.log(q,"ddd");

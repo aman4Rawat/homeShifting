@@ -138,16 +138,23 @@ async function generatePDF(data) {
     const pdf = await page.pdf({
         
       format: 'A4',
-      path: `./invoice/${data.payment.orderId}.pdf`,
+      path: `../invoice/${data.payment.orderId}.pdf`,
     });
-    console.log("five");
+    console.log("five", pdf);
     await browser.close();
   return BASEURL+ `/invoice/${data.payment.orderId}.pdf`;
 }catch(err){
+    console.log("ffffffffffffffff",err.message)
    return err.message;
+
 }
   }
 
+//   const data={
+//     createdAt:"12/12/12",
+//     payment:{orderId:"123123",amount:255,productName:"abcabc",paidAmount:156},
+//   }
+//   generatePDF(data)
   module.exports = {
     generatePDF
   }
