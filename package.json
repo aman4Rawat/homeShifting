@@ -36,7 +36,9 @@
     "nodemon": "^2.0.22",
     "otp-generator": "^4.0.1",
     "puppeteer": "^21.2.1",
-    "referral-code-generator": "^1.0.8"
+    "referral-code-generator": "^1.0.8",
+    "swagger-autogen": "^2.23.7",
+    "swagger-ui-express": "^5.0.0"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",

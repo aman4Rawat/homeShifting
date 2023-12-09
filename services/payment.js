@@ -46,5 +46,4 @@ try {
   // return res.status(403).json({"khatra":khatra})
 }
 }
-phonePePayment()
 module.exports={phonePePayment}

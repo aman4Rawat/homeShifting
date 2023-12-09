@@ -19,6 +19,9 @@ var dataDate = new Date();
 dataDate.setUTCHours(0,0,0,0)
 try {
   const app = express();
+  
+  const swaggerUi = require('swagger-ui-express');
+  const swaggerDocument = require('./swagger.json');
   app.use(express.static('uploads'));
   app.use("/image",express.static('image'));
   app.use("/services",express.static('services'));
@@ -49,6 +52,7 @@ try {
    app.use("/service",service);
    app.use("/vendor",vendor);
    app.use("/payment",payment);
+   app.use('/api', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
   
   mongoose.set('strictQuery', false);
   (async () => {
