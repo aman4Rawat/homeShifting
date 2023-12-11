@@ -52,7 +52,7 @@ try {
    app.use("/service",service);
    app.use("/vendor",vendor);
    app.use("/payment",payment);
-   app.use('/api', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+   app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
   
   mongoose.set('strictQuery', false);
   (async () => {
