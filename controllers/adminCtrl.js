@@ -183,11 +183,11 @@ try {
     },
     adminById: async (req, res) => {
       try {
-          if(!req.userId){
-            return res.status(500).send(utils.error("Not Authantecated"));
-          }
-          id= req.userId;
-        
+        if (!req.userId) {
+          return res.status(500).send(utils.error("Not Authantecated"));
+        }
+        id = req.userId;
+
         const result = await adminModel.adminById(id);
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
@@ -223,8 +223,8 @@ try {
             .status(401)
             .send(utils.error("Only Admin can create Vendor business"));
         }
-        
-        const  userId=req.body.userId
+
+        const userId = req.body.userId;
         const result = await userModel.makeNewVander(userId);
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
@@ -235,111 +235,111 @@ try {
         return res.status(403).send(utils.error(err.message));
       }
     },
-
-    addSubcategoryByBusinessId:async(req,res)=>{
-      try{
-         if (req.role !== "ADMIN") {
+    addSubcategoryByBusinessId: async (req, res) => {
+      try {
+        if (req.role !== "ADMIN") {
           return res
             .status(401)
             .send(utils.error("Only Admin can create Vendor business"));
         }
-        const subCategories = req.body.subCategoriesname
-        const  businessId=req.body.businessId;
-        const result = await venderBUsinessModel.addSubCategoryByBusinessId(businessId,subCategories);
+        const subCategories = req.body.subCategoriesname;
+        const businessId = req.body.businessId;
+        const result = await venderBUsinessModel.addSubCategoryByBusinessId(
+          businessId,
+          subCategories
+        );
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
         } else {
           return res.status(200).send(utils.response(result));
         }
-
-      }catch(error){
+      } catch (error) {
         return error;
       }
     },
-
-
-
-    allUsers:async(req,res)=>{
-      try{
+    allUsers: async (req, res) => {
+      try {
         if (req.role !== "ADMIN") {
-          return res
-            .status(401)
-            .send(utils.error("Only Admin can see users"));
+          return res.status(401).send(utils.error("Only Admin can see users"));
         }
-        const body= req.body;
+        const body = req.body;
         const result = await adminModel.allUserss(body);
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
         } else {
           return res.status(200).send(utils.response(result));
         }
-
-      }catch(err){ return res.status(403).send(utils.error(err));}
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
     },
-    allVendors:async(req,res)=>{
-      try{
+    allVendors: async (req, res) => {
+      try {
         if (req.role !== "ADMIN") {
           return res
             .status(401)
             .send(utils.error("Only Admin can see vendors"));
         }
-        const body= req.body;
+        const body = req.body;
         const result = await adminModel.allVendors(body);
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
         } else {
           return res.status(200).send(utils.response(result));
         }
-
-      }catch(err){ return res.status(403).send(utils.error(err));}
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
     },
-    findAllBusiness:async(req,res)=>{
-      try{
+    findAllBusiness: async (req, res) => {
+      try {
         if (req.role !== "ADMIN") {
           return res
             .status(401)
             .send(utils.error("Only Admin can see vendors"));
         }
-        const body= req.body;
+        const body = req.body;
         const result = await adminModel.findAllBusiness(body);
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
         } else {
           return res.status(200).send(utils.response(result));
         }
-
-      }catch(err){ return res.status(403).send(utils.error(err));}
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
     },
-    nameChangeRequestList:async(req,res)=>{
-      try{
+    nameChangeRequestList: async (req, res) => {
+      try {
         if (req.role !== "ADMIN") {
           return res
             .status(401)
             .send(utils.error("Only Admin can see vendors"));
         }
-        const body= req.body;
+        const body = req.body;
         const result = await adminModel.nameChangeRequestList(body);
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
         } else {
           return res.status(200).send(utils.response(result));
         }
-
-      }catch(err){ return res.status(403).send(utils.error(err));}
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
     },
-    nameChangeRequestUpdate:async(req,res)=>{
-      try{
+    nameChangeRequestUpdate: async (req, res) => {
+      try {
         if (req.role !== "ADMIN") {
           return res
             .status(401)
             .send(utils.error("Only Admin can see vendors"));
         }
-        const body={
-          what:req.body.submit,
-          businessId:req.body.businessId,
-          name:req.body.name,
-          id:req.body.id
-        }
+        const body = {
+          what: req.body.submit,
+          businessId: req.body.businessId,
+          name: req.body.name,
+          id: req.body.id,
+        };
 
         const result = await adminModel.nameChangeRequestUpdate(body);
         if (result instanceof Error) {
@@ -347,8 +347,9 @@ try {
         } else {
           return res.status(200).send(utils.response(result));
         }
-
-      }catch(err){ return res.status(403).send(utils.error(err));}
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
     },
     createVendorProfile: async (req, res) => {
       try {
@@ -357,16 +358,16 @@ try {
             .status(401)
             .send(utils.error("Only Admin can create vendor's Business"));
         }
-        const body={
+        const body = {
           companyName: req.body.companyName,
           constactPersonName: req.body.constactPersonName,
           mobileNumber: req.body.mobileNumber,
           area: req.body.area,
           pinCode: req.body.pinCode,
           categoryId: req.body.categoryId,
-          longitude:req.body.longitude,
-          latitude:req.body.latitude,
-        }
+          longitude: req.body.longitude,
+          latitude: req.body.latitude,
+        };
         const result = await venderBUsinessModel.vendorProfile(body);
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
@@ -379,12 +380,16 @@ try {
     },
     createPackage: async (req, res) => {
       try {
-        if (req.role !== "ADMIN") { return res.status(401).send(utils.error("Only Admin can create package")); }
-        const data={
+        if (req.role !== "ADMIN") {
+          return res
+            .status(401)
+            .send(utils.error("Only Admin can create package"));
+        }
+        const data = {
           packageName: req.body.packageName,
           packageAmount: req.body.packageAmount,
           packageDuration: req.body.packageDuration,
-          packageDetalis: req.body.packageDetails,
+          packageDetails: req.body.packageDetails,
           callCharges: req.body.callCharges,
           bestDealCharges: req.body.bestDealCharges,
           socialMediaCharges: req.body.socialMediaCharges,
@@ -393,8 +398,10 @@ try {
           inqueryCharges: req.body.inqueryCharges,
           othersCharges: req.body.othersCharges,
           chatCharges: req.body.chatCharges,
-        }
-        const body = await adminValidation.createPackageValidation.validateAsync(data);
+        };
+        console.log("***************BODY***************", body);
+        const body =
+          await adminValidation.createPackageValidation.validateAsync(data);
         const result = await adminModel.createNewPackage(body);
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
@@ -407,11 +414,15 @@ try {
     },
     addlocality: async (req, res) => {
       try {
-        if (req.role !== "ADMIN") { return res.status(401).send(utils.error("Only Admin can add locality")); }
-        const data={
+        if (req.role !== "ADMIN") {
+          return res
+            .status(401)
+            .send(utils.error("Only Admin can add locality"));
+        }
+        const data = {
           cityId: req.body.cityId,
           name: req.body.name,
-        }
+        };
         const result = await adminModel.addlocality(data);
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
@@ -424,13 +435,17 @@ try {
     },
     getlocality: async (req, res) => {
       try {
-        if (req.role !== "ADMIN") { return res.status(401).send(utils.error("Only Admin can get locality")); }
-        const data={
+        if (req.role !== "ADMIN") {
+          return res
+            .status(401)
+            .send(utils.error("Only Admin can get locality"));
+        }
+        const data = {
           city: req.body.city,
           name: req.body.name,
           page: req.body.page || 1,
           limit: req.body.limit || 10,
-        }
+        };
         const result = await adminModel.getlocality(data);
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
@@ -443,13 +458,17 @@ try {
     },
     updatelocality: async (req, res) => {
       try {
-        if (req.role !== "ADMIN") { return res.status(401).send(utils.error("Only Admin can update locality")); }
-        const data={
+        if (req.role !== "ADMIN") {
+          return res
+            .status(401)
+            .send(utils.error("Only Admin can update locality"));
+        }
+        const data = {
           cityId: req.body.cityId,
           name: req.body.name,
           status: req.body.status,
-          id:req.body.id,
-        }
+          id: req.body.id,
+        };
         const result = await adminModel.updatelocality(data);
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
@@ -462,7 +481,6 @@ try {
     },
     zroorat2: async (req, res) => {
       try {
-        
         const result = await adminModel.zroorat();
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
@@ -473,10 +491,6 @@ try {
         return res.status(403).send(utils.error(err.message));
       }
     },
-
-
-
-
   };
 } catch (err) {
   console.log(err);
