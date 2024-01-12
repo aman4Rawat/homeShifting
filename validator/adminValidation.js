@@ -37,17 +37,18 @@ try {
         }),
     }),
     loginAdmin: Joi.object({
-      email: Joi.string().required().email({ tlds: { allow: false } }).messages({
-        "string.base": "{#label} should be a type of 'text'",
-        "string.email": "{#label} should be in a valid email format",
-        "any.required": "{#label} is a required field",
-      }),
-      password: Joi.string()
+      email: Joi.string()
         .required()
+        .email({ tlds: { allow: false } })
         .messages({
           "string.base": "{#label} should be a type of 'text'",
+          "string.email": "{#label} should be in a valid email format",
           "any.required": "{#label} is a required field",
         }),
+      password: Joi.string().required().messages({
+        "string.base": "{#label} should be a type of 'text'",
+        "any.required": "{#label} is a required field",
+      }),
     }),
     createPackageValidation: Joi.object({
       packageName: Joi.string().required().label("packageName").messages({
@@ -58,11 +59,14 @@ try {
         "number.base": "{#label} should be a type of 'number'",
         "any.required": "{#label} is a required field",
       }),
-      packageDuration: Joi.number().required().label("packageDuration").messages({
-        "number.base": "{#label} should be a type of 'number'",
-        "any.required": "{#label} is a required field",
-      }),
-      packageDetalis: Joi.array().required().label("packageDetalis").messages({
+      packageDuration: Joi.number()
+        .required()
+        .label("packageDuration")
+        .messages({
+          "number.base": "{#label} should be a type of 'number'",
+          "any.required": "{#label} is a required field",
+        }),
+      packageDetails: Joi.array().required().label("packageDetails").messages({
         "string.base": "{#label} should be a type of 'text'",
         "any.required": "{#label} is a required field",
       }),
@@ -70,22 +74,31 @@ try {
         "number.base": "{#label} should be a type of 'number'",
         "any.required": "{#label} is a required field",
       }),
-      socialMediaCharges: Joi.number().required().label("socialMediaCharges").messages({
-        "number.base": "{#label} should be a type of 'number'",
-        "any.required": "{#label} is a required field",
-      }),
-      bestDealCharges: Joi.number().required().label("bestDealCharges").messages({
-        "number.base": "{#label} should be a type of 'number'",
-        "any.required": "{#label} is a required field",
-      }),
+      socialMediaCharges: Joi.number()
+        .required()
+        .label("socialMediaCharges")
+        .messages({
+          "number.base": "{#label} should be a type of 'number'",
+          "any.required": "{#label} is a required field",
+        }),
+      bestDealCharges: Joi.number()
+        .required()
+        .label("bestDealCharges")
+        .messages({
+          "number.base": "{#label} should be a type of 'number'",
+          "any.required": "{#label} is a required field",
+        }),
       websiteCharges: Joi.number().required().label("websiteCharges").messages({
         "number.base": "{#label} should be a type of 'number'",
         "any.required": "{#label} is a required field",
       }),
-      directionCharges: Joi.number().required().label("directionCharges").messages({
-        "number.base": "{#label} should be a type of 'number'",
-        "any.required": "{#label} is a required field",
-      }),
+      directionCharges: Joi.number()
+        .required()
+        .label("directionCharges")
+        .messages({
+          "number.base": "{#label} should be a type of 'number'",
+          "any.required": "{#label} is a required field",
+        }),
       inqueryCharges: Joi.number().required().label("inqueryCharges").messages({
         "number.base": "{#label} should be a type of 'number'",
         "any.required": "{#label} is a required field",
@@ -98,11 +111,8 @@ try {
         "number.base": "{#label} should be a type of 'number'",
         "any.required": "{#label} is a required field",
       }),
-      
-
-        
     }),
   };
 } catch (error) {
- return error
+  return error;
 }

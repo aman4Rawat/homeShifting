@@ -16,26 +16,18 @@ try {
   adminroutes.post("/craetevenderprofile",jwtauth, adminCtrl.createVendorProfile);
   adminroutes.post("/createpackage",jwtauth, adminCtrl.createPackage);
   
-  
-
-
-
-
   adminroutes.post("/allusers",jwtauth, adminCtrl.allUsers);
   adminroutes.post("/allvendors",jwtauth, adminCtrl.allVendors);
   adminroutes.post("/findallbusiness",jwtauth, adminCtrl.findAllBusiness);
   adminroutes.post("/namechangerequestlist",jwtauth, adminCtrl.nameChangeRequestList);
   adminroutes.post("/updatenameofbusiness",jwtauth, adminCtrl.nameChangeRequestUpdate);
-
+  
   //locality start
   adminroutes.post("/addlocality",jwtauth, adminCtrl.addlocality);
   adminroutes.post("/getlocality",jwtauth, adminCtrl.getlocality);
   adminroutes.post("/updatelocality",jwtauth, adminCtrl.updatelocality);
   adminroutes.post("/zroorat", adminCtrl.zroorat2);//agr kisi city main state nhi aa raha hai tb postman se chalani hai
   
-
-
-
   module.exports = adminroutes;
 } catch (error) {
   console.log(error);
