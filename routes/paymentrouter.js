@@ -16,7 +16,7 @@ try {
     
     
     //PhonePe Payment Gateway
-    paymentRoute.post("/payment",jwtauth, apyment.phonePePayment);
+    // paymentRoute.post("/payment",jwtauth, apyment.phonePePayment);
     
     
     paymentRoute.post("/invoice",jwtauth, paymentCtrl.invoice);

@@ -1,4 +1,4 @@
-const dotenv = require("dotenv").config();
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
@@ -39,7 +39,9 @@ try {
     res.setHeader("Access-Control-Allow-Credentials", true);
     next();
   });
-  app.use(cors());
+  app.use(cors(
+    orgin=["13.48.193.62:3001","localhost:3000"]
+  ));
 
   app.use(bodyParser.json());
   module.exports =app;

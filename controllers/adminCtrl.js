@@ -56,6 +56,68 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
+    mainBannerUpdate: async (req, res) => {
+      try {
+        const id = req.body.id;
+        if (req.role !== "ADMIN") {
+          return res
+            .status(401)
+            .send(utils.error("Only Admin can upload main banner"));
+        }
+        upload(req, res, async (err) => {
+          if (err) {
+            return res.status(500).send(utils.error("Internal server error"));
+          }
+          if (!req.file) {
+            return res.status(400).send(utils.error("No file uploaded"));
+          }
+          const data = req.file;
+          const result = await bannerModel.addMailBanner(data);
+          return res.status(200).send(utils.response(result));
+        });
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+    mainBannerList:async(req,res)=>{
+      try{
+        if (req.role !== "ADMIN") {
+          return res
+            .status(401)
+            .send(utils.error("Only Admin can see banners"));
+        }
+
+        const result = await bannerModel.mainBannerList();
+          if (result instanceof Error) {
+            return res.status(403).send(utils.error(result.message));
+          } else {
+            return res.status(201).send(utils.response(result));
+          }
+
+      }catch(furr){
+        return res.status(403).send(utils.error(furr));
+      }
+    },
+   
+    threeBannerList:async(req,res)=>{
+      try{
+        if (req.role !== "ADMIN") {
+          return res
+            .status(401)
+            .send(utils.error("Only Admin can see banners"));
+        }
+
+        const result = await bannerModel.threeBannerList();
+          if (result instanceof Error) {
+            return res.status(403).send(utils.error(result.message));
+          } else {
+            return res.status(201).send(utils.response(result));
+          }
+
+      }catch(furr){
+        return res.status(403).send(utils.error(furr));
+      }
+    },
     threeBanners: async (req, res) => {
       try {
         if (req.role !== "ADMIN") {

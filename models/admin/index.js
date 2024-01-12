@@ -35,6 +35,24 @@ try {
         return err;
       }
     },
+    mainBannerList:async()=>{
+      try{
+        const data = await bannerSchema.find();
+        return data;
+      
+      }catch(furr){
+        return furr;
+      }
+    },
+    threeBannerList:async()=>{
+      try{
+        const data = await banner3Schema.find();
+        return data;
+      
+      }catch(furr){
+        return furr;
+      }
+    },
     threeBanner: async (data) => {
       try {
         const checkBanner = await banner3Schema.find();

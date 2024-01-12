@@ -7,6 +7,9 @@ try {
   adminroutes.post("/loginadmin", adminCtrl.loginAdmin);
   adminroutes.get("/adminbyid",jwtauth, adminCtrl.adminById);
   adminroutes.post("/mainbanner",jwtauth, adminCtrl.mainBanner);
+  adminroutes.post("/mainbannerlist",jwtauth, adminCtrl.mainBannerList);
+  adminroutes.post("/mainbannerupdate",jwtauth, adminCtrl.mainBannerUpdate);
+  adminroutes.post("/threebannerlist",jwtauth, adminCtrl.threeBannerList);
   adminroutes.post("/threebanner",jwtauth, adminCtrl.threeBanners);
   adminroutes.post("/appdataadd",jwtauth, adminCtrl.appDataAdd);
   adminroutes.post("/makevander",jwtauth, adminCtrl.makeVander);

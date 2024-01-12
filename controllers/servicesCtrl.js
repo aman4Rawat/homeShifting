@@ -133,7 +133,7 @@ try {
     },
     categoriesbyserviceid:async(req, res)=>{
       try{
-        const body = req.body;
+        const body = {serviceId:req.body.serviceId};
         if(!body.serviceId){return res.status(404).send(utils.error("serviceId required"));}
         const result = await serviceModel.categoriesbyservice(body);
           return res.status(200).send(utils.response(result));

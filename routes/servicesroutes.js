@@ -15,7 +15,7 @@ try {
   serviceroutes.post("/allserviceandcategory", serviceCtrl.allserviceandcategory);
   serviceroutes.post("/search", serviceCtrl.search);
   
-  //SubCategory only mood off
+  //SubCategory only mood off 
   serviceroutes.post("/createsubcategory",jwtauth, serviceCtrl.createSubCategory);
   serviceroutes.post("/updatesubcategory",jwtauth, serviceCtrl.updateSubCategory);
   serviceroutes.post("/allsubcategories",jwtauth, serviceCtrl.allSubCategories);
