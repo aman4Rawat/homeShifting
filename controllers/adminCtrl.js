@@ -556,7 +556,7 @@ try {
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
         } else {
-          return res.status(201).send(utils.response(result));
+          return res.status(200).send(utils.response(result));
         }
       } catch (error) {
         return res.status(403).send(utils.error(err.message));
@@ -571,7 +571,7 @@ try {
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
         } else {
-          return res.status(201).send(utils.response(result));
+          return res.status(200).send(utils.response(result));
         }
       } catch (error) {
         return res.status(403).send(utils.error(err.message));
@@ -598,7 +598,7 @@ try {
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
         } else {
-          return res.status(201).send(utils.response(result));
+          return res.status(200).send(utils.response(result));
         }
         });
        

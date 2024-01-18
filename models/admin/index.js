@@ -443,7 +443,7 @@ try {
         if(condition.image){
           condition.image = BASEURL+image
         }
-       const result = await optionsService.findByIdAndUpdate({_id:id},{condition},{new:true});
+       const result = await optionsSchema.findByIdAndUpdate({_id:id},condition,{new:true});
         return result;
         
       } catch (error) {

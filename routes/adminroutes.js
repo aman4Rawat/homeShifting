@@ -39,7 +39,7 @@ try {
   
   //isExport and isVerified wala seen chutiyapanti 2
   
-  adminroutes.post("/createOption", jwtauth, adminCtrl.createFuckOption);
+  adminroutes.post("/createpackageoption", jwtauth, adminCtrl.createFuckOption);
   adminroutes.post("/updateOption", jwtauth, adminCtrl.updateFuckOption);
   adminroutes.post("/listingOption", jwtauth, adminCtrl.listingFuckOption);
   adminroutes.post("/deleteOption", jwtauth, adminCtrl.deleteFuckOption);
