@@ -6,6 +6,7 @@ const venderBUsinessModel = require("../models/vendor/index.js");
 const adminValidation = require("../validator/adminValidation.js");
 const upload = require("../middlewares/multer.js");
 const utils = require("../libs/utils");
+const assert = require("assert");
 // const multer = require("multer");
 // const fs = require("fs");
 
@@ -482,6 +483,37 @@ try {
     zroorat2: async (req, res) => {
       try {
         const result = await adminModel.zroorat();
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(201).send(utils.response(result));
+        }
+      } catch (err) {
+        return res.status(403).send(utils.error(err.message));
+      }
+    },
+
+
+    freeListingOtpSend: async (req, res) => {
+      try {
+        const phone = req.body.phone;
+        assert(phone, new Error(404,"Number is required"));
+        const result = await adminModel.freeLlistingSendOTP(phone);
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(201).send(utils.response(result));
+        }
+      } catch (err) {
+        return res.status(403).send(utils.error(err.message));
+      }
+    },
+    freeListingOtpVerify: async (req, res) => {
+      try {
+        const phone = req.body.phone;
+        const otp = req.body.otp;
+        assert(phone, new Error("Number is required"));
+        const result = await adminModel.freeLlistingVerifyOTP(phone, otp);
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
         } else {

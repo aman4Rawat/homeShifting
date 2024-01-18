@@ -130,8 +130,8 @@ try {
       try {
         const condition = {};
         if(body.search){
-          condition.name = { $regex : new RegExp(body.search, "i") }
-        } //condition.service
+          condition.companyName = { $regex : new RegExp(body.search, "i") }
+        } //condition.name
         if(body.location){
           condition.searchAddress={$regex : new RegExp(body.location,"i")};
         }

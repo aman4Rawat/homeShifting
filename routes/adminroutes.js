@@ -30,6 +30,9 @@ try {
   adminroutes.post("/getlocality",jwtauth, adminCtrl.getlocality);
   adminroutes.post("/updatelocality",jwtauth, adminCtrl.updatelocality);
   adminroutes.post("/zroorat", adminCtrl.zroorat2);//agr kisi city main state nhi aa raha hai tb postman se chalani hai
+
+  adminroutes.post("/freelistingotpsend", jwtauth, adminCtrl.freeListingOtpSend);
+  adminroutes.post("/freelistingotpverify", jwtauth, adminCtrl.freeListingOtpVerify);
   
   module.exports = adminroutes;
 } catch (error) {
