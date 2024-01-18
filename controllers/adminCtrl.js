@@ -523,6 +523,91 @@ try {
         return res.status(403).send(utils.error(err.message));
       }
     },
+
+    createFuckOption:async(req,res)=>{
+      try {
+        if (req.role !== "ADMIN") {return res.status(401).send(utils.error("Only Admin can create options"));}
+        upload(req, res, async (err) => {
+          if (err) { return res.status(500).send(utils.error("Internal server error")); }
+          if (!req.file) {return res.status(400).send(utils.error("No file found, Please upload Image")); }
+          const name=req.body.name;
+          const amount=req.body.amount;
+          const description=req.body.description;
+          const image=req.file.path;
+          const result = await adminModel.createFaltukOptions(name,amount,description,image);
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(201).send(utils.response(result));
+        }
+        });
+       
+      } catch (error) {
+        return res.status(403).send(utils.error(err.message));
+      }
+    },
+
+    listingFuckOption:async(req,res)=>{
+      try {
+        if (req.role !== "ADMIN") {return res.status(401).send(utils.error("Only Admin can see list"));}
+        const page = req.body.page||1;
+        const limit = req.body.limit||8;
+        const result = await adminModel.listingFaltukOptions(page,limit);
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(201).send(utils.response(result));
+        }
+      } catch (error) {
+        return res.status(403).send(utils.error(err.message));
+      }
+    },
+    deleteFuckOption:async(req,res)=>{
+      try {
+        if (req.role !== "ADMIN") {return res.status(401).send(utils.error("Only Admin can see list"));}
+       const id = req.body.id;
+       if(!id) {return new Error("options id required") }
+        const result = await adminModel.deleteFaltukOptions(id);
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(201).send(utils.response(result));
+        }
+      } catch (error) {
+        return res.status(403).send(utils.error(err.message));
+      }
+    },
+        
+    updateFuckOption:async(req,res)=>{
+      try {
+        if (req.role !== "ADMIN") {return res.status(401).send(utils.error("Only Admin can update options"));}
+        upload(req, res, async (err) => {
+          if (err) { return res.status(500).send(utils.error("Internal server error")); }
+          const body = req.body;
+          const id = req.body.id;
+          const condition={};
+          for (const key in body) {
+            if (body[key] !== undefined && body[key] !== "id") {
+              condition[key] = body[key];
+            }
+          }
+          if(!id){
+            return new Error("Invalid option id")
+          }
+          const result = await adminModel.updateFaltukOptions(id,condition);
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(201).send(utils.response(result));
+        }
+        });
+       
+      } catch (error) {
+        return res.status(403).send(utils.error(err.message));
+      }
+    },
+
+
   };
 } catch (err) {
   console.log(err);

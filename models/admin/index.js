@@ -4,6 +4,7 @@ const bannerSchema = require("./bannerSchema.js");
 const banner3Schema = require("./banner3Schema.js");
 const packageSchema = require("./packageSchame.js");
 const userSchema = require("../user/userSchema.js");
+const optionsSchema = require("./optionsSchema.js");
 const { Locality, City, State } = require("../vendor/stateAndCitySchrma.js");
 const { nameUpdateRequest } = require("../vendor/needfullSchema.js");
 const bcrypt = require("bcryptjs");
@@ -395,6 +396,61 @@ try {
         return error;
       }
     },
+
+    createFaltukOptions:async(name,amount,description,image)=>{
+      try {
+        let update = {
+          name:name,
+          amount:amount,
+          description:description,
+        }
+        if(image){
+          update.image = BASEURL+image
+        }
+        const abc = new optionsSchema(update);
+        const result = await abc.save();
+        return result;
+        
+      } catch (error) {
+        return error;
+      }
+    },
+
+    listingFaltukOptions:async(page, limit)=>{
+      try {
+       const result = await optionsSchema.find().skip((page-1)*limit).limit(page);
+        return result;
+        
+      } catch (error) {
+        return error;
+      }
+    },
+
+    deleteFaltukOptions:async(id)=>{
+      try {
+       const result = await optionsSchema.findByIdAndDelete({_id: id});
+        return result;
+        
+      } catch (error) {
+        return error;
+      }
+    },
+
+
+    updateFaltukOptions:async(id,condition)=>{
+      try {
+        
+        if(condition.image){
+          condition.image = BASEURL+image
+        }
+       const result = await optionsService.findByIdAndUpdate({_id:id},{condition},{new:true});
+        return result;
+        
+      } catch (error) {
+        return error;
+      }
+    },
+
   };
 } catch (e) {
   log.error(e);
