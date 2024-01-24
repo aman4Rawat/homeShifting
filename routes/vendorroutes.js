@@ -21,7 +21,6 @@ try {
   vendorRoutes.post("/removesubcategorybyvendorid",JWTAUTH, vendorCtrl.removeSubcategoryByBusinessId);
   
   //reviewsssssssssssss
-
   vendorRoutes.post("/reviewbybusinessid", vendorCtrl.reviewByBusinessId);
   vendorRoutes.post("/reviewthisvendor",JWTAUTH, vendorCtrl.reviewThisVendor);
   vendorRoutes.post("/getmyreviewofthisvendor",JWTAUTH, vendorCtrl.getMyReviewOfThisVendor);
@@ -42,11 +41,9 @@ try {
   vendorRoutes.post("/dashboardleads",JWTAUTH, vendorCtrl.dashboardLeads);
   vendorRoutes.post("/dashboardleadsbyid",JWTAUTH, vendorCtrl.dashboardLeadById);
 
-
   vendorRoutes.post("/packagedetails",JWTAUTH, vendorCtrl.packageDetails);
   vendorRoutes.post("/currentpackage",JWTAUTH, vendorCtrl.currentPackageDetails);
   vendorRoutes.post("/singlepackagedetailsbyid",JWTAUTH, vendorCtrl.singlePackageDetailsById);
-
 
   vendorRoutes.post("/support",JWTAUTH, vendorCtrl.support);
   vendorRoutes.post("/askrating",JWTAUTH, vendorCtrl.askForRating);
@@ -59,10 +56,9 @@ try {
   vendorRoutes.post("/getlocality", vendorCtrl.getLocality);
   vendorRoutes.post("/searchLocation", vendorCtrl.searchLocation);
   
-  
-  
-  
-  
+  vendorRoutes.delete("/deleteVendor", vendorCtrl.deleteVendor);
+  vendorRoutes.post("/banner", vendorCtrl.createBanner);
+  vendorRoutes.get("/listBanner", vendorCtrl.listBanner)
   module.exports = vendorRoutes;
 } catch (error) {
   console.log(error);

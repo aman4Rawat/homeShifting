@@ -23,6 +23,7 @@ const packageSchame = new mongoose.Schema(
     chatCharges: { type: Number },
     bestDealCharges: { type: Number },
     serviceId: { type: String, ref: "service" },
+    status: { type: Boolean, default: true },
   },
   { timestamps: true }
 );

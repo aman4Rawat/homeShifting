@@ -13,11 +13,14 @@ try {
   adminroutes.post("/threebanner",jwtauth, adminCtrl.threeBanners);
   adminroutes.post("/appdataadd",jwtauth, adminCtrl.appDataAdd);
   adminroutes.post("/makevander",jwtauth, adminCtrl.makeVander);
+  adminroutes.delete("/deleteBanner",jwtauth, adminCtrl.deleteBanner);
   //add servide as subCategory
   adminroutes.post("/addsubcategorybyvendorid",jwtauth, adminCtrl.addSubcategoryByBusinessId);
   
   adminroutes.post("/craetevenderprofile",jwtauth, adminCtrl.createVendorProfile);
   adminroutes.post("/createpackage",jwtauth, adminCtrl.createPackage);
+  adminroutes.post("/updatepackage",jwtauth, adminCtrl.updatePackage);
+  adminroutes.delete("/deletepackage",jwtauth, adminCtrl.deletePackage);
   
   adminroutes.post("/allusers",jwtauth, adminCtrl.allUsers);
   adminroutes.post("/allvendors",jwtauth, adminCtrl.allVendors);

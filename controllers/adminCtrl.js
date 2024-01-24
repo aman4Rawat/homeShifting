@@ -7,6 +7,7 @@ const adminValidation = require("../validator/adminValidation.js");
 const upload = require("../middlewares/multer.js");
 const utils = require("../libs/utils");
 const assert = require("assert");
+const mongoose = require("mongoose");
 // const multer = require("multer");
 // const fs = require("fs");
 
@@ -80,8 +81,8 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
-    mainBannerList:async(req,res)=>{
-      try{
+    mainBannerList: async (req, res) => {
+      try {
         if (req.role !== "ADMIN") {
           return res
             .status(401)
@@ -89,19 +90,18 @@ try {
         }
 
         const result = await bannerModel.mainBannerList();
-          if (result instanceof Error) {
-            return res.status(403).send(utils.error(result.message));
-          } else {
-            return res.status(201).send(utils.response(result));
-          }
-
-      }catch(furr){
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(201).send(utils.response(result));
+        }
+      } catch (furr) {
         return res.status(403).send(utils.error(furr));
       }
     },
-   
-    threeBannerList:async(req,res)=>{
-      try{
+
+    threeBannerList: async (req, res) => {
+      try {
         if (req.role !== "ADMIN") {
           return res
             .status(401)
@@ -109,13 +109,12 @@ try {
         }
 
         const result = await bannerModel.threeBannerList();
-          if (result instanceof Error) {
-            return res.status(403).send(utils.error(result.message));
-          } else {
-            return res.status(201).send(utils.response(result));
-          }
-
-      }catch(furr){
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(201).send(utils.response(result));
+        }
+      } catch (furr) {
         return res.status(403).send(utils.error(furr));
       }
     },
@@ -141,6 +140,27 @@ try {
             return res.status(201).send(utils.response(result));
           }
         });
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+    deleteBanner: async (req, res) => {
+      try {
+        if (req.role !== "ADMIN") {
+          return res
+            .status(401)
+            .send(utils.error("Only Admin can upload banners"));
+        }
+        const { id = "" } = req.body;
+        if (!mongoose.isValidObjectId(id) || id == "") {
+          return res.status(400).send(utils.error("Provide valid banner id"));
+        }
+        const result = await bannerModel.deleteBanner(data);
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(201).send(utils.response(result));
+        }
       } catch (err) {
         return res.status(403).send(utils.error(err));
       }
@@ -400,10 +420,66 @@ try {
           othersCharges: req.body.othersCharges,
           chatCharges: req.body.chatCharges,
         };
-        console.log("***************BODY***************", body);
+        console.log("***************DATA***************", data);
         const body =
           await adminValidation.createPackageValidation.validateAsync(data);
+        console.log("***************BODY***************", body);
         const result = await adminModel.createNewPackage(body);
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(201).send(utils.response(result));
+        }
+      } catch (err) {
+        return res.status(403).send(utils.error(err.message));
+      }
+    },
+    updatePackage: async (req, res) => {
+      try {
+        if (req.role !== "ADMIN") {
+          return res
+            .status(401)
+            .send(utils.error("Only Admin can create package"));
+        }
+        const data = {
+          packageName: req.body.packageName,
+          packageAmount: req.body.packageAmount,
+          packageDuration: req.body.packageDuration,
+          packageDetails: req.body.packageDetails,
+          callCharges: req.body.callCharges,
+          bestDealCharges: req.body.bestDealCharges,
+          socialMediaCharges: req.body.socialMediaCharges,
+          websiteCharges: req.body.websiteCharges,
+          directionCharges: req.body.directionCharges,
+          inqueryCharges: req.body.inqueryCharges,
+          othersCharges: req.body.othersCharges,
+          chatCharges: req.body.chatCharges,
+        };
+        const id = req.body.id;
+        console.log("***************DATA***************", data);
+        // const body =
+        // await adminValidation.createPackageValidation.validateAsync(data);
+        // console.log("***************BODY***************", body);
+        const result = await adminModel.updateNewPackage(id, data);
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(201).send(utils.response(result));
+        }
+      } catch (err) {
+        return res.status(403).send(utils.error(err.message));
+      }
+    },
+    deletePackage: async (req, res) => {
+      try {
+        if (req.role !== "ADMIN") {
+          return res
+            .status(401)
+            .send(utils.error("Only Admin can create package"));
+        }
+        const packageId = req.body.id;
+        console.log("***************packageId***************", packageId);
+        const result = await adminModel.deletePackage(packageId);
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
         } else {
@@ -493,11 +569,10 @@ try {
       }
     },
 
-
     freeListingOtpSend: async (req, res) => {
       try {
         const phone = req.body.phone;
-        assert(phone, new Error(404,"Number is required"));
+        assert(phone, new Error(404, "Number is required"));
         const result = await adminModel.freeLlistingSendOTP(phone);
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
@@ -513,6 +588,7 @@ try {
         const phone = req.body.phone;
         const otp = req.body.otp;
         assert(phone, new Error("Number is required"));
+        console.log("before freeListingVerifyOTP", phone, otp);
         const result = await adminModel.freeLlistingVerifyOTP(phone, otp);
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
@@ -523,36 +599,50 @@ try {
         return res.status(403).send(utils.error(err.message));
       }
     },
-
-    createFuckOption:async(req,res)=>{
+    createFuckOption: async (req, res) => {
       try {
-        if (req.role !== "ADMIN") {return res.status(401).send(utils.error("Only Admin can create options"));}
-        upload(req, res, async (err) => {
-          if (err) { return res.status(500).send(utils.error("Internal server error")); }
-          if (!req.file) {return res.status(400).send(utils.error("No file found, Please upload Image")); }
-          const name=req.body.name;
-          const amount=req.body.amount;
-          const description=req.body.description;
-          const image=req.file.path;
-          const result = await adminModel.createFaltukOptions(name,amount,description,image);
-        if (result instanceof Error) {
-          return res.status(403).send(utils.error(result.message));
-        } else {
-          return res.status(201).send(utils.response(result));
+        if (req.role !== "ADMIN") {
+          return res
+            .status(401)
+            .send(utils.error("Only Admin can create options"));
         }
+        upload(req, res, async (err) => {
+          if (err) {
+            return res.status(500).send(utils.error("Internal server error"));
+          }
+          if (!req.file) {
+            return res
+              .status(400)
+              .send(utils.error("No file found, Please upload Image"));
+          }
+          const name = req.body.name;
+          const amount = req.body.amount;
+          const description = req.body.description;
+          const image = req.file.path;
+          const result = await adminModel.createFaltukOptions(
+            name,
+            amount,
+            description,
+            image
+          );
+          if (result instanceof Error) {
+            return res.status(403).send(utils.error(result.message));
+          } else {
+            return res.status(201).send(utils.response(result));
+          }
         });
-       
       } catch (error) {
         return res.status(403).send(utils.error(err.message));
       }
     },
-
-    listingFuckOption:async(req,res)=>{
+    listingFuckOption: async (req, res) => {
       try {
-        if (req.role !== "ADMIN") {return res.status(401).send(utils.error("Only Admin can see list"));}
-        const page = req.body.page||1;
-        const limit = req.body.limit||8;
-        const result = await adminModel.listingFaltukOptions(page,limit);
+        if (req.role !== "ADMIN") {
+          return res.status(401).send(utils.error("Only Admin can see list"));
+        }
+        const page = req.body.page || 1;
+        const limit = req.body.limit || 8;
+        const result = await adminModel.listingFaltukOptions(page, limit);
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
         } else {
@@ -562,11 +652,15 @@ try {
         return res.status(403).send(utils.error(err.message));
       }
     },
-    deleteFuckOption:async(req,res)=>{
+    deleteFuckOption: async (req, res) => {
       try {
-        if (req.role !== "ADMIN") {return res.status(401).send(utils.error("Only Admin can see list"));}
-       const id = req.body.id;
-       if(!id) {return new Error("options id required") }
+        if (req.role !== "ADMIN") {
+          return res.status(401).send(utils.error("Only Admin can see list"));
+        }
+        const id = req.body.id;
+        if (!id) {
+          return new Error("options id required");
+        }
         const result = await adminModel.deleteFaltukOptions(id);
         if (result instanceof Error) {
           return res.status(403).send(utils.error(result.message));
@@ -577,37 +671,40 @@ try {
         return res.status(403).send(utils.error(err.message));
       }
     },
-        
-    updateFuckOption:async(req,res)=>{
+
+    updateFuckOption: async (req, res) => {
       try {
-        if (req.role !== "ADMIN") {return res.status(401).send(utils.error("Only Admin can update options"));}
+        if (req.role !== "ADMIN") {
+          return res
+            .status(401)
+            .send(utils.error("Only Admin can update options"));
+        }
         upload(req, res, async (err) => {
-          if (err) { return res.status(500).send(utils.error("Internal server error")); }
+          if (err) {
+            return res.status(500).send(utils.error("Internal server error"));
+          }
           const body = req.body;
           const id = req.body.id;
-          const condition={};
+          const condition = {};
           for (const key in body) {
             if (body[key] !== undefined && body[key] !== "id") {
               condition[key] = body[key];
             }
           }
-          if(!id){
-            return new Error("Invalid option id")
+          if (!id) {
+            return new Error("Invalid option id");
           }
-          const result = await adminModel.updateFaltukOptions(id,condition);
-        if (result instanceof Error) {
-          return res.status(403).send(utils.error(result.message));
-        } else {
-          return res.status(200).send(utils.response(result));
-        }
+          const result = await adminModel.updateFaltukOptions(id, condition);
+          if (result instanceof Error) {
+            return res.status(403).send(utils.error(result.message));
+          } else {
+            return res.status(200).send(utils.response(result));
+          }
         });
-       
       } catch (error) {
         return res.status(403).send(utils.error(err.message));
       }
     },
-
-
   };
 } catch (err) {
   console.log(err);

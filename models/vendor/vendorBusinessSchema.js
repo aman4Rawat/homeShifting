@@ -1,25 +1,26 @@
+const { string } = require("joi");
 const mongoose = require("mongoose");
 
 const vendorBusinessSchema = new mongoose.Schema(
   {
     bgImage: {
       type: String,
-      default:"http://13.48.193.62:3001/image/i/noImage.png"
+      default: "http://13.48.193.62:3001/image/i/noImage.png",
     },
     profileImage: {
       type: String,
-      default:"http://13.48.193.62:3001/image/i/noImage.png"
+      default: "http://13.48.193.62:3001/image/i/noImage.png",
     },
     name: {
       type: String,
     },
     isVerified: {
       type: Boolean,
-      default:false,
+      default: false,
     },
     isExpert: {
       type: Boolean,
-      default:false,
+      default: false,
     },
     companyName: {
       type: String,
@@ -36,86 +37,97 @@ const vendorBusinessSchema = new mongoose.Schema(
     whatsappNumber: {
       type: Number,
     },
-    pinCode:{
-        type:Number,
+    pinCode: {
+      type: Number,
     },
-    startTime:{
-        type:String,
-        default:"08:00 AM",
+    isFree: {
+      type: Boolean,
+      default: false,
     },
-    endTime:{
-        type:String,
-        default:"09:00 PM",
+    isPaid: {
+      type: Boolean,
+      default: false,
     },
-    yearOfEsteblish:{
-        type:String,
-        default:"0",
+    startTime: {
+      type: String,
+      default: "08:00 AM",
     },
-    aadharImage:{
-        type:String,
+    endTime: {
+      type: String,
+      default: "09:00 PM",
     },
-    panImage:{
-        type:String,
+    yearOfEsteblish: {
+      type: String,
+      default: "0",
     },
-    companyCertificateImage:{
-        type:String,
+    aadharImage: {
+      type: String,
     },
-    otherDocumentImage:{
-        type:String,
+    panImage: {
+      type: String,
     },
-    aadharImageVerified:{
-        type:Boolean,
-        default:false
+    companyCertificateImage: {
+      type: String,
     },
-    panImageVerified:{
-        type:Boolean,
-        default:false,
+    otherDocumentImage: {
+      type: String,
     },
-    companyCertificateImageVerified:{
-        type:Boolean,
-        default:false
+    aadharImageVerified: {
+      type: Boolean,
+      default: false,
     },
-    otherDocumentImageVerified:{
-        type:Boolean,
-        default:false
+    panImageVerified: {
+      type: Boolean,
+      default: false,
     },
-    categoryId:{
-      type:String
+    companyCertificateImageVerified: {
+      type: Boolean,
+      default: false,
     },
-    categoryName:{
-      type:String
+    otherDocumentImageVerified: {
+      type: Boolean,
+      default: false,
     },
-    uniqueId:{
-      type:String
+    categoryId: {
+      type: String,
     },
-    email:{
-      type:String
+    categoryName: {
+      type: String,
     },
-    designation:{
-      type:String
+    uniqueId: {
+      type: String,
     },
-    userId:{
-      type:mongoose.Schema.Types.ObjectId,
-      ref:"user",
+    email: {
+      type: String,
+    },
+    designation: {
+      type: String,
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
     },
     is_active: {
       type: Boolean,
       default: false,
     },
-    address:[],
-    paymentType:[],
-    rating:{type:Number, default:0},
-    ratingCount:{type:Number, default:0},
-    wallet:{type:Number,default:0,},
-    packageId:{type:mongoose.Schema.Types.ObjectId,ref:"package"},
+    bannerImage: {
+      type: String,
+    },
+    address: [],
+    paymentType: [],
+    rating: { type: Number, default: 0 },
+    ratingCount: { type: Number, default: 0 },
+    wallet: { type: Number, default: 0 },
+    packageId: { type: mongoose.Schema.Types.ObjectId, ref: "package" },
     packagePurchaseId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "pruchasedPackage",
     },
-    latitute:{type:String},
-    longitute:{type:String},
-    services:{type:Array},
-    searchAddress:{type:String},
+    latitute: { type: String },
+    longitute: { type: String },
+    services: { type: Array },
+    searchAddress: { type: String },
   },
   { timestamps: true }
 );

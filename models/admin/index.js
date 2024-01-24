@@ -5,6 +5,7 @@ const banner3Schema = require("./banner3Schema.js");
 const packageSchema = require("./packageSchame.js");
 const userSchema = require("../user/userSchema.js");
 const optionsSchema = require("./optionsSchema.js");
+const mongoose = require('mongoose');
 const { Locality, City, State } = require("../vendor/stateAndCitySchrma.js");
 const { nameUpdateRequest } = require("../vendor/needfullSchema.js");
 const bcrypt = require("bcryptjs");
@@ -65,7 +66,21 @@ try {
           await banner.save();
           return "Banner uploaded successfully";
         } else {
-          return new Error("First delete a image to upload this image because length is full");
+          return new Error(
+            "First delete a image to upload this image because length is full"
+          );
+        }
+      } catch (err) {
+        return err;
+      }
+    },
+    deleteBanner: async (id) => {
+      try {
+        const deleteBanner = await banner3Schema.findByIdAndDelete(id);
+        if (!deleteBanner) {
+          return "Banner delete successfully";
+        } else {
+          return new Error("Banner not deleted try again!");
         }
       } catch (err) {
         return err;
@@ -115,7 +130,10 @@ try {
           } else {
             if (await bcrypt.compare(password, admin.password)) {
               if (admin.is_active === true) {
-                token = jwt.sign({ admin_id: admin._id, role: admin.role, email }, JWTSECRET);
+                token = jwt.sign(
+                  { admin_id: admin._id, role: admin.role, email },
+                  JWTSECRET
+                );
                 return { token: token, admin: admin };
               } else {
                 return new Error("Account is not Activated");
@@ -142,6 +160,39 @@ try {
         const package = new packageSchema(condition);
         const result = await package.save();
         return result;
+      } catch (err) {
+        return err;
+      }
+    },
+    updateNewPackage: async (id, body) => {
+      try {
+        if(!mongoose.isValidObjectId(id)){
+          return new Error("Please provide valid id");
+        }
+        let condition = {};
+        for (let key in body) {
+          if (body[key] !== undefined) {
+            condition[key] = body[key];
+          }
+        }
+
+        const result = await packageSchema.findByIdAndUpdate(id, condition, { new: true });
+        return result;
+      } catch (err) {
+        return err;
+      }
+    },
+    deletePackage: async (id) => {
+      try {
+        console.log("**********deletePackage**********", id);
+        const package = await packageSchema.findByIdAndUpdate(id, {
+          status: false,
+        });
+        console.log("**********package**********", package);
+        if (!package) {
+          return new Error("Please try again!");
+        }
+        return "Package deleted successfully!";
       } catch (err) {
         return err;
       }
@@ -226,7 +277,11 @@ try {
     nameChangeRequestUpdate: async (body) => {
       try {
         if (body.what) {
-          const result = await vendorBusinessSchema.findByIdAndUpdate({ _id: body.businessId }, { companyName: body.name }, { new: true });
+          const result = await vendorBusinessSchema.findByIdAndUpdate(
+            { _id: body.businessId },
+            { companyName: body.name },
+            { new: true }
+          );
           await nameUpdateRequest.findByIdAndDelete({ _id: body.id });
           return result;
         } else {
@@ -242,7 +297,9 @@ try {
         if (!data.cityId || !data.name) {
           return new Error("Please Enter both City and Name");
         }
-        const city = await City.findById({ _id: data.cityId }).populate("state");
+        const city = await City.findById({ _id: data.cityId }).populate(
+          "state"
+        );
         const condition = {};
         condition.city = data.cityId;
         condition.name = { $regex: new RegExp(data.name, "i") };
@@ -294,7 +351,11 @@ try {
           condition.isActive = data.ststus;
         }
 
-        const result = await Locality.findByIdAndUpdate({ _id: data.id }, { $set: condition }, { new: true });
+        const result = await Locality.findByIdAndUpdate(
+          { _id: data.id },
+          { $set: condition },
+          { new: true }
+        );
         return result;
       } catch (err) {
         return err;
@@ -306,7 +367,11 @@ try {
         const newabro = arr.map(async (x) => {
           if (!x.stateName) {
             console.log("yaha ayiiiiiiiiiiiiiiiiiiiiiiiiiii");
-            await City.findByIdAndUpdate({ _id: x.id }, { stateName: x.state.name }, { new: true });
+            await City.findByIdAndUpdate(
+              { _id: x.id },
+              { stateName: x.state.name },
+              { new: true }
+            );
           } else {
             console.log("doneeeeeeeeeeeeeeeeeeeee");
           }
@@ -319,7 +384,11 @@ try {
     },
     freeLlistingSendOTP: async (phone) => {
       try {
-        const otp = otpGenerator.generate(4, { upperCaseAlphabets: false, specialChars: false, lowerCaseAlphabets: false });
+        const otp = otpGenerator.generate(4, {
+          upperCaseAlphabets: false,
+          specialChars: false,
+          lowerCaseAlphabets: false,
+        });
         const time = new Date(Date.now() + 60000 * 5).getTime();
         const user = await otpSchema.findOne({ mobile_number: phone });
         if (!user) {
@@ -350,8 +419,7 @@ try {
         return err;
       }
     },
-
-    freeLlistingVerifyOTP:async(phone, otps) =>{
+    freeLlistingVerifyOTP: async (phone, otps) => {
       try {
         const number = phone;
         const otp = Number(otps);
@@ -384,11 +452,14 @@ try {
             { $set: { is_active: false } },
             { new: true }
           );
-
-          
-
-         await vendorBusinessSchema.findOneAndUpdate({ mobile_number: number },{is_active: true},{new: true});
-          return "Congratulations"
+          console.log("after freeListingVerifyOTP", number, otp);
+          const vendor = await vendorBusinessSchema.findOneAndUpdate(
+            { mobileNumber: number },
+            { is_active: true, isFree: true },
+            { new: true }
+          );
+          console.log("updatedVendor********", vendor);
+          return "Congratulations";
         } else {
           return new Error("OTP has been used");
         }
@@ -396,61 +467,58 @@ try {
         return error;
       }
     },
-
-    createFaltukOptions:async(name,amount,description,image)=>{
+    createFaltukOptions: async (name, amount, description, image) => {
       try {
         let update = {
-          name:name,
-          amount:amount,
-          description:description,
-        }
-        if(image){
-          update.image = BASEURL+image
+          name: name,
+          amount: amount,
+          description: description,
+        };
+        if (image) {
+          update.image = BASEURL + image;
         }
         const abc = new optionsSchema(update);
         const result = await abc.save();
         return result;
-        
       } catch (error) {
         return error;
       }
     },
 
-    listingFaltukOptions:async(page, limit)=>{
+    listingFaltukOptions: async (page, limit) => {
       try {
-       const result = await optionsSchema.find().skip((page-1)*limit).limit(page);
+        const result = await optionsSchema
+          .find()
+          .skip((page - 1) * limit)
+          .limit(page);
         return result;
-        
       } catch (error) {
         return error;
       }
     },
-
-    deleteFaltukOptions:async(id)=>{
+    deleteFaltukOptions: async (id) => {
       try {
-       const result = await optionsSchema.findByIdAndDelete({_id: id});
+        const result = await optionsSchema.findByIdAndDelete({ _id: id });
         return result;
-        
       } catch (error) {
         return error;
       }
     },
-
-
-    updateFaltukOptions:async(id,condition)=>{
+    updateFaltukOptions: async (id, condition) => {
       try {
-        
-        if(condition.image){
-          condition.image = BASEURL+image
+        if (condition.image) {
+          condition.image = BASEURL + image;
         }
-       const result = await optionsSchema.findByIdAndUpdate({_id:id},condition,{new:true});
+        const result = await optionsSchema.findByIdAndUpdate(
+          { _id: id },
+          condition,
+          { new: true }
+        );
         return result;
-        
       } catch (error) {
         return error;
       }
     },
-
   };
 } catch (e) {
   log.error(e);
