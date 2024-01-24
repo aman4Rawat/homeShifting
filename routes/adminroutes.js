@@ -19,7 +19,7 @@ try {
   
   adminroutes.post("/craetevenderprofile",jwtauth, adminCtrl.createVendorProfile);
   adminroutes.post("/createpackage",jwtauth, adminCtrl.createPackage);
-  adminroutes.post("/updatepackage",jwtauth, adminCtrl.updatePackage);
+  adminroutes.put("/updatepackage/:id",jwtauth, adminCtrl.updatePackage);
   adminroutes.delete("/deletepackage",jwtauth, adminCtrl.deletePackage);
   
   adminroutes.post("/allusers",jwtauth, adminCtrl.allUsers);
@@ -46,8 +46,7 @@ try {
   adminroutes.post("/updateOption", jwtauth, adminCtrl.updateFuckOption);
   adminroutes.post("/listingOption", jwtauth, adminCtrl.listingFuckOption);
   adminroutes.post("/deleteOption", jwtauth, adminCtrl.deleteFuckOption);
-
-
+  adminroutes.post("/packagepayment", jwtauth, adminCtrl.purchasePackage)
 
   module.exports = adminroutes;
 } catch (error) {

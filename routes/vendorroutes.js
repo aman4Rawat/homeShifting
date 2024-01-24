@@ -27,7 +27,6 @@ try {
   vendorRoutes.post("/businessreviewlist",JWTAUTH, vendorCtrl.businessReviewList);
   vendorRoutes.post("/responsereviewbyid",JWTAUTH, vendorCtrl.responseReviewById);
 
-
   vendorRoutes.post("/suggestion",JWTAUTH, vendorCtrl.suggestion);
   vendorRoutes.post("/uploadsocialmedia",JWTAUTH, vendorCtrl.uploadSocialMedia);
   vendorRoutes.post("/uploadtiming",JWTAUTH, vendorCtrl.uploadTiming);

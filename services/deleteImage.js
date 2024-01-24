@@ -4,6 +4,9 @@ const fs = require("fs");
 module.exports = {
     async imageDelete(id, schema, field) {
         const path = await schema.findOne({ _id: id }, { [field]: 1, _id: 0 });
+        console.log("***********path************", path);
+        if(!path[field]) return;
+        console.log("***********path************", path);
         const unlinkFile = util.promisify(fs.unlink);
         try {
             await unlinkFile(path[field].replace(process.env.BASEURL, ""));
