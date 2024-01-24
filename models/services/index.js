@@ -76,7 +76,7 @@ try {
     allCategories: async(body)=>{
       try {
         const page = body.page || 1;
-        const limit = body.limit || 8;
+        const limit = body.limit || 10;
           const data = await categorySchema.find({}).skip((page-1)*limit).limit(limit);
           const count = await categorySchema.find({}).countDocuments();
           const totalPages = Math.ceil(count/limit);

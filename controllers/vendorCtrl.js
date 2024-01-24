@@ -54,7 +54,8 @@ try {
       try {
         const cId = req.body.id;
         const sort = req.body.sort;
-        const result = await vendorModel.vendorByCategoryId(cId, sort);
+        const location = req.body.locationnlskdjdfsllsidufsdkkjbjsdusuiduf_ksjdhfksd;
+        const result = await vendorModel.vendorByCategoryId(cId, sort,location);
         return res.status(200).send(utils.response(result));
       } catch (err) {
         return res.status(403).send(utils.error(err));

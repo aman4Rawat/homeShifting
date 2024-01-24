@@ -455,7 +455,7 @@ try {
           othersCharges: req.body.othersCharges,
           chatCharges: req.body.chatCharges,
         };
-        const id = req.body.id;
+        const id = req.params.id;
         console.log("***************DATA***************", data);
         // const body =
         // await adminValidation.createPackageValidation.validateAsync(data);
@@ -701,6 +701,20 @@ try {
             return res.status(200).send(utils.response(result));
           }
         });
+      } catch (error) {
+        return res.status(403).send(utils.error(err.message));
+      }
+    },
+
+    purchasePackage: async (req, res) => {
+      try {
+        if (req.role !== "ADMIN") {
+          return res
+            .status(401)
+            .send(utils.error("Only Admin can update options"));
+        }
+        const { type = "", packageDetails="" } = req.body;
+        const result = await adminModel.packagePayment(type, packageDetails);
       } catch (error) {
         return res.status(403).send(utils.error(err.message));
       }

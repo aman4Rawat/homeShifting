@@ -126,34 +126,33 @@ try {
     },
     vendorBanner: async (media, v_id) => {
       try {
-        console.log("**************vendorBanner************", media, v_id);
         if (media) {
           const feild = "bannerImage";
           await imageDelete(v_id, vendorBusinessSchema, feild);
         }
-        const results = await vendorBusinessSchema.findById({ _id: v_id });
-        console.log("**************vendorBanner************", results);
-        if (!results) {
+        let results = await vendorBusinessSchema.findById(v_id);
+        if (!results?._id) {
           return new Error("No vendor found with this Id");
         }
         const image = BASEURL + media;
-        await vendorBannerSchema.findByIdAndUpdate(
+        results = await vendorBusinessSchema.findByIdAndUpdate(
           { _id: v_id },
           { $set: { bannerImage: image } },
           { new: true }
         );
-        return "image Updated sucessfully";
+        return results;
       } catch (err) {
         return err;
       }
     },
-    vendorByCategoryId: async (cId, sort) => {
+    vendorByCategoryId: async (cId, sort, location) => {
       try {
         const condition = {};
         const filter = {};
+        //here we have to find vendor by location search if location is exist else jesa chl raha hai chlene do
 
         filter.categoryId = cId;
-        filter.wallet = { $gte: 10 };
+        // filter.wallet = { $gte: 10 }; //fuck
 
         if (sort === "TOP") {
           condition.ratingCount = -1;

@@ -519,6 +519,20 @@ try {
         return error;
       }
     },
+    packagePayment: async (type, packageDetails) => {
+      try {
+        type = type.trim().toUpperCase();
+        if(type==="ONLINE"){}
+        else if(type === "CASH" || type === "CHEQUE"){
+          const result = await pruchasedPackageSchemas.create();
+          return result;
+        }else{
+          return new Error("Provide valid payment mode");
+        }
+      } catch (error) {
+        return error;
+      }
+    },
   };
 } catch (e) {
   log.error(e);
