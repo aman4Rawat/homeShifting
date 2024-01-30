@@ -1,10 +1,15 @@
 const vendorBusinessSchema = require("./vendorBusinessSchema.js");
 const packageSchame = require("../admin/packageSchame.js");
+const optionsSchema = require("../admin/optionsSchema.js");
 const gallarySchema = require("./gallarySchema.js");
 const CategorySchema = require("../services/categorySchema.js");
 const { socialMediaSchemas, clickSchema } = require("./socialMedia.js");
 const { reviewsSchema, suggestionsSchema } = require("./reviews.js");
-const { pruchasedPackageSchema } = require("../payment/paymentSchema.js");
+const {
+  pruchasedPackageSchema,
+  paymentSchema,
+} = require("../payment/paymentSchema.js");
+const invoiceSchema = require("../payment/invoiceSchema.js");
 const { State, City, Locality } = require("./stateAndCitySchrma.js");
 const { nameUpdateRequest } = require("./needfullSchema.js");
 const passbookSchema = require("./passbookSchema.js");
@@ -46,6 +51,7 @@ try {
             condition[key] = body[key];
           }
         }
+        condition.searchAddress = body.area;
         const results = await vendorBusinessSchema
           .find(condition)
           .populate("userId");
@@ -124,7 +130,7 @@ try {
         return err;
       }
     },
-    vendorBanner: async (media, v_id) => {
+    createVendorBanner: async (media, v_id) => {
       try {
         if (media) {
           const feild = "bannerImage";
@@ -145,7 +151,28 @@ try {
         return err;
       }
     },
-    vendorByCategoryId: async (cId, sort, location) => {
+    // deleteVendorBanner: async (v_id) => {
+    //   try {
+    //     if (media) {
+    //       const feild = "bannerImage";
+    //       await imageDelete(v_id, vendorBusinessSchema, feild);
+    //     }
+    //     let results = await vendorBusinessSchema.findById(v_id);
+    //     if (!results?._id) {
+    //       return new Error("No vendor found with this Id");
+    //     }
+    //     const image = BASEURL + media;
+    //     results = await vendorBusinessSchema.findByIdAndUpdate(
+    //       { _id: v_id },
+    //       { $set: { bannerImage: image } },
+    //       { new: true }
+    //     );
+    //     return results;
+    //   } catch (err) {
+    //     return err;
+    //   }
+    // },
+    vendorByCategoryIdAndLocation: async (cId, sort, location = "ALL") => {
       try {
         const condition = {};
         const filter = {};
@@ -154,11 +181,16 @@ try {
         filter.categoryId = cId;
         // filter.wallet = { $gte: 10 }; //fuck
 
+        if (location !== "ALL" || location !== "") {
+          const pattern = new RegExp(location, "i");
+          filter.searchAddress = { $regex: pattern };
+        }
+
         if (sort === "TOP") {
           condition.ratingCount = -1;
         }
-        if (sort === "ALL") {
-        }
+        // if (sort === "ALL") {
+        // }
         if (sort === "VERIFIED") {
           filter.isVerified = true;
         }
@@ -166,6 +198,7 @@ try {
           filter.isExpert = true;
         }
 
+        console.log("^^^^^^^^^^^^^^^^^^^^filter^^^^^^^^^^^^^^^^^^^^^", filter);
         const results = await vendorBusinessSchema
           .find(filter)
           .populate("packagePurchaseId")
@@ -1108,7 +1141,6 @@ try {
         return err;
       }
     },
-
     detailsSinglePackagebyId: async (pid) => {
       try {
         const package = await packageSchame.findById({ _id: pid });
@@ -1419,6 +1451,139 @@ try {
           return new Error("banners not found");
         }
         return banner;
+      } catch (err) {
+        return err;
+      }
+    },
+    createPackageOrder: async (payload) => {
+      try {
+        const vendor = await vendorBusinessSchema.findById(payload.v_id);
+        let optionAmount = 0;
+        let packageOptions = [];
+        console.log(vendor);
+        if (!vendor) {
+          return new Error("vendor not found");
+        }
+        const package = await packageSchame.findById(payload.packageId);
+        if (!package) {
+          return new Error("package not found");
+        }
+        console.log(payload?.optionId.length);
+        if (payload?.optionId.length) {
+          packageOptions = await Promise.all(
+            payload.optionId.map((id) => optionsSchema.findById(id))
+          );
+          optionAmount = packageOptions.reduce((acc, cv) => acc + cv.amount, 0);
+        }
+        let totalAmount = package.packageAmount + optionAmount;
+        let gstAmount = totalAmount * process.env.GST;
+        let discount = totalAmount * process.env.DISCOUNT;
+        let paidAmount = totalAmount + gstAmount - discount;
+
+        console.log(
+          "PackageOptions",
+          totalAmount,
+          gstAmount,
+          discount,
+          paidAmount
+        );
+        const generateOrderId = () => {
+          const timestamp = Date.now();
+          const randomId = Math.floor(Math.random() * 1000);
+          return `${timestamp}-${randomId}`;
+        };
+        const result = await pruchasedPackageSchema.create({
+          userId: vendor.userId,
+          businessId: vendor._id,
+          packageId: package._id,
+          amount: package.packageAmount + optionAmount,
+          orderId: generateOrderId(),
+          packageOptions: payload.optionId || [],
+          paidAmount,
+          gstAmount,
+          discount,
+          package: { package, packageOptions: packageOptions || [] },
+          paymentStatus: "PENDING",
+        });
+        return result;
+        // return {};
+      } catch (error) {
+        return error;
+      }
+    },
+    purchasePackage: async (payload) => {
+      try {
+        let type = payload.type.trim().toUpperCase();
+        let mode = "";
+        let paymentDetails = "";
+        console.log(new mongoose.Types.ObjectId(payload.id));
+        const packageRecord = await pruchasedPackageSchema.findOne({
+          orderId: payload.orderId,
+          paymentStatus: new RegExp("PENDING", "i"),
+        });
+        console.log("packageRecord", packageRecord);
+        if (!packageRecord) {
+          return new Error("data not found");
+        }
+        const month =
+          new Date().getMonth() +
+          packageRecord?.package?.package?.packageDuration;
+        const expireDate = new Date().setMonth(month);
+        if (type === "CASH") {
+          mode = "CASH";
+          paymentDetails = "";
+        } else if (type === "CHEQUE") {
+          mode = "CHEQUE";
+          paymentDetails = payload.paymentDetails;
+        } else return new Error("provide valid payment mode");
+        const isUpdated = await pruchasedPackageSchema.findByIdAndUpdate(
+          payload.id,
+          { paymentStatus: "DONE", expireDate: new Date(expireDate) },
+          { new: true }
+        );
+        if (isUpdated) {
+          const payment = await paymentSchema.create({
+            userId: isUpdated.userId,
+            businessId: isUpdated.businessId,
+            amount: isUpdated.amount,
+            paidAmount: isUpdated.paidAmount,
+            orderId: isUpdated.orderId,
+            mode,
+            paymentDetails,
+            productName: "Purchased Package",
+            paymentStatus: "PAID",
+          });
+          await invoiceSchema.create({
+            businessId: payment.businessId,
+            payment: payment._id,
+            is_active: true,
+          });
+          if (!payment) {
+            return new Error("Payment not initiated successfully!");
+          }
+          return { payment };
+        }
+        return result;
+      } catch (error) {
+        return error;
+      }
+    },
+    listTopVendor: async () => {
+      try {
+        const vendor = await vendorBusinessSchema
+          .find({}, { bannerImage: 1, rating: 1, _id: 1 })
+          .sort({ rating: -1 })
+          .skip(0)
+          .limit(5);
+        // .find(
+        //   { $max: { rating: new Date("2013-09-30") } }
+        // )
+        // .skip(skip)
+        // .limit(limit);
+        if (!vendor.length) {
+          return new Error("banners not found");
+        }
+        return vendor;
       } catch (err) {
         return err;
       }

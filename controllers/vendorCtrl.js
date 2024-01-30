@@ -50,12 +50,21 @@ try {
         return err;
       }
     },
-    findVendorbyCategoryId: async (req, res) => {
+    findVendorbyCategoryIdAndLocation: async (req, res) => {
       try {
         const cId = req.body.id;
         const sort = req.body.sort;
-        const location = req.body.locationnlskdjdfsllsidufsdkkjbjsdusuiduf_ksjdhfksd;
-        const result = await vendorModel.vendorByCategoryId(cId, sort,location);
+        const location = req.body.location;
+        if (!mongoose.isValidObjectId(cId)) {
+          return res
+            .status(401)
+            .send(utils.error("Please provide category id"));
+        }
+        const result = await vendorModel.vendorByCategoryIdAndLocation(
+          cId,
+          sort,
+          location
+        );
         return res.status(200).send(utils.response(result));
       } catch (err) {
         return res.status(403).send(utils.error(err));
@@ -138,17 +147,30 @@ try {
           }
           const media = req.file.path;
           const v_id = req.body.id;
-          console.log("media, v_id", media, v_id)
-          const result = await vendorModel.vendorBanner(
-            media,
-            v_id
-          );
+          console.log("media, v_id", media, v_id);
+          const result = await vendorModel.createVendorBanner(media, v_id);
           return res.status(200).send(utils.response(result));
         });
       } catch (err) {
         return res.status(403).send(utils.error(err));
       }
     },
+    // deleteBanner: async (req, res, next) => {
+    //   try {
+    //       const v_id = req.body.id;
+    //       console.log("media, v_id", media, v_id)
+    //       const result = await vendorModel.deleteVendorBanner(
+    //         v_id
+    //       );
+    //       if (result instanceof Error) {
+    //         return res.status(403).send(utils.error(result.message));
+    //       } else {
+    //         return res.status(200).send(utils.response(result));
+    //       }
+    //     } catch (err) {
+    //       return res.status(403).send(utils.error(err));
+    //     }
+    // },
     uploadVendorDocuments: async (req, res, next) => {
       try {
         if (!req.role === "VENDOR") {
@@ -633,7 +655,7 @@ try {
             .status(401)
             .send(utils.error("user can't see package details"));
         }
-        const {skip = 0, limit=10} = req.body;
+        const { skip = 0, limit = 10 } = req.body;
         const result = await vendorModel.detailsofPackage(skip, limit);
         return res.status(200).send(utils.response(result));
       } catch (err) {
@@ -857,16 +879,16 @@ try {
     },
     deleteVendor: async (req, res) => {
       try {
-        const { id="" } = req.body;
-        if(id=="" || !mongoose.isValidObjectId(id)){
+        const { id = "" } = req.body;
+        if (id == "" || !mongoose.isValidObjectId(id)) {
           return res.status(403).send(utils.error("Please provide valid id!"));
         }
-          const result = await vendorModel.deleteVendor(id);
-          if (result instanceof Error) {
-            return res.status(403).send(utils.error(result.message));
-          } else {
-            return res.status(200).send(utils.response(result));
-          }
+        const result = await vendorModel.deleteVendor(id);
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(200).send(utils.response(result));
+        }
       } catch (err) {
         return res.status(403).send(utils.error(err));
       }
@@ -888,14 +910,82 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
-  //   popularVendor: async (req, res) => {
-  //     try{
-        
-  //     } catch (err) {
-  //       return res.status(403).send(utils.error(err));
-  //     }
-  // };
-  }
+    createPackageOrder: async (req, res) => {
+      try {
+        if (req.role !== "ADMIN") {
+          return res
+            .status(401)
+            .send(utils.error("Only Admin can update options"));
+        }
+        const body = ({
+          packageId = "",
+          optionId = [],
+          v_id = "",
+        } = req.body);
+
+        if (
+          !mongoose.isValidObjectId(v_id) ||
+          !mongoose.isValidObjectId(packageId)
+        ) {
+          return res
+            .status(401)
+            .send(utils.error("Please provide valid vendor and packageId"));
+        }
+        const result = await vendorModel.createPackageOrder(body);
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(200).send(utils.response(result));
+        }
+      } catch (error) {
+        return res.status(403).send(utils.error(err.message));
+      }
+    },
+    purchagePackage: async (req, res) => {
+      try {
+        if (req.role !== "ADMIN") {
+          return res
+            .status(401)
+            .send(utils.error("Only Admin can update options"));
+        }
+        const body = { type = "", id = "", orderId="" } = req.body;
+        if (body.id == "" || !body.id || !mongoose.isValidObjectId(body.id)) {
+          return res.status(401).send(utils.error("Please provide valid id"));
+        }
+        if(orderId === ""||!orderId ){
+          return res.status(401).send(utils.error("Please provide order id"));
+        }
+
+        const result = await vendorModel.purchasePackage(body);
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(200).send(utils.response(result));
+        }
+      } catch (error) {
+        return res.status(403).send(utils.error(err.message));
+      }
+    },
+    vendorListing: async (req, res) => {
+      try {
+        const result = await vendorModel.listTopVendor();
+        if (result instanceof Error) {
+          return res.status(403).send(utils.error(result.message));
+        } else {
+          return res.status(200).send(utils.response(result));
+        }
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
+    //   popularVendor: async (req, res) => {
+    //     try{
+
+    //     } catch (err) {
+    //       return res.status(403).send(utils.error(err));
+    //     }
+    // };
+  };
 } catch (err) {
   console.log(err);
 }

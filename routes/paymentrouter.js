@@ -14,7 +14,6 @@ try {
     paymentRoute.post("/verifypurchasepackage",jwtauth, paymentCtrl.verifyPurchasePackage);
     
     
-    
     //PhonePe Payment Gateway
     // paymentRoute.post("/payment",jwtauth, apyment.phonePePayment);
     

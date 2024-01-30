@@ -1,3 +1,4 @@
+const { string } = require("joi");
 const mongoose = require("mongoose");
 
 const paymentSchemas = new mongoose.Schema(
@@ -71,6 +72,19 @@ const pruchasedPackageSchemas = new mongoose.Schema(
     },
     orderId: {
       type: String,
+    },
+    discount: {
+      type: Number
+    },
+    packageOptions: {
+      type: [Object]
+    },
+    mode: {
+      type: String,
+      enum: ["CASH", "CHEQUE", "ONLINE"]
+    },
+    paymentDetails: {
+      type: Object
     },
     paidAmount: {
       type: String,

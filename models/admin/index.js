@@ -5,7 +5,7 @@ const banner3Schema = require("./banner3Schema.js");
 const packageSchema = require("./packageSchame.js");
 const userSchema = require("../user/userSchema.js");
 const optionsSchema = require("./optionsSchema.js");
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const { Locality, City, State } = require("../vendor/stateAndCitySchrma.js");
 const { nameUpdateRequest } = require("../vendor/needfullSchema.js");
 const bcrypt = require("bcryptjs");
@@ -16,8 +16,28 @@ const JWTSECRET = process.env.JWTSECRET;
 const otpSchema = require("../../models/user/otpSchema.js");
 const BASEURL = process.env.BASEURL;
 const { sendOTP, verifyOTP } = require("../../services/OTP.js");
+const { imageDelete } = require("../../services/deleteImage.js");
+
 try {
   module.exports = {
+    updateThreeBanner: async (data, id) => {
+      try {
+        const banner3Data = await banner3Schema.findById(id);
+        if (banner3Data) {
+          await imageDelete(id, banner3Schema, "banner_three_image");
+          const updateFile = await banner3Schema.findByIdAndUpdate(
+            id,
+            {
+              banner_main_image: BASEURL + data.path,
+            },
+            { new: true }
+          );
+          return updateFile;
+        }
+      } catch (err) {
+        return err;
+      }
+    },
     addMailBanner: async (data) => {
       try {
         const checkBanner = await bannerSchema.find();
@@ -166,7 +186,7 @@ try {
     },
     updateNewPackage: async (id, body) => {
       try {
-        if(!mongoose.isValidObjectId(id)){
+        if (!mongoose.isValidObjectId(id)) {
           return new Error("Please provide valid id");
         }
         let condition = {};
@@ -176,7 +196,9 @@ try {
           }
         }
 
-        const result = await packageSchema.findByIdAndUpdate(id, condition, { new: true });
+        const result = await packageSchema.findByIdAndUpdate(id, condition, {
+          new: true,
+        });
         return result;
       } catch (err) {
         return err;
@@ -251,7 +273,8 @@ try {
         const result = await vendorBusinessSchema
           .find()
           .skip((page - 1) * limit)
-          .limit(limit);
+          .limit(limit)
+          .sort({ createdAt: -1 });
         return { result, totalPages };
       } catch (error) {
         return error;
@@ -459,7 +482,7 @@ try {
             { new: true }
           );
           console.log("updatedVendor********", vendor);
-          return "Congratulations";
+          return "Success";
         } else {
           return new Error("OTP has been used");
         }
@@ -515,20 +538,6 @@ try {
           { new: true }
         );
         return result;
-      } catch (error) {
-        return error;
-      }
-    },
-    packagePayment: async (type, packageDetails) => {
-      try {
-        type = type.trim().toUpperCase();
-        if(type==="ONLINE"){}
-        else if(type === "CASH" || type === "CHEQUE"){
-          const result = await pruchasedPackageSchemas.create();
-          return result;
-        }else{
-          return new Error("Provide valid payment mode");
-        }
       } catch (error) {
         return error;
       }

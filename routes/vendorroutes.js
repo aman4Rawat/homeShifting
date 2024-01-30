@@ -2,7 +2,7 @@ const vendorRoutes = require("express").Router();
 const vendorCtrl = require("../controllers/vendorCtrl.js");
 const JWTAUTH = require('../middlewares/auth.js');
 try {
-  vendorRoutes.post("/findvendorbycategoryid", vendorCtrl.findVendorbyCategoryId);
+  vendorRoutes.post("/findvendorbycategoryid", vendorCtrl.findVendorbyCategoryIdAndLocation);
   vendorRoutes.post("/findvendorbyid", vendorCtrl.findVendorbyId);
   vendorRoutes.post("/findvendorbusinessbytoken",JWTAUTH, vendorCtrl.findVendorBusinessByToken);
   //update vendor profile
@@ -57,7 +57,11 @@ try {
   
   vendorRoutes.delete("/deleteVendor", vendorCtrl.deleteVendor);
   vendorRoutes.post("/banner", vendorCtrl.createBanner);
+  // vendorRoutes.delete("/banner", vendorCtrl.deleteBanner);
   vendorRoutes.get("/listBanner", vendorCtrl.listBanner)
+  vendorRoutes.post("/createOrder", JWTAUTH, vendorCtrl.createPackageOrder)
+  vendorRoutes.post("/purchasePackage", JWTAUTH, vendorCtrl.purchagePackage)
+  vendorRoutes.get("/topVendorListing", JWTAUTH, vendorCtrl.vendorListing)
   module.exports = vendorRoutes;
 } catch (error) {
   console.log(error);

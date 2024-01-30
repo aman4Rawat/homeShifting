@@ -81,6 +81,29 @@ try {
         return res.status(403).send(utils.error(err));
       }
     },
+    updateThreeBanner: async (req, res) => {
+      try {
+        const id = req.body.id;
+        if (req.role !== "ADMIN") {
+          return res
+            .status(401)
+            .send(utils.error("Only Admin can upload main banner"));
+        }
+        upload(req, res, async (err) => {
+          if (err) {
+            return res.status(500).send(utils.error("Internal server error"));
+          }
+          if (!req.file) {
+            return res.status(400).send(utils.error("No file uploaded"));
+          }
+          const data = req.file;
+          const result = await bannerModel.updateThreeBanner(data, id);
+          return res.status(200).send(utils.response(result));
+        });
+      } catch (err) {
+        return res.status(403).send(utils.error(err));
+      }
+    },
     mainBannerList: async (req, res) => {
       try {
         if (req.role !== "ADMIN") {
@@ -701,20 +724,6 @@ try {
             return res.status(200).send(utils.response(result));
           }
         });
-      } catch (error) {
-        return res.status(403).send(utils.error(err.message));
-      }
-    },
-
-    purchasePackage: async (req, res) => {
-      try {
-        if (req.role !== "ADMIN") {
-          return res
-            .status(401)
-            .send(utils.error("Only Admin can update options"));
-        }
-        const { type = "", packageDetails="" } = req.body;
-        const result = await adminModel.packagePayment(type, packageDetails);
       } catch (error) {
         return res.status(403).send(utils.error(err.message));
       }

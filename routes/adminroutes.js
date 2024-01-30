@@ -10,6 +10,9 @@ try {
   adminroutes.post("/mainbannerlist",jwtauth, adminCtrl.mainBannerList);
   adminroutes.post("/mainbannerupdate",jwtauth, adminCtrl.mainBannerUpdate);
   adminroutes.post("/threebannerlist",jwtauth, adminCtrl.threeBannerList);
+  
+  adminroutes.put("/threebanner",jwtauth, adminCtrl.updateThreeBanner);
+
   adminroutes.post("/threebanner",jwtauth, adminCtrl.threeBanners);
   adminroutes.post("/appdataadd",jwtauth, adminCtrl.appDataAdd);
   adminroutes.post("/makevander",jwtauth, adminCtrl.makeVander);
@@ -46,7 +49,6 @@ try {
   adminroutes.post("/updateOption", jwtauth, adminCtrl.updateFuckOption);
   adminroutes.post("/listingOption", jwtauth, adminCtrl.listingFuckOption);
   adminroutes.post("/deleteOption", jwtauth, adminCtrl.deleteFuckOption);
-  adminroutes.post("/packagepayment", jwtauth, adminCtrl.purchasePackage)
 
   module.exports = adminroutes;
 } catch (error) {
